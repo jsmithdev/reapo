@@ -2,4 +2,4 @@
 
 simple repo manager in progress
 
-![shot](https://i.imgur.com/HfGutA2.png)
+![shot](https://i.imgur.com/c41tWv1.png)

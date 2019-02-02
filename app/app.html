@@ -1,15 +1,42 @@
 <!doctype html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>Reapo</title>
+
+  <script type="module" src="../components/reapo-modal/reapo-modal.js"></script>
+
 </head>
+
 <body>
 
   <div id="app">
+    <div class="header center">
+
+      <span class="left">
+        <svg class="icon_small">
+          <use xlink:href="./../src/stylesheets/icons.svg#gitface" />
+        </svg>
+      </span>
+
+      <input type="text" class="filter" placeholder="Filter" autofocus />
+
+      <span class="right">
+        <svg class="icon_small">
+          <use xlink:href="./../src/stylesheets/icons.svg#sync" />
+        </svg>
+      </span>
+
+
+    </div>
     <div class="container"></div>
   </div>
 
+
+  <reapo-modal></reapo-modal>
   <script src="app.js"></script>
+
 </body>
+
 </html>

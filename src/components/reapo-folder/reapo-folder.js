@@ -51,7 +51,7 @@ export class ReapoFolder extends HTMLElement {
 
     connectedCallback() {
         this.dom.onclick = () => {
-
+            new CustomEvent()
         }
     }
 	
