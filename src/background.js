@@ -34,11 +34,15 @@ if (env.name !== "production") {
 }
 
 app.on("ready", () => {
+  
   setApplicationMenu();
-
+  
   const mainWindow = createWindow("main", {
     width: 1000,
-    height: 600
+    height: 600,
+    backgroundColor: '#3e3e3c',
+    icon: `../resources/icons/512x512.png`,
+    titleBarStyle: 'customButtonsOnHover'
   });
 
   mainWindow.loadURL(
