@@ -67,6 +67,8 @@ const repo = jetpack.dir(path, {})
 }
 
 { // Settings
+  console.dir(dom)
+
   dom.menu.onclick = () => dom.settings.open()
 
   dom.settings.addEventListener('save-settings', e => {
@@ -74,7 +76,7 @@ const repo = jetpack.dir(path, {})
     const path = e.detail.path
     localStorage.path = path
     const msg = `Saved ${path}`
-    this.dom.footer.textContent = msg
+    dom.footer.textContent = msg
     e.detail.res(msg)
   })
 }
