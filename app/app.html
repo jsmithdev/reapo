@@ -12,25 +12,27 @@
   <div id="app">
     <div class="header center">
 
-      <span class="left">
+      <input type="text" class="filter" placeholder="Filter" autofocus tabindex="0"/>
+
+      <span id="menu" class="right">
         <svg class="icon_small">
+          <linearGradient x1="0" y1="0" x2="100%" y2="100%" id="gradient">
+              <stop class="gradient__icon-secondary" offset="0"/>
+              <stop class="gradient__icon" offset="100%"/>
+          </linearGradient>
           <use href="./../src/stylesheets/icons.svg#gitface" />
         </svg>
       </span>
 
-      <input type="text" class="filter" placeholder="Filter" autofocus />
-
-      <span class="right">
+      <!-- <span class="right">
         <svg class="icon_small">
           <use href="./../src/stylesheets/icons.svg#sync" />
         </svg>
-      </span>
-
+      </span> -->
 
     </div>
     <div class="container">
     </div>
-
 
     <footer></footer>
   </div>

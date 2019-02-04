@@ -44,8 +44,8 @@ footer {
 	height: auto;
 	display: grid;
 	overflow: auto;
-	max-height: 90%;
 	grid-row-gap: 2rem;
+    max-height: 92.2%;
 	text-align: center;
 	grid-column-gap: 15px;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -76,17 +76,6 @@ footer {
 	text-align: center;
 	border-radius: 5px;
 	background: #eee;
-}
-
-svg {
-	fill: #EEE;
-	cursor: pointer;
-}
-
-.icon_small {
-	width: 2rem;
-	height: 2rem;
-	vertical-align: middle;
 }
 
 @-webkit-keyframes AnimationName {
@@ -144,4 +133,34 @@ svg {
 .container::-webkit-scrollbar-thumb {
 	background-color: #525252;
 	outline: 1px solid #525252;
+}
+
+
+
+
+svg {
+	fill: #EEE;
+	cursor: pointer;
+}
+.icon_small {
+	width: 2rem;
+	height: 2rem;
+	fill: url(#gradient);
+	vertical-align: middle;
+}
+:root {
+	--color-icon: #4f23d7;
+	--color-icon-secondary: #ec00ff;
+	--shadow-drop: drop-shadow(12px 12px 7px rgba(0, 0, 0, 0.5));
+
+}
+.gradient__icon {
+	stop-color: var(--color-icon-secondary);
+}  
+.gradient__icon-secondary {
+	stop-color: var(--color-icon);
+}
+
+svg:hover {
+	filter: var(--shadow-drop);
 }

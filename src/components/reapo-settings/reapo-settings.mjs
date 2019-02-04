@@ -43,19 +43,21 @@ body {
 }
 
 .card {
-    width: 95%;
     opacity: .9;
     z-index: 20;
-    height: 50%;
     margin: auto 0;
-    text-align: left;
+    text-align: center;
     background: #FFF;
     position: relative;
-    border-radius: 0px;
     display: inline-block;
     max-height: calc(100% - 150px);
     transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    width: 50%;
+    height: 0;
+    padding-bottom: 50%;
+    border-radius: 50%;
+}
 }
 .card:hover {
 	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 0 10px 0 rgba(0, 0, 0, 0.22);
@@ -73,74 +75,53 @@ body {
     fill: #525252;
     vertical-align: middle;
 }
-
-.action {
-    width: 7.5rem;
+.text {
+    border: none;
+    border-bottom: 1pt solid pink;
+}
+#save {
+    margin-top: 2rem;
     cursor: pointer;
-    background: lightblue;
-    border-radius: 5px;
-    padding: .5rem;
-    margin: 1rem;
-}
-.terminal-log {
-    background: #525252;
+    background: #4f23d7;
     color: white;
-    width: 100%;
-    height: 10rem;
-    overflow-y: scroll;
-    position: absolute;
-    bottom: 0;
+    border: 1pt solid #4f23d7;
+    padding: .5rem 1rem;
     border-radius: 5px;
 }
 
-.terminal-log::-webkit-scrollbar {
+body::-webkit-scrollbar {
 	width: .25em;
 }
 
-.terminal-log::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track {
 	background: #eee;
 	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
-.terminal-log::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb {
 	background-color: #ec00ff;
 	outline: 1px solid #525252;
 }
 </style>
+
 <body>
     <div class="is-hidden modal-overlay">
         <div class="card">
-            <h3 class="title"></h3>
+            <h3 class="title">Settings</h3>
             <br />
-            <div class="actions">
-                <div id="sync" class="action">
-                <svg class="icon_small" viewBox="0 0 24 24">
-                    <path d="M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z" />
-                </svg>
-                &nbsp; Git Status
-                </div>
+            <div class="inputs">
+                <label for="path">Path to a Repo</label>
+                <br/>
+                <input id="path" class="text" placeholder="Eg: /home/jamie/repo"/>
+                <br/>
             </div>
-            <footer class="terminal-log"></footer>
+            <button id="save">Save</button>
         </div>
     </div>
 </body>`
 
-/* class Modal {
-    constructor(overlay) {
-      this.overlay = overlay;
-      const closeButton = overlay.querySelector('.button-close')
-      closeButton.addEventListener('click', this.close.bind(this));
-      overlay.addEventListener('click', e => {
-        if (e.srcElement.id === this.overlay.id) {
-          this.close();
-        }
-      });
-    }
-    
-  } */
-
-export class ReapoModal extends HTMLElement {
+export class ReapoSettings extends HTMLElement {
 
     constructor() {
         super()
@@ -148,7 +129,7 @@ export class ReapoModal extends HTMLElement {
         this.attachShadow({mode: 'open'})
     }
     static get is() {
-        return 'reapo-modal'
+        return 'reapo-settings'
     }
 
     static get observedAttributes() {
@@ -161,15 +142,17 @@ export class ReapoModal extends HTMLElement {
         this.registerElements(this.shadowRoot)
     }
     registerElements(doc){
-        //console.log('registerElements')
-        
+
         this.dom = {
             sync: doc.querySelector('#sync'),
             modal: doc.querySelector('.modal'),
-            log: doc.querySelector('.terminal-log'),
+            save: doc.querySelector('#save'),
             overlay: doc.querySelector('.modal-overlay'),
-            title: doc.querySelector('.title')
+            title: doc.querySelector('.title'),
+            path: doc.querySelector('#path'),
         }
+
+        this.dom.path.value = localStorage.path ? localStorage.path : ''
 	    
 		this.registerListeners()
     }
@@ -181,25 +164,20 @@ export class ReapoModal extends HTMLElement {
             }
         }
         
-        this.dom.sync.onclick = e => new Promise(res => 
+        this.dom.save.onclick = e => new Promise(res => 
             this.dispatchEvent(new CustomEvent(
-                `exec-modal`, 
+                `save-settings`, 
                 { 
-                    bubbles: true, 
+                    bubbles: true,
                     composed: true,
                     detail: {
                         res,
-                        cmd: `git status`,
-                        cwd: this.path
+                        path: this.dom.path.value
                     }
                 })
             )
         )
-        .then(x => {
-            console.log('got a RESPONSE... kinda!')
-            console.dir(x)
-            this.dom.log.innerHTML = `${this.cleanStatus(x)}\n`
-        })
+        .then(x => this.close())
 	}
 	
     attributeChangedCallback(n, ov, nv) {
@@ -217,13 +195,10 @@ export class ReapoModal extends HTMLElement {
     open(detail){
         if(detail){
             if(this.caller != detail.from){
-                while(this.dom.log.lastChild){
-                    this.dom.removeChild(this.dom.log.lastChild)
-                }
+                //while(this.dom.log.lastChild){
+                //    this.dom.removeChild(this.dom.log.lastChild)
+                //}
             }
-            this.caller = detail.from
-            this.dom.title.textContent = detail.name
-            this.path = detail.path
         }
         
         this.dom.overlay.classList.remove('is-hidden')
@@ -240,4 +215,4 @@ export class ReapoModal extends HTMLElement {
         .replace(/modified: /g, `modified: <br/>`)
     }
 }
-customElements.define(ReapoModal.is, ReapoModal);
+customElements.define(ReapoSettings.is, ReapoSettings);
