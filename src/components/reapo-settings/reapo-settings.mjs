@@ -103,20 +103,30 @@ body::-webkit-scrollbar-thumb {
 	background-color: #ec00ff;
 	outline: 1px solid #525252;
 }
+
+.container {
+    margin: 0 auto;
+    display: inline-block;
+    vertical-align: bottom;
+    height: 200px;
+    width: 100%;
+    padding-top: 20%;
+}
 </style>
 
 <body>
     <div class="is-hidden modal-overlay">
         <div class="card">
             <h3 class="title">Settings</h3>
-            <br />
-            <div class="inputs">
-                <label for="path">Path to a Repo</label>
-                <br/>
-                <input id="path" class="text" placeholder="Eg: /home/jamie/repo"/>
-                <br/>
+            <div class="container">
+                <div class="inputs">
+                    <label for="path">Path to a Repo</label>
+                    <br/>
+                    <input id="path" class="text" placeholder="Eg: /home/jamie/repo"/>
+                    <br/>
+                </div>
+                <button id="save">Save</button>
             </div>
-            <button id="save">Save</button>
         </div>
     </div>
 </body>`
@@ -164,19 +174,22 @@ export class ReapoSettings extends HTMLElement {
             }
         }
         
-        this.dom.save.onclick = e => new Promise(res => 
-            this.dispatchEvent(new CustomEvent(
-                `save-settings`, 
-                { 
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        res,
-                        path: this.dom.path.value
+        this.dom.save.onclick = e => new Promise(res => {
+
+            const val = this.dom.path.value
+            const path = val.slice(val.length-1) == '/' ? val : `${val}/`
+
+            this.dispatchEvent(
+                new CustomEvent(
+                    `save-settings`, 
+                    { 
+                        bubbles: true,
+                        composed: true,
+                        detail: { res, path }
                     }
-                })
+                )
             )
-        )
+        })
         .then(x => this.close())
 	}
 	

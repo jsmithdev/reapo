@@ -125,28 +125,25 @@ footer {
 }
 
 .container::-webkit-scrollbar-track {
-	background: #eee;
+	background: #525252;
 	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 .container::-webkit-scrollbar-thumb {
-	background-color: #525252;
-	outline: 1px solid #525252;
+	background-color: #4f23d7;
+	outline: 1px solid #4f23d7;
 }
 
 
 
 
-svg {
-	fill: #EEE;
-	cursor: pointer;
-}
 .icon_small {
 	width: 2rem;
 	height: 2rem;
 	fill: url(#gradient);
 	vertical-align: middle;
+	cursor: pointer;
 }
 :root {
 	--color-icon: #4f23d7;

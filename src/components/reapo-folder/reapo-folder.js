@@ -107,23 +107,34 @@ export class ReapoFolder extends HTMLElement {
 
     connectedCallback() {
         
+        this.dom.code.addEventListener('keyup', e => 
+            e.code != 'Tab' ? e.target.onclick(e) : null)
         this.dom.code.onclick = e => {
             e.cancelBubble = true
-            this.exec(`code ${this.path}`)
+            e.preventDefault()
+            
+            this.exec(`code ${this.path+this.name}`)
         }
 
-        this.dom.show.onclick = () => this.dispatchEvent(new CustomEvent(
-            `open-modal`, 
-            { 
-                bubbles: true, 
-                composed: true,
-                detail: {
-                    from: this.is,
-                    name: this.name, 
-                    path: this.path
-                }
-            })
-        )
+   
+        this.dom.show.addEventListener('keyup', e => 
+            e.code != 'Tab' ? e.target.onclick(e) : null)
+        this.dom.show.onclick = e => {
+            e.cancelBubble = true
+            e.preventDefault()
+            this.dispatchEvent(new CustomEvent(
+                `open-modal`, 
+                { 
+                    bubbles: true, 
+                    composed: true,
+                    detail: {
+                        from: this.is,
+                        name: this.name, 
+                        path: this.path
+                    }
+                })
+            )
+        }
     }
 	
     attributeChangedCallback(n, ov, nv) {

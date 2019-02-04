@@ -40,7 +40,7 @@ const repo = jetpack.dir(path, {})
   const projects = repo.list()
   
   const add = title => {
-    const div = new ReapoFolder(title, path+title)
+    const div = new ReapoFolder(title, path)
     div.exec = exec
     
     dom.container.appendChild(div)
