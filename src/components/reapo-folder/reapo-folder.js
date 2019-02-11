@@ -13,7 +13,7 @@ template.innerHTML = /*html*/`
   margin: 0 auto;
   cursor: pointer;
   border-radius: 5px;
-  background: #525252;
+  background: #011627;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
@@ -112,8 +112,26 @@ export class ReapoFolder extends HTMLElement {
         this.dom.code.onclick = e => {
             e.cancelBubble = true
             e.preventDefault()
+
+            console.log(this.name)
+            console.log(this.path)
             
-            this.exec(`code ${this.path+this.name}`)
+            new Promise(res => 
+                this.dispatchEvent(new CustomEvent(
+                    `open-code`, 
+                    { 
+                        bubbles: true, 
+                        composed: true,
+                        detail: {
+                            res,
+                            from: this.is,
+                            cmd: 'code .', 
+                            cwd: `${this.path}/${this.name}`
+                        }
+                    })
+                )
+            )
+            .then(console.info)
         }
 
    

@@ -108,6 +108,7 @@ body {
 	outline: 1px solid #525252;
 }
 </style>
+
 <body>
     <div class="is-hidden modal-overlay">
         <div class="card">
@@ -195,10 +196,11 @@ export class ReapoModal extends HTMLElement {
                 })
             )
         )
-        .then(x => {
+        .then((res, e) => {
             console.log('got a RESPONSE... kinda!')
-            console.dir(x)
-            this.dom.log.innerHTML = `${this.cleanStatus(x)}\n`
+            console.dir(res)
+            console.dir(e)
+            this.dom.log.innerHTML = `${this.cleanStatus(res)}\n`
         })
 	}
 	

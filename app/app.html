@@ -4,25 +4,21 @@
 <head>
   <meta charset="utf-8">
   <title>Reapo</title>
-
 </head>
 
 <body>
 
   <div id="app">
+
     <div class="header center">
+
+      <div></div>
 
       <input type="text" class="filter" placeholder="Filter" autofocus tabindex="0"/>
 
-      <span id="menu" class="right">
-          <img class="icon_small" src="./../resources/icons/512x512.png" />
-      </span>
-
-      <!-- <span class="right">
-        <svg class="icon_small">
-          <use href="./../src/stylesheets/icons.svg#sync" />
-        </svg>
-      </span> -->
+      <div id="menu">
+          <reapo-menu></reapo-menu>
+      </div>
 
     </div>
     <div class="container">
@@ -31,10 +27,18 @@
     <footer></footer>
   </div>
 
-
   <reapo-modal></reapo-modal>
+  <reapo-settings></reapo-settings>
+  
   <script src="app.js"></script>
 
 </body>
 
 </html>
+
+
+      <!-- <span class="right">
+        <svg class="icon_small">
+          <use href="./../src/stylesheets/icons.svg#sync" />
+        </svg>
+      </span> -->
