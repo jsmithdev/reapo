@@ -42,7 +42,7 @@ app.on("ready", () => {
     width: 1000,
     height: 600,
     backgroundColor: '#3e3e3c',
-    icon: `../resources/icons/512x512.png`,
+    icon: `./../resources/icons/512x512.png`,
     titleBarStyle: 'customButtonsOnHover'
   });
 

@@ -2,7 +2,7 @@
   "name": "reapo",
   "productName": "Reapo",
   "description": "A simple repo manager",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": false,
   "author": "jamie smith",
   "copyright": "© 2019, Jamie Smith.",
