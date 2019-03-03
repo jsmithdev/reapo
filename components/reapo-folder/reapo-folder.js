@@ -1,7 +1,5 @@
 // jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
-// /home/jamie/repo/reapo/src/stylesheets/icons.svg
-const icon = `${__dirname}/../src/stylesheets/icons.svg#code`
 
 const template = document.createElement('template')
 template.innerHTML = /*html*/`
@@ -76,14 +74,11 @@ template.innerHTML = /*html*/`
     </div>
 </div>`
 
-export class ReapoFolder extends HTMLElement {
+//export class ReapoFolder extends HTMLElement {      //<= es ver
+class ReapoFolder extends HTMLElement {
 
-    constructor(title, path) {
+    constructor() {
         super()
-
-        this.name = title
-        this.path = path
-        //this.title = `Manage ${title}`
         
         this.attachShadow({mode: 'open'})
 
@@ -95,25 +90,40 @@ export class ReapoFolder extends HTMLElement {
             title: this.shadowRoot.querySelector('.title')
         }
 
-        this.dom.title.textContent = title
     }
     static get is() {
         return 'reapo-folder'
     }
 
     static get observedAttributes() {
-        return ['title']
+        return ['title', 'path']
     }
 
     connectedCallback() {
         
+    }
+	
+    attributeChangedCallback(n, ov, nv) {
+
+        n === 'path' || n === 'title' ? this.ready() : null
+    }
+
+    ready(){
+
+        //console.log(this.path, this.title)
+
+        if(!this.title || !this.path){return}
+
+        this.dom.title.textContent = this.title
+
         this.dom.code.addEventListener('keyup', e => 
             e.code != 'Tab' ? e.target.onclick(e) : null)
+
         this.dom.code.onclick = e => {
             e.cancelBubble = true
             e.preventDefault()
 
-            console.log(this.name)
+            console.log(this.title)
             console.log(this.path)
             
             new Promise(res => 
@@ -125,8 +135,9 @@ export class ReapoFolder extends HTMLElement {
                         detail: {
                             res,
                             from: this.is,
+                            title: this.title,
                             cmd: 'code .', 
-                            cwd: `${this.path}/${this.name}`
+                            cwd: `${this.path}/${this.title}`
                         }
                     })
                 )
@@ -137,6 +148,8 @@ export class ReapoFolder extends HTMLElement {
    
         this.dom.show.addEventListener('keyup', e => 
             e.code != 'Tab' ? e.target.onclick(e) : null)
+
+        
         this.dom.show.onclick = e => {
             e.cancelBubble = true
             e.preventDefault()
@@ -147,19 +160,15 @@ export class ReapoFolder extends HTMLElement {
                     composed: true,
                     detail: {
                         from: this.is,
-                        name: this.name, 
+                        name: this.title, 
                         path: this.path
                     }
                 })
             )
         }
     }
-	
-    attributeChangedCallback(n, ov, nv) {
-
-        switch (n) {
-            case 'attrName': {}
-        }
-    }
 }
 customElements.define(ReapoFolder.is, ReapoFolder)
+
+
+module.exports = ReapoFolder

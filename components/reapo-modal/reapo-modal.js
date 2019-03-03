@@ -141,7 +141,8 @@ body {
     
   } */
 
-export class ReapoModal extends HTMLElement {
+//export class ReapoModal extends HTMLElement {
+class ReapoModal extends HTMLElement {
 
     constructor() {
         super()
@@ -153,7 +154,7 @@ export class ReapoModal extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['projects']
+        return []
     }
 
     connectedCallback() {
@@ -242,4 +243,7 @@ export class ReapoModal extends HTMLElement {
         .replace(/modified: /g, `modified: <br/>`)
     }
 }
-customElements.define(ReapoModal.is, ReapoModal);
+customElements.define(ReapoModal.is, ReapoModal)
+
+
+module.exports = ReapoModal

@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Reapo</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="./resources/main.css" />
+</head>
+ 
+<!-- 
+<script type="module" src="./components/reapo-menu/reapo-menu.js"></script>
+<script type="module" src="./components/reapo-modal/reapo-modal.js"></script>
+<script type="module" src="./components/reapo-folder/reapo-folder.js"></script>
+<script type="module" src="./components/reapo-settings/reapo-settings.js"></script>
+ -->
+
+<body>
+
+  <div id="app">
+
+    <div class="header center">
+
+      <div></div>
+
+      <input type="text" class="filter" placeholder="Filter" autofocus tabindex="0"/>
+
+      <div id="menu">
+          <reapo-menu></reapo-menu>
+      </div>
+
+    </div>
+    <div class="container">
+    </div>
+
+    <footer></footer>
+  </div>
+
+  <reapo-modal></reapo-modal>
+  <reapo-settings></reapo-settings>
+  
+  <script src="index.js"></script>
+  <script src="helpers/main.js"></script>
+  <!-- <script src="helpers/window.js"></script> -->
+  
+</body>
+
+</html>
+
+
+      <!-- <span class="right">
+        <svg class="icon_small">
+          <use href="./../src/resources/icons.svg#sync" />
+        </svg>
+      </span> -->

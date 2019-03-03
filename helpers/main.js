@@ -1,26 +1,20 @@
 //jshint esversion:6, asi: true
-import "./stylesheets/main.css";
 
-import "./helpers/context_menu.js";
-import "./helpers/external_links.js";
+require("./components/reapo-menu/reapo-menu.js")
+require("./components/reapo-modal/reapo-modal.js")
+require("./components/reapo-folder/reapo-folder.js")
+require("./components/reapo-settings/reapo-settings.js")
 
-//import env from "env"
+
 const fs = require('fs')
-import {exec} from "child_process"
-import { remote } from "electron"
-import jetpack from "fs-jetpack"
+const exec = require("child_process").exec
+const jetpack = require("fs-jetpack")
 
-import {ReapoFolder} from "./components/reapo-folder/reapo-folder.js"
-import {ReapoMenu} from "./components/reapo-menu/reapo-menu.mjs"
-import {ReapoModal} from "./components/reapo-modal/reapo-modal.mjs"
-import {ReapoSettings} from "./components/reapo-settings/reapo-settings.mjs"
 
 const codes = {
 	close: ['Esc']
 }
 
-const app = remote.app;
-const appDir = jetpack.cwd(app.getAppPath());
 
 const dom = {
 	filter: document.querySelector('.filter'),
@@ -36,45 +30,45 @@ const toast = msg => {
 	setTimeout(() => dom.footer.textContent = '', 4000)
 }
 
-toast('test')
-
 
 //const manifest = appDir.read("package.json", "json")
 const path = localStorage.path ? localStorage.path : ''
 
 const repo = jetpack.dir(path, {})
 
-const loadRepo = (init) => { // init repo
+const loadRepo = (config) => { // init repo
 
-	if(!init){
+	if(config.clear){
 		while(dom.container.lastChild){
 			dom.container.removeChild(dom.container.lastChild)
 		}
 	}
-
+	
 	const projects = repo.list()
 
 	const add = title => {
-		const div = new ReapoFolder(title, path)
-		div.exec = exec
+
+		const folder = document.createElement('reapo-folder')
+		folder.path = repo.cwd()
+		folder.title = title
 		
-		dom.container.appendChild(div)
+		dom.container.appendChild(folder)
 	}
 	projects.map(x => add(x))
 
 	//give some empty space
 	Array.from(Array(4).keys()).map(() => dom.container.appendChild(document.createElement('div')))
 
-	dom.settings.close()
+	//dom.settings.close()
 }
-loadRepo(true)
+loadRepo({clear: true})
 
 
 { // Filtering
 	dom.filter.addEventListener('keyup', e => 
 		dom.container.childNodes.forEach(el => {
-		if(el.name)
-			el.style.display = el.name.toLowerCase().includes(e.target.value.toLowerCase()) ? 'inline' : 'none'
+		if(el.title)
+			el.style.display = el.title.toLowerCase().includes(e.target.value.toLowerCase()) ? 'inline' : 'none'
 	}))
 }
 
@@ -85,11 +79,14 @@ loadRepo(true)
 		exec(e.detail.cmd, {cwd: e.detail.cwd}, (ev, resp) => e.detail.res(resp, ev)))
 
 	dom.container.addEventListener('open-code', e =>  //console.dir(e.detail))
-		exec(e.detail.cmd, {cwd: e.detail.cwd}, (ev, resp) => e.detail.res(resp, ev)))
+		exec(e.detail.cmd, {cwd: e.detail.cwd}, (ev, resp) => {
+			toast(`Opened ${e.detail.title} in VS Code 🦄`)
+			e.detail.res(resp, ev)
+		}))
 }
 
 { // Menu
-	console.dir(dom)
+	
 	const clear = n => setTimeout(() => dom.footer.textContent = '', n ? n : 6000)
 
 	dom.menu.onclick = () => dom.settings.open()
@@ -122,14 +119,14 @@ loadRepo(true)
 		const path = `${localStorage.path}/${name}`
 		fs.mkdir(path, { recursive: true }, (err) => {
 			if (err) throw err;
-			loadRepo()
+			loadRepo({})
 			exec('code .', {cwd: path}, (ev, resp) => callback(name, path))
 		})
 	})
-	dom.settings.addEventListener('refresh-repo', e => {
-		loadRepo()
-	})
 
+	dom.settings.addEventListener('refresh-repo', e => {
+		loadRepo({})
+	})
 
 	dom.menu.onkeyup = e => {
 		console.log(e.code)
@@ -137,3 +134,4 @@ loadRepo(true)
 	}
 
 }
+

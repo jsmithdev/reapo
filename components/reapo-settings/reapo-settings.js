@@ -253,7 +253,8 @@ svg {
     </div>
 </body>`
 
-export class ReapoSettings extends HTMLElement {
+//export class ReapoSettings extends HTMLElement {
+class ReapoSettings extends HTMLElement {
 
     constructor() {
         super()
@@ -265,7 +266,7 @@ export class ReapoSettings extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['projects']
+        return []
     }
 
     connectedCallback() {
@@ -437,4 +438,6 @@ export class ReapoSettings extends HTMLElement {
         )
     }
 }
-customElements.define(ReapoSettings.is, ReapoSettings);
+customElements.define(ReapoSettings.is, ReapoSettings)
+
+module.exports = ReapoSettings
