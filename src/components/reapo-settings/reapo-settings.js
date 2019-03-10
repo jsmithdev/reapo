@@ -31,7 +31,6 @@ body {
 
 .modal-overlay {
     position: fixed;
-    text-align: center;
     vertical-align: middle;
     top: 0px;
     left: 0;
@@ -40,7 +39,6 @@ body {
     max-height: 100%;
     background: rgba(0, 0, 0, 0.6);
     z-index: 9999;
-    /*padding-top: 15%;*/
 }
 
 
@@ -117,6 +115,13 @@ body {
   width: 94%;
     max-height: 100%;
   text-align: center;
+}
+
+.modal-body {
+    background: #EEE;
+    width: 85%;
+    margin: auto;
+    min-width: 420px;
 }
 
 /**
@@ -213,42 +218,36 @@ svg {
 
 <body>
     <div class="is-hidden modal-overlay">
-        <div class="circle">
-            <div class="circle__inner">
-                <div class="circle__wrapper">
-                    <div class="circle__content">
-        
-                        <h3 class="title">Menu</h3>
-                        <div class="container">
-                            
-                            <div class="inputs">
-                                <label for="path">Path to a Repo</label>
-                                <br/>
-                                <input id="path" class="text" placeholder="Eg: /home/jamie/repo"/>
-                                <br/>
-                            </div>
+        <div class="modal-body">
 
-                            <button id="save">Save</button>
-                        </div>
-
-                        <footer>
-                        
-                            <div></div>
-                        
-                            <div>
-                                <input id="name" />
-                                <svg id="new" viewBox="0 0 24 24">
-                                    <path fill="#FFF" d="M10,4L12,6H20A2,2 0 0,1 22,8V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z" />
-                                </svg>
-                            </div>
-
-                            <div></div>
-    
-                        </footer>
-
-                    </div>
+            <h3 class="title">Menu</h3>
+            <div class="container">
+                
+                <div class="inputs">
+                    <label for="path">Path to a Repo</label>
+                    <br/>
+                    <input id="path" class="text" placeholder="Eg: /home/jamie/repo"/>
+                    <br/>
                 </div>
+
+                <button id="save">Save</button>
             </div>
+
+            <footer>
+            
+                <div></div>
+            
+                <div>
+                    <input id="name" />
+                    <svg id="new" viewBox="0 0 24 24">
+                        <path fill="#FFF" d="M10,4L12,6H20A2,2 0 0,1 22,8V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z" />
+                    </svg>
+                </div>
+
+                <div></div>
+
+            </footer>
+
         </div>
     </div>
 </body>`

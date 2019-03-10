@@ -1,6 +1,6 @@
-# Reapo
+# Reapo 🗃
 
-simple repo manager in progress
+## A simple repo manager coded in easily editable, deliciously vanilla web standards 🎉
 
 - quick filter
 - quick open in VS Code
@@ -8,8 +8,36 @@ simple repo manager in progress
 - - todo add .gitignore, npm init, etc options
 - view details (wip)
 
+To just use, get latest release [here](/releases) on Github.
+
+---
+
 ![shot](https://i.imgur.com/t1xkWRm.png)
 
-![shot](https://i.imgur.com/cHbWswy.png)
+## Develop Reapo
 
-![shot](https://i.imgur.com/czrSTFY.png)
+Rebased to use electron-forge. To install Electron Forge:
+
+```npm i -g electron-forge```
+
+### To install
+
+After cloning the repo and/or opening the reapo dir:
+
+```npm i```
+
+### To start
+
+```npm run start```
+
+### To package
+
+```npm run package```
+
+### To make (create an installer for your OS)
+
+```npm run make```
+
+### To publish
+
+```npm run publish```
