@@ -33,6 +33,7 @@ const toast = (msg) => {
 const path = localStorage.path ? localStorage.path : ''
 
 const repo = jetpack.dir(path, {})
+console.dir(repo)
 
 const loadRepo = (config) => { // init repo
 	if (config.clear) {
