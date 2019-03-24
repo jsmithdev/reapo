@@ -53,7 +53,7 @@ body {
     height: 200px;
     width: 100%;
     max-height: 100%;
-    /*padding-top: 20%;*/
+    padding: 20px 10px 2px 10px;
 }
 .icon_small {
     margin: 2px;
@@ -117,11 +117,12 @@ body {
   text-align: center;
 }
 
-.modal-body {
+.body {
     background: #EEE;
     width: 85%;
     margin: auto;
     min-width: 420px;
+    padding: 1rem;
 }
 
 /**
@@ -202,25 +203,58 @@ footer {
     grid-template-columns: 1fr 1fr 1fr;
 }
 svg {
+
     height: 4rem;
     max-width: 50%;
     cursor: pointer;
 }
+path {
+    fill: #eee;
+}
+.title {
+    padding: 0;
+    margin: 0 0 3px 0px;
+}
+.iconContainer {
+    text-align: center;
+    background: #4f23d7;
+    border-radius: 0 0 5px 5px;
+    cursor: pointer;
+}
+.iconContainer input {
+    color: white;
+    -webkit-appearance: none;
+    background-color: #3a208e;
+    -webkit-rtl-ordering: logical;
+    cursor: text;
+    padding: 4px 0 5px 0;
+    width: calc(100% - 7px);
+    padding-left: 7px;
+    border-width: 0px;
+}
+.iconContainer input::placeholder {
+    color: #eee;
+}
+.subtitle {
+    background: #011627;
+    color: white;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    margin: 0;
+    height: 4rem;
+    padding-top: 5px;
+}
 
-#name {
-    opacity: 0;
-    margin-top: 4rem;
-}
-#name.active {
-    opacity: 1;
-}
 </style>
 
 <body>
-    <div class="is-hidden modal-overlay">
-        <div class="modal-body">
 
-            <h3 class="title">Menu</h3>
+    <div class="is-hidden modal-overlay">
+
+        <div class="body">
+
+            <h3 class="title">Settings</h3>
+
             <div class="container">
                 
                 <div class="inputs">
@@ -238,10 +272,19 @@ svg {
                 <div></div>
             
                 <div>
-                    <input id="name" />
-                    <svg id="new" viewBox="0 0 24 24">
-                        <path fill="#FFF" d="M10,4L12,6H20A2,2 0 0,1 22,8V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z" />
-                    </svg>
+                    <h2 class="subtitle">New repo</h2>
+                    <!-- 
+                    todo idea to start adding sfdx, yeoman gens, etc 
+                    <select>
+                        <option>sfdx project</option>
+                    </select>
+                    -->
+                    <div id="new" class="iconContainer" title="Give a name for a new repo &amp; hit Enter 🦄">
+                        <input id="name" placeholder="Enter a name &amp; hit Enter" />
+                        <svg viewBox="0 0 24 24">
+                            <path d="M10,4L12,6H20A2,2 0 0,1 22,8V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z" />
+                        </svg>
+                    </div>
                 </div>
 
                 <div></div>
@@ -337,10 +380,10 @@ class ReapoSettings extends HTMLElement {
         .then(x => this.close())
 
         this.dom.new.onclick = e => new Promise(res => {
-            
-            if(this.dom.name.classList.contains('active')){
+            console.log()
+            if(this.dom.name.value){
                 
-                const name = this.dom.name.value   
+                
         		this.mkRepo(name, res)
             }
             this.dom.name.classList.add('active')
@@ -353,8 +396,8 @@ class ReapoSettings extends HTMLElement {
 
             const name = this.dom.name.value
             name 
-            ? this.mkRepo(name, res)
-            : this.toast(`Type a name and hit enter to create a repo 😯`, res)
+                ? this.mkRepo(name, res)
+                : console.log('boolp')
         })
         .then(x => {
             
