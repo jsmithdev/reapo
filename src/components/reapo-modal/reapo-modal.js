@@ -1,9 +1,8 @@
 // jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
-const ipcRenderer = require('electron').ipcRenderer
-
 const template = document.createElement('template')
+
 template.innerHTML = /*html*/`
 <style>
 body {

@@ -6,9 +6,13 @@ require('./components/reapo-folder/reapo-folder.js')
 require('./components/reapo-settings/reapo-settings.js')
 
 
+// const manifest = appDir.read("package.json", "json")
+
+
 const fs = require('fs')
-    , exec = require('child_process').exec
-    , jetpack = require('fs-jetpack')
+	, exec = require('child_process').exec
+	, path = localStorage.path ? localStorage.path : ''
+    , repo = require('fs-jetpack').dir(path, {})
     , codes = {
 	    close: ['Esc']
     };
@@ -29,29 +33,25 @@ const toast = (msg) => {
 }
 
 
-// const manifest = appDir.read("package.json", "json")
-const path = localStorage.path ? localStorage.path : ''
-
-const repo = jetpack.dir(path, {})
-console.dir(repo)
-
 const loadRepo = (config) => { // init repo
+
 	if (config.clear) {
 		while (dom.container.lastChild) {
 			dom.container.removeChild(dom.container.lastChild)
 		}
 	}
 
-	const projects = repo.list()
+	const projects = repo.list().map(name => repo.inspect(`${path}/${name}`, { times: true }))
 
-	const add = (title) => {
+	const add = dir => {
 		const folder = document.createElement('reapo-folder')
 		folder.path = repo.cwd()
-		folder.title = title
+		folder.name = dir.name
+		folder.title = dir.modifyTime
 
 		dom.container.appendChild(folder)
 	}
-	projects.map(x => add(x))
+	projects.map(add)
 
 	// give some empty space #todo do better
 	Array.from(Array(4).keys()).map(() => dom.container.appendChild(document.createElement('div')))
@@ -71,8 +71,11 @@ loadRepo({ clear: true })
 { // Repo Details
 	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
 
-	dom.modal.addEventListener('exec-modal', e =>  // console.dir(e.detail))
-		exec(e.detail.cmd, { cwd: e.detail.cwd }, (ev, resp) => e.detail.res(resp, ev)))
+	dom.modal.addEventListener('exec-modal', e => {
+		console.dir(e.detail)
+		
+		exec(e.detail.cmd, { cwd: e.detail.cwd }, (ev, resp) => e.detail.res(resp, ev))
+	})
 
 	dom.container.addEventListener('open-code', e =>  // console.dir(e.detail))
 		exec(e.detail.cmd, { cwd: e.detail.cwd }, (ev, resp) => {

@@ -33,18 +33,21 @@ template.innerHTML = /*html*/`
     bottom: 0;
     height: 3.3rem;
     width: 100%;
-    display: grid;
     background: #4f23d7;
     border-radius: 0px 0px 5px 5px;
     vertical-align: middle;
+    box-shadow: 0 -3px 5px 0px rgba(0,0,0,0.12);
+
+
+    display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 2fr;
     grid-column-gap: 20px;
     grid-row-gap: 20px;
     justify-items: center;
     align-items: center;
-    align-items: center;
-    box-shadow: 0 -3px 5px 0px rgba(0,0,0,0.12);
+}
+.actions-body {
 }
 .action {
     width: 25px;
@@ -53,24 +56,38 @@ template.innerHTML = /*html*/`
     border-radius: 5px;
     bottom: 0;
 }
+
+.moddate {
+    color: white;
+    display: contents;
+    font-size: .8rem;
+}
 </style>
 
 <div class="card">
     <h3 class="title"></h3>
     <div class="actions">
-        <div id="show" class="action" title="View in App" tabindex="1">
-            <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12,10L8,14H11V20H13V14H16M19,4H5C3.89,4 3,4.9 3,6V18A2,2 0 0,0 5,20H9V18H5V8H19V18H15V20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4Z" />
-            </svg>
-        </div>
-        <div id="other" class="action" title="">
-            
-        </div>
-        <div id="code" class="action" title="Open in VS Code" tabindex="1">
-            <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6Z"/>
-            </svg>
-        </div>
+
+        <!-- <span class="moddate"></span> 
+        
+        <div class="actions-body">
+        -->
+
+            <div id="show" class="action" title="View in App" tabindex="1">
+                <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12,10L8,14H11V20H13V14H16M19,4H5C3.89,4 3,4.9 3,6V18A2,2 0 0,0 5,20H9V18H5V8H19V18H15V20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4Z" />
+                </svg>
+            </div>
+
+            <div id="other" class="action" title="">
+                
+            </div>
+            <div id="code" class="action" title="Open in VS Code" tabindex="1">
+                <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6Z"/>
+                </svg>
+            </div>
+        <!-- </div> -->
     </div>
 </div>`
 
@@ -85,8 +102,10 @@ class ReapoFolder extends HTMLElement {
         this.shadowRoot.appendChild(template.content.cloneNode(true))
 
         this.dom = {
+            card: this.shadowRoot.querySelector('.card'),
             code: this.shadowRoot.querySelector('#code'),
             show: this.shadowRoot.querySelector('#show'),
+            moddate: this.shadowRoot.querySelector('.moddate'),
             title: this.shadowRoot.querySelector('.title')
         }
 
@@ -96,7 +115,7 @@ class ReapoFolder extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['title', 'path']
+        return ['title', 'path', 'name']
     }
 
     connectedCallback() {
@@ -110,11 +129,24 @@ class ReapoFolder extends HTMLElement {
 
     ready(){
 
-        //console.log(this.path, this.title)
+        const options = {
 
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        }
+        
         if(!this.title || !this.path){return}
+        
+        const mod = new Intl.DateTimeFormat('en-US', options).format(new Date(this.title))
 
-        this.dom.title.textContent = this.title
+        this.dom.title.textContent = this.name
+        //this.dom.moddate.textContent = mod
+        
+        this.title = `Name: ${this.name} \n Modded: ${mod}`
 
         this.dom.code.addEventListener('keyup', e => 
             e.code != 'Tab' ? e.target.onclick(e) : null)
@@ -123,9 +155,6 @@ class ReapoFolder extends HTMLElement {
             e.cancelBubble = true
             e.preventDefault()
 
-            console.log(this.title)
-            console.log(this.path)
-            
             new Promise(res => 
                 this.dispatchEvent(new CustomEvent(
                     `open-code`, 
@@ -135,9 +164,9 @@ class ReapoFolder extends HTMLElement {
                         detail: {
                             res,
                             from: this.is,
-                            title: this.title,
+                            title: this.name,
                             cmd: 'code .', 
-                            cwd: `${this.path}/${this.title}`
+                            cwd: `${this.path}/${this.name}`
                         }
                     })
                 )
