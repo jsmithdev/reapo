@@ -7,8 +7,17 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/app/background.js"
-        }
+            "name": "Reapo Debug",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-nix",
+            "windows": {
+              "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-win.cmd"
+            },
+            // runtimeArgs will be passed directly to your Electron application
+            //"runtimeArgs": [
+            //  "foo",
+            //  "bar"
+            //],
+            "cwd": "${workspaceFolder}"
+          }
     ]
 }
