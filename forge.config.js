@@ -26,8 +26,9 @@ module.exports = {
         "electronInstallerDebian": {},
         "electronInstallerRedhat": {},
         "github_repository": {
-          "owner": "dubyajaysmith",
-          "name": "reapo"
+          "owner": "jsmithdev",
+          "name": "reapo",
+          "prerelease": true
         },
         "windowsStoreConfig": {
           "packageName": "reapo",
@@ -35,4 +36,3 @@ module.exports = {
         }
     }
 }
-console.dir(module.exports.forge.electronPackagerConfig.icon)

@@ -1,22 +1,38 @@
 # Reapo 🗃
 
-## A simple repo manager built with easily editable, deliciously vanilla web standards 🎉
+## A repo manager built with vanilla web standards 🎉
+
+## Purpose
+
+Wanting a repo manager that:
+
+- Compliments VS Code
+- Easily editable via vanilla web standards
+- Like VS Code, is in the middle between
+  - dumb (eg: OS file manager)
+  - heavy (eg: gitkraken)
+
+Reapo has some tricks already like:
 
 - quick filter
 - quick open in VS Code
-- quick new repo && open in vs code 
+- quick new repo or git
+  - auto opens in VS Code
 
-todos
-  - archive that zips repo, opts to remove things in .gitignore, etc
-  - improve new repo function with .gitignore, npm init, local yeoman generators, etc options
-  - quick view meta like git status, etc
-  - UI improvments after rebase to forge
+Any todos are under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub.
 
-Alpha releases are [here](https://github.com/jsmithdev/reapo/releases) on Github.
+Early releases are [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub.
+
+Feel free to:
+
+- Open an [issue](https://github.com/jsmithdev/reapo/issues)
+- Contact [Jamie](https://jsmith.dev)
 
 ---
 
 ![shot](https://i.imgur.com/t1xkWRm.png)
+
+---
 
 ## Develop Reapo
 
@@ -45,3 +61,7 @@ After cloning the repo and/or opening the reapo dir:
 ### To publish
 
 ```npm run publish```
+
+---
+
+Made with 💙 by [jsmithdev](https://jsmith.dev)
