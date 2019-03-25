@@ -10,7 +10,8 @@ require('./components/reapo-settings/reapo-settings.js')
 
 
 const fs = require('fs')
-	, exec = require('child_process').exec
+	, util = require('util')
+	, exec = util.promisify(require('child_process').exec)
 	, path = localStorage.path ? localStorage.path : ''
     , repo = require('fs-jetpack').dir(path, {})
     , codes = {
@@ -44,13 +45,15 @@ const loadRepo = (config) => { // init repo
 	const projects = repo.list().map(name => repo.inspect(`${path}/${name}`, { times: true }))
 
 	const add = dir => {
+		
 		const folder = document.createElement('reapo-folder')
 		folder.path = repo.cwd()
 		folder.name = dir.name
-		folder.title = dir.modifyTime
+		folder.date = dir.modifyTime
 
 		dom.container.appendChild(folder)
 	}
+	//console.dir(projects)
 	projects.map(add)
 
 	// give some empty space #todo do better
@@ -74,21 +77,27 @@ loadRepo({ clear: true })
 	dom.modal.addEventListener('exec-modal', e => {
 		console.dir(e.detail)
 		
-		exec(e.detail.cmd, { cwd: e.detail.cwd }, (ev, resp) => e.detail.res(resp, ev))
+		exec(e.detail.cmd, { cwd: e.detail.cwd })
+		.then((ev, resp) => e.detail.res(resp, ev))
 	})
 
+	/* Open in VS Code */
 	dom.container.addEventListener('open-code', e =>  // console.dir(e.detail))
-		exec(e.detail.cmd, { cwd: e.detail.cwd }, (ev, resp) => {
+		exec(e.detail.cmd, { cwd: e.detail.cwd })
+		.then((ev, resp) => {
 			toast(`Opened ${e.detail.title} in VS Code 🦄`)
 			e.detail.res(resp, ev)
-		}))
+		})
+	)
 }
 
 { // Menu
 	const clear = n => setTimeout(() => dom.footer.textContent = '', n || 6000)
 
+	/* Opener */
 	dom.menu.onclick = () => dom.settings.open()
 
+	/* Save Main Settings */
 	dom.settings.addEventListener('save-settings', (e) => {
         
 		const path = e.detail.path
@@ -101,35 +110,61 @@ loadRepo({ clear: true })
         e.detail.res(msg)
 	})
 
+	/* New blank Repo */
 	dom.settings.addEventListener('new-repo', (e) => {
-		console.log('new repo')
-		console.dir(e)
-
-
-		const callback = (name, path) => {
-			toast(`Created ${path}`)
-
-			dom.filter.value = name
-			dom.filter.keyup()
-			dom.settings.close()
-		}
 
 		const name = e.detail.name
 		const path = `${localStorage.path}/${name}`
+		const chain = e.detail.res
+
+
 		fs.mkdir(path, { recursive: true }, (err) => {
 			if (err) throw err;
 			loadRepo({})
-			exec('code .', { cwd: path }, (ev, resp) => callback(name, path))
+			exec('code .', { cwd: path })
+			.then(x => chain(`Created ${name} in ${path}`, x))
 		})
 	})
 
-	dom.settings.addEventListener('refresh-repo', (e) => {
-		loadRepo({})
+	/* New git clone */
+	dom.settings.addEventListener('new-git', (e) => {
+
+		const git = e.detail.name
+		const path = localStorage.path
+		const chain = e.detail.res
+
+
+		exec(`git clone ${git}`, { cwd: path })
+		.then(x => chain(x.stderr || x.stdout, x))
 	})
 
+	/* Refresh Repos */
+	dom.settings.addEventListener('refresh-repo', (e) => {
+		loadRepo({ clear: true })
+	})
+
+	/* Toaster */
+	dom.settings.addEventListener('toast', (e) => {
+		toast(e.detail.msg)
+		if(e.detail.res){
+			res('ran toast')
+		}
+	})
+
+	/* Close on Esc #todo */
 	dom.menu.onkeyup = (e) => {
 		console.log(e.code)
 		codes.close.includes(e.code) ? e.target.close() : null
 	}
+
+
+	/* Open in VS Code */
+	dom.settings.addEventListener('open-code', e =>  // console.dir(e.detail))
+		exec(e.detail.cmd, { cwd: e.detail.cwd })
+		.then((ev, resp) => {
+			toast(`Opened ${e.detail.title} in VS Code 🦄`)
+			e.detail.res(resp, ev)
+		})
+	)
 }
 

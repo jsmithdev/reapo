@@ -71,34 +71,6 @@ class ReapoMenu extends HTMLElement {
 
     connectedCallback() {
         
-
-        //this.dom.code.addEventListener('keyup', e => 
-        //    codes_action.includes(e.code) ? e.target.onclick(e) : null)
-
-        /* this.dom.code.onclick = e => {
-            e.cancelBubble = true
-            e.preventDefault()
-
-            console.log(this.name)
-            console.log(this.path)
-            
-            new Promise(res => 
-                this.dispatchEvent(new CustomEvent(
-                    `open-code`, 
-                    { 
-                        bubbles: true, 
-                        composed: true,
-                        detail: {
-                            res,
-                            from: this.is,
-                            cmd: 'code .', 
-                            cwd: this.path+this.name
-                        }
-                    })
-                )
-            )
-            .then(console.info)
-        } */   
     }
 	
     attributeChangedCallback(n, ov, nv) {

@@ -115,42 +115,38 @@ class ReapoFolder extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['title', 'path', 'name']
+        return ['title', 'path', 'name', 'date']
     }
 
     connectedCallback() {
         
+        if(this.path && this.name && this.date){ this.ready() }
     }
 	
     attributeChangedCallback(n, ov, nv) {
-
-        n === 'path' || n === 'title' ? this.ready() : null
     }
 
     ready(){
 
-        const options = {
+        /* Folder Name */
+        this.dom.title.textContent = this.name
 
+        /* Surface Modified Date */
+        const moddate = new Intl.DateTimeFormat('en-US', {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',
             hour: 'numeric',
             minute: 'numeric',
             second: 'numeric'
-        }
-        
-        if(!this.title || !this.path){return}
-        
-        const mod = new Intl.DateTimeFormat('en-US', options).format(new Date(this.title))
+        })
+        .format(new Date(this.date))
 
-        this.dom.title.textContent = this.name
-        //this.dom.moddate.textContent = mod
+        this.title = `Name: ${this.name} \n Mod: ${moddate}`
+
+
         
-        this.title = `Name: ${this.name} \n Modded: ${mod}`
-
-        this.dom.code.addEventListener('keyup', e => 
-            e.code != 'Tab' ? e.target.onclick(e) : null)
-
+        /* Open in VS Code */
         this.dom.code.onclick = e => {
             e.cancelBubble = true
             e.preventDefault()
@@ -173,12 +169,12 @@ class ReapoFolder extends HTMLElement {
             )
             .then(console.info)
         }
-
-   
-        this.dom.show.addEventListener('keyup', e => 
+        this.dom.code.addEventListener('keyup', e => 
             e.code != 'Tab' ? e.target.onclick(e) : null)
+            
 
-        
+
+        /* Modal to show extra info about repo (a lot todo there) */
         this.dom.show.onclick = e => {
             e.cancelBubble = true
             e.preventDefault()
@@ -195,6 +191,8 @@ class ReapoFolder extends HTMLElement {
                 })
             )
         }
+        this.dom.show.addEventListener('keyup', e => 
+            e.code != 'Tab' ? e.target.onclick(e) : null)
     }
 }
 customElements.define(ReapoFolder.is, ReapoFolder)

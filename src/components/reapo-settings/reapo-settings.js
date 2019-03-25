@@ -258,7 +258,7 @@ path {
             <div class="container">
                 
                 <div class="inputs">
-                    <label for="path">Path to a Repo</label>
+                    <label for="path">Path to Main Directory</label>
                     <br/>
                     <input id="path" class="text" placeholder="Eg: /home/jamie/repo"/>
                     <br/>
@@ -272,15 +272,17 @@ path {
                 <div></div>
             
                 <div>
-                    <h2 class="subtitle">New repo</h2>
+                    <h2 class="subtitle">Create</h2>
                     <!-- 
                     todo idea to start adding sfdx, yeoman gens, etc 
                     <select>
                         <option>sfdx project</option>
                     </select>
                     -->
-                    <div id="new" class="iconContainer" title="Give a name for a new repo &amp; hit Enter 🦄">
-                        <input id="name" placeholder="Enter a name &amp; hit Enter" />
+                    <div id="new" class="iconContainer" title="Give a name for a new repo or paste a .git uri 🦄">
+                        
+                        <input id="name" placeholder="Enter a name or a .git URL to clone" />
+
                         <svg viewBox="0 0 24 24">
                             <path d="M10,4L12,6H20A2,2 0 0,1 22,8V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z" />
                         </svg>
@@ -337,12 +339,14 @@ class ReapoSettings extends HTMLElement {
     }
     registerListeners() {
 
+        /* Close Modal */
         this.dom.overlay.onclick = e => {
             if (e.target == this.dom.overlay) {
                 this.close()
             }
         }
 
+        /* Main Settings Save: Main Directory, ... */
         this.dom.save.onclick = e => new Promise(res => {
 
             const val = this.dom.path.value
@@ -361,58 +365,99 @@ class ReapoSettings extends HTMLElement {
         })
         .then(x => this.close())
 
-        this.dom.save.onclick = e => new Promise(res => {
 
-            const val = this.dom.path.value
-            const path = val.slice(val.length - 1) == '/' ? val : `${val}/`
+        /* Create a Repo */
+        const createRepo = (name, path) => {
 
-            this.dispatchEvent(
-                new CustomEvent(
-                    `save-settings`,
-                    {
-                        bubbles: true,
-                        composed: true,
-                        detail: { res, path }
-                    }
-                )
-            )
-        })
-        .then(x => this.close())
+            console.log(name)
+            console.log(path)
 
-        this.dom.new.onclick = e => new Promise(res => {
-            console.log()
-            if(this.dom.name.value){
-                
-                
-        		this.mkRepo(name, res)
+            if(!path){
+                this.close()
+                this.toast('Please set a Main Directory')
             }
-            this.dom.name.classList.add('active')
-            this.dom.name.focus()            
-        })
 
-        this.dom.name.onkeyup = e => new Promise(res => {
-            console.log(e.code)
-            if(!this.codes.action.includes(e.code)){return}
+            let action
 
-            const name = this.dom.name.value
-            name 
-                ? this.mkRepo(name, res)
-                : console.log('boolp')
-        })
-        .then(x => {
-            
-            this.dispatchEvent(
-                new CustomEvent(
-                    `refresh-repo`,
-                    {
-                        bubbles: true,
-                        composed: true,
-                        detail: { }
-                    }
+            if(name.includes('.git')){
+                
+                action = () => new Promise(res => {
+                    this.dispatchEvent(
+                        new CustomEvent(
+                            `new-git`,
+                            {
+                                bubbles: true,
+                                composed: true,
+                                detail: { name, res }
+                            }
+                        )
+                    )
+                })
+            }
+            else {
+                action = () => new Promise(res => {
+                    this.dispatchEvent(
+                        new CustomEvent(
+                            `new-repo`,
+                            {
+                                bubbles: true,
+                                composed: true,
+                                detail: { name, res }
+                            }
+                        )
+                    )
+                })
+            }
+
+            action().then(x => {
+
+                name = name.includes('.git') ? name.substring(name.lastIndexOf('/')+1, name.lastIndexOf('.')) : name
+                
+                this.dispatchEvent(
+                    new CustomEvent(
+                        `refresh-repo`,
+                        {
+                            bubbles: true,
+                            composed: true,
+                            detail: { }
+                        }
+                    )
                 )
-            )
-            this.close()
-        })
+
+
+                new Promise(res => 
+                    this.dispatchEvent(new CustomEvent(
+                        `open-code`, 
+                        { 
+                            bubbles: true, 
+                            composed: true,
+                            detail: {
+                                res,
+                                from: this.is,
+                                title: name,
+                                cmd: 'code .', 
+                                cwd: `${path}/${name}`
+                            }
+                        })
+                    )
+                )
+                .then(console.info)
+                
+                this.dom.name.value = ''
+
+                this.close()
+                this.toast(x)
+            })
+        }
+        this.dom.new.onclick = e => {
+            if(e.target == this.dom.name){ return }
+
+            const name = this.dom.name.value 
+            name ? createRepo(name, localStorage.path) : this.toast('Please enter a name or .git url')
+        }
+        this.dom.name.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.new.click() : null
+
+
 
 
     }
@@ -452,20 +497,6 @@ class ReapoSettings extends HTMLElement {
             .replace(/modified: /g, `modified: <br/>`)
     }
 
-
-    mkRepo(name, res){
-        this.dispatchEvent(
-            new CustomEvent(
-                `new-repo`,
-                {
-                    bubbles: true,
-                    composed: true,
-                    detail: { name, res }
-                }
-            )
-        )
-        res()
-    }
 
     toast(msg, res){
         this.dispatchEvent(
