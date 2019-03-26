@@ -114,11 +114,18 @@ body {
             <h3 class="title"></h3>
             <br />
             <div class="actions">
-                <div id="sync" class="action">
-                <svg class="icon_small" viewBox="0 0 24 24">
-                    <path d="M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z" />
-                </svg>
-                &nbsp; Git Status
+                <div>
+                    <div id="sync" class="action">
+                    <svg class="icon_small" viewBox="0 0 24 24">
+                        <path d="M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z" />
+                    </svg>
+                    &nbsp; Git Status
+                    </div>
+                </div>
+                <div id="remove">
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="#4f23d7" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                    </svg>
                 </div>
             </div>
             <footer class="terminal-log"></footer>
@@ -169,17 +176,38 @@ class ReapoModal extends HTMLElement {
             modal: doc.querySelector('.modal'),
             log: doc.querySelector('.terminal-log'),
             overlay: doc.querySelector('.modal-overlay'),
-            title: doc.querySelector('.title')
+            title: doc.querySelector('.title'),
+            remove: doc.querySelector('#remove')
         }
 	    
 		this.registerListeners()
     }
 	registerListeners(){
-
+        
+        /* Close Modal */
         this.dom.overlay.onclick = e => {
             if (e.target == this.dom.overlay) {
                 this.close()
             }
+        }
+        
+        /* Delete Repo */
+        this.dom.remove.onclick = e => {
+
+            const name = this.name
+            
+            if(!confirm(`For reals, you wanna trash ${name}?`)){ return }
+
+            this.dispatchEvent(
+                new CustomEvent(
+                    `delete-repo`,
+                    {
+                        bubbles: true,
+                        composed: true,
+                        detail: { name }
+                    }
+                )
+            )
         }
         
         this.dom.sync.onclick = e => new Promise(res => 
@@ -191,7 +219,7 @@ class ReapoModal extends HTMLElement {
                     detail: {
                         res,
                         cmd: `git status`,
-                        cwd: this.path
+                        cwd: this.path+'/'+this.name
                     }
                 })
             )
@@ -200,7 +228,7 @@ class ReapoModal extends HTMLElement {
             console.log('got a RESPONSE... kinda!')
             console.dir(res)
             console.dir(e)
-            this.dom.log.innerHTML = `${this.cleanStatus(res)}\n`
+            this.dom.log.innerHTML += this.cleanStatus(res)+'\n\n' // 
         })
 	}
 	
@@ -217,6 +245,7 @@ class ReapoModal extends HTMLElement {
     }
 
     open(detail){
+
         if(detail){
             if(this.caller != detail.from){
                 while(this.dom.log.lastChild){
@@ -224,12 +253,14 @@ class ReapoModal extends HTMLElement {
                 }
             }
             this.caller = detail.from
-            this.dom.title.textContent = detail.name
+            this.dom.title.textContent = detail.title
             this.path = detail.path
+            this.name = detail.name
         }
         
         this.dom.overlay.classList.remove('is-hidden')
     }
+
     close(){
         this.dom.overlay.classList.add('is-hidden')
     }

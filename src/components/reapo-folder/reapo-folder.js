@@ -185,7 +185,8 @@ class ReapoFolder extends HTMLElement {
                     composed: true,
                     detail: {
                         from: this.is,
-                        name: this.title, 
+                        name: this.name, 
+                        title: this.title, 
                         path: this.path
                     }
                 })

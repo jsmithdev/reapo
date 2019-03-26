@@ -5,21 +5,19 @@ require('./components/reapo-modal/reapo-modal.js')
 require('./components/reapo-folder/reapo-folder.js')
 require('./components/reapo-settings/reapo-settings.js')
 
-
-// const manifest = appDir.read("package.json", "json")
-
-
 const fs = require('fs')
 	, util = require('util')
 	, exec = util.promisify(require('child_process').exec)
 	, path = localStorage.path ? localStorage.path : ''
     , repo = require('fs-jetpack').dir(path, {})
     , codes = {
-	    close: ['Esc']
+	    close: ['Escape'],
+	    exit: ['KeyW'],
     };
 
 
 const dom = {
+	body: document.querySelector('body'),
 	filter: document.querySelector('.filter'),
 	container: document.querySelector('.container'),
 	modal: document.querySelector('reapo-modal'),
@@ -28,12 +26,14 @@ const dom = {
 	footer: document.querySelector('footer'),
 }
 
-const toast = (msg) => {
+/* Toaster */
+const toast = msg => {
+
 	dom.footer.textContent = msg
 	setTimeout(() => dom.footer.textContent = '', 4000)
 }
 
-
+/* Load Main Directory View */
 const loadRepo = (config) => { // init repo
 
 	if (config.clear) {
@@ -58,41 +58,90 @@ const loadRepo = (config) => { // init repo
 
 	// give some empty space #todo do better
 	Array.from(Array(4).keys()).map(() => dom.container.appendChild(document.createElement('div')))
-
-	// dom.settings.close()
 }
 loadRepo({ clear: true })
 
 
-{ // Filtering
-	dom.filter.addEventListener('keyup', e =>
-		dom.container.childNodes.forEach((el) => {
-			if (el.title) { el.style.display = el.title.toLowerCase().includes(e.target.value.toLowerCase()) ? 'inline' : 'none' }
-		}))
-}
+{ /* Global Listeners, bubble ups => gotta catch em all */
+	
+	/* Toaster */
+	dom.body.addEventListener('toast', (e) => {
 
-{ // Repo Details
-	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
+		toast(e.detail.msg)
 
-	dom.modal.addEventListener('exec-modal', e => {
-		console.dir(e.detail)
-		
-		exec(e.detail.cmd, { cwd: e.detail.cwd })
-		.then((ev, resp) => e.detail.res(resp, ev))
+		if(typeof e.detail.res == 'function'){
+			res('toasted')
+		}
 	})
 
 	/* Open in VS Code */
-	dom.container.addEventListener('open-code', e =>  // console.dir(e.detail))
+	dom.body.addEventListener('open-code', e =>  // console.dir(e.detail))
 		exec(e.detail.cmd, { cwd: e.detail.cwd })
 		.then((ev, resp) => {
 			toast(`Opened ${e.detail.title} in VS Code 🦄`)
 			e.detail.res(resp, ev)
 		})
 	)
+
+	/* Close overlay on Esc press */
+	dom.body.onkeyup = e => {
+		console.log(e)
+		codes.close.includes(e.code) ? [dom.settings, dom.modal].map(el => el.close()) : null
+	}
+
+	/* Close overlay on Esc press */
+	dom.body.onkeyup = e => {
+		e.ctrlKey && codes.exit.includes(e.code) ? require('electron').remote.getCurrentWindow().close() : null
+	}
 }
 
-{ // Menu
-	const clear = n => setTimeout(() => dom.footer.textContent = '', n || 6000)
+{ /* Filtering */
+	dom.filter.addEventListener('keyup', e =>
+		dom.container.childNodes.forEach(el => {
+			if (el.title) { el.style.display = el.title.toLowerCase().includes(e.target.value.toLowerCase()) ? 'inline' : 'none' }
+		})
+	)
+}
+
+{ /* Repo Details via Modal */
+
+	dom.modal.addEventListener('exec-modal', e => {
+		console.dir(e.detail)
+		
+		exec(e.detail.cmd, { cwd: e.detail.cwd })
+		.then(x => {
+			e.detail.res(x.stderr || x.stdout)
+			toast(x.stderr || x.stdout)
+		})
+	})
+
+	dom.modal.addEventListener('delete-repo', e => {
+		
+		const name = e.detail.name
+		const path = localStorage.path
+		const chain = e.detail.res
+
+		const cmd = `rm -Rf ${path}${name}`
+
+		exec(cmd, { cwd: path })
+		.then(x => {
+			loadRepo({ clear: true })
+			dom.modal.close()
+			toast(x.stderr || x.stdout)
+		})
+	})
+
+}
+
+{ /* Folders */
+
+	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
+	
+}
+
+
+
+{ /* Settings Menu */
 
 	/* Opener */
 	dom.menu.onclick = () => dom.settings.open()
@@ -120,7 +169,9 @@ loadRepo({ clear: true })
 
 		fs.mkdir(path, { recursive: true }, (err) => {
 			if (err) throw err;
+
 			loadRepo({})
+			
 			exec('code .', { cwd: path })
 			.then(x => chain(`Created ${name} in ${path}`, x))
 		})
@@ -133,38 +184,24 @@ loadRepo({ clear: true })
 		const path = localStorage.path
 		const chain = e.detail.res
 
-
 		exec(`git clone ${git}`, { cwd: path })
 		.then(x => chain(x.stderr || x.stdout, x))
+	})
+
+	/* New sfdx project */
+	dom.settings.addEventListener('new-sfdx', (e) => {
+
+		const name = e.detail.name
+		const cwd = localStorage.path
+		const chain = e.detail.res
+		
+		exec(`sfdx force:project:create --projectname ${name}`, { cwd })
+		.then(x => chain(x.stderr || x.stdout, x))
+		.catch(x => chain(x.stderr || x.stdout, x))
 	})
 
 	/* Refresh Repos */
 	dom.settings.addEventListener('refresh-repo', (e) => {
 		loadRepo({ clear: true })
 	})
-
-	/* Toaster */
-	dom.settings.addEventListener('toast', (e) => {
-		toast(e.detail.msg)
-		if(e.detail.res){
-			res('ran toast')
-		}
-	})
-
-	/* Close on Esc #todo */
-	dom.menu.onkeyup = (e) => {
-		console.log(e.code)
-		codes.close.includes(e.code) ? e.target.close() : null
-	}
-
-
-	/* Open in VS Code */
-	dom.settings.addEventListener('open-code', e =>  // console.dir(e.detail))
-		exec(e.detail.cmd, { cwd: e.detail.cwd })
-		.then((ev, resp) => {
-			toast(`Opened ${e.detail.title} in VS Code 🦄`)
-			e.detail.res(resp, ev)
-		})
-	)
 }
-

@@ -1,6 +1,8 @@
 // jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
+require('../reapo-create/reapo-create.js')
+
 const ipcRenderer = require('electron').ipcRenderer
 
 const template = document.createElement('template')
@@ -272,21 +274,7 @@ path {
                 <div></div>
             
                 <div>
-                    <h2 class="subtitle">Create</h2>
-                    <!-- 
-                    todo idea to start adding sfdx, yeoman gens, etc 
-                    <select>
-                        <option>sfdx project</option>
-                    </select>
-                    -->
-                    <div id="new" class="iconContainer" title="Give a name for a new repo or paste a .git uri 🦄">
-                        
-                        <input id="name" placeholder="Enter a name or a .git URL to clone" />
-
-                        <svg viewBox="0 0 24 24">
-                            <path d="M10,4L12,6H20A2,2 0 0,1 22,8V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z" />
-                        </svg>
-                    </div>
+                    <reapo-create></reapo-create>
                 </div>
 
                 <div></div>
@@ -329,8 +317,6 @@ class ReapoSettings extends HTMLElement {
             overlay: doc.querySelector('.modal-overlay'),
             title: doc.querySelector('.title'),
             path: doc.querySelector('#path'),
-            new: doc.querySelector('#new'),
-            name: doc.querySelector('#name'),
         }
 
         this.dom.path.value = localStorage.path ? localStorage.path : ''
@@ -364,102 +350,6 @@ class ReapoSettings extends HTMLElement {
             )
         })
         .then(x => this.close())
-
-
-        /* Create a Repo */
-        const createRepo = (name, path) => {
-
-            console.log(name)
-            console.log(path)
-
-            if(!path){
-                this.close()
-                this.toast('Please set a Main Directory')
-            }
-
-            let action
-
-            if(name.includes('.git')){
-                
-                action = () => new Promise(res => {
-                    this.dispatchEvent(
-                        new CustomEvent(
-                            `new-git`,
-                            {
-                                bubbles: true,
-                                composed: true,
-                                detail: { name, res }
-                            }
-                        )
-                    )
-                })
-            }
-            else {
-                action = () => new Promise(res => {
-                    this.dispatchEvent(
-                        new CustomEvent(
-                            `new-repo`,
-                            {
-                                bubbles: true,
-                                composed: true,
-                                detail: { name, res }
-                            }
-                        )
-                    )
-                })
-            }
-
-            action().then(x => {
-
-                name = name.includes('.git') ? name.substring(name.lastIndexOf('/')+1, name.lastIndexOf('.')) : name
-                
-                this.dispatchEvent(
-                    new CustomEvent(
-                        `refresh-repo`,
-                        {
-                            bubbles: true,
-                            composed: true,
-                            detail: { }
-                        }
-                    )
-                )
-
-
-                new Promise(res => 
-                    this.dispatchEvent(new CustomEvent(
-                        `open-code`, 
-                        { 
-                            bubbles: true, 
-                            composed: true,
-                            detail: {
-                                res,
-                                from: this.is,
-                                title: name,
-                                cmd: 'code .', 
-                                cwd: `${path}/${name}`
-                            }
-                        })
-                    )
-                )
-                .then(console.info)
-                
-                this.dom.name.value = ''
-
-                this.close()
-                this.toast(x)
-            })
-        }
-        this.dom.new.onclick = e => {
-            if(e.target == this.dom.name){ return }
-
-            const name = this.dom.name.value 
-            name ? createRepo(name, localStorage.path) : this.toast('Please enter a name or .git url')
-        }
-        this.dom.name.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.new.click() : null
-
-
-
-
     }
 
     attributeChangedCallback(n, ov, nv) {
