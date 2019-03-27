@@ -132,7 +132,7 @@ class ReapoFolder extends HTMLElement {
         this.dom.title.textContent = this.name
 
         /* Surface Modified Date */
-        const moddate = new Intl.DateTimeFormat('en-US', {
+        this.moddate = new Intl.DateTimeFormat('en-US', {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',
@@ -142,7 +142,7 @@ class ReapoFolder extends HTMLElement {
         })
         .format(new Date(this.date))
 
-        this.title = `Name: ${this.name} \n Mod: ${moddate}`
+        this.title = `Name: ${this.name} \n Mod: ${this.moddate}`
 
 
         
@@ -186,6 +186,7 @@ class ReapoFolder extends HTMLElement {
                     detail: {
                         from: this.is,
                         name: this.name, 
+                        moddate: this.moddate, 
                         title: this.title, 
                         path: this.path
                     }

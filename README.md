@@ -16,21 +16,19 @@ Reapo has some tricks already like:
 
 - quick filter
 - quick open in VS Code
-- quick new repo or git
+- quick new repo or git clone
   - auto opens in VS Code
-
-Any todos are under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub.
+- quick run commands with
+  - shortcut icons for git sync, etc
+  - or via the terminal like interface below
 
 Early releases are [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub.
 
-Feel free to:
-
-- Open an [issue](https://github.com/jsmithdev/reapo/issues)
-- Contact [Jamie](https://jsmith.dev)
+Any todos are under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub.
 
 ---
 
-![shot](https://i.imgur.com/t1xkWRm.png)
+![shot](https://i.imgur.com/ZKqvCKn.png)
 
 ---
 
@@ -64,4 +62,4 @@ After cloning the repo and/or opening the reapo dir:
 
 ---
 
-Made with 💙 by [jsmithdev](https://jsmith.dev)
+Made with 💙 by [Jamie Smith](https://jsmith.dev)

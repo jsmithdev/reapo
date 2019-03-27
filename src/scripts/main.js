@@ -11,8 +11,10 @@ const fs = require('fs')
 	, path = localStorage.path ? localStorage.path : ''
     , repo = require('fs-jetpack').dir(path, {})
     , codes = {
+	    find: ['KeyF'],
 	    close: ['Escape'],
 	    exit: ['KeyW'],
+	    restart: ['KeyR'],
     };
 
 
@@ -74,24 +76,19 @@ loadRepo({ clear: true })
 		}
 	})
 
-	/* Open in VS Code */
-	dom.body.addEventListener('open-code', e =>  // console.dir(e.detail))
-		exec(e.detail.cmd, { cwd: e.detail.cwd })
-		.then((ev, resp) => {
-			toast(`Opened ${e.detail.title} in VS Code 🦄`)
-			e.detail.res(resp, ev)
-		})
-	)
-
-	/* Close overlay on Esc press */
-	dom.body.onkeyup = e => {
-		console.log(e)
+	dom.body.onkeyup = e => { //console.log(e.code+e.ctrlKey)
+		
+		/* Close overlay on Esc press */
 		codes.close.includes(e.code) ? [dom.settings, dom.modal].map(el => el.close()) : null
-	}
 
-	/* Close overlay on Esc press */
-	dom.body.onkeyup = e => {
+		/* Close overlay on Esc press */
 		e.ctrlKey && codes.exit.includes(e.code) ? require('electron').remote.getCurrentWindow().close() : null
+
+		/* Restart Reapo on Ctrl+R */
+		e.ctrlKey && codes.restart.includes(e.code) ? restart() : null
+
+		/* Focus filter of Ctrl+F overlay on Esc press */
+		e.ctrlKey && codes.find.includes(e.code) ? dom.filter.focus() : null
 	}
 }
 
@@ -103,18 +100,28 @@ loadRepo({ clear: true })
 	)
 }
 
-{ /* Repo Details via Modal */
+{ /* Repo Details / Modal */
 
+	/* Opener */
+	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
+	
+	/* Exec CMDs for User */
 	dom.modal.addEventListener('exec-modal', e => {
-		console.dir(e.detail)
 		
-		exec(e.detail.cmd, { cwd: e.detail.cwd })
+		const { cmd, cwd, chain } = e.detail
+		
+		exec(cmd, { cwd })
 		.then(x => {
-			e.detail.res(x.stderr || x.stdout)
 			toast(x.stderr || x.stdout)
+			chain.res(x.stderr || x.stdout)
+		})
+		.catch(e => {
+			toast(e)
+			chain.rej(e)
 		})
 	})
 
+	/* Delete Repo */
 	dom.modal.addEventListener('delete-repo', e => {
 		
 		const name = e.detail.name
@@ -134,9 +141,18 @@ loadRepo({ clear: true })
 }
 
 { /* Folders */
-
+	
+	/* Opener */
 	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
 	
+	/* Open in VS Code */
+	dom.container.addEventListener('open-code', e =>  // console.dir(e.detail))
+		exec(e.detail.cmd, { cwd: e.detail.cwd })
+		.then((ev, resp) => {
+			toast(`Opened ${e.detail.title} in VS Code 🦄`)
+			e.detail.res(resp, ev)
+		})
+	)
 }
 
 
@@ -150,12 +166,11 @@ loadRepo({ clear: true })
 	dom.settings.addEventListener('save-settings', (e) => {
         
 		const path = e.detail.path
-        localStorage.path = path
-        
 		const msg = `Saved ${path}`
+
+        localStorage.path = path
 		toast(msg)
         loadRepo({ clear: true })
-        
         e.detail.res(msg)
 	})
 
@@ -204,4 +219,10 @@ loadRepo({ clear: true })
 	dom.settings.addEventListener('refresh-repo', (e) => {
 		loadRepo({ clear: true })
 	})
+}
+
+function restart(){
+	const app = require('electron').remote.app
+	app.relaunch()
+	app.exit(0)
 }

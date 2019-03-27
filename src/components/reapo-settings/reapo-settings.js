@@ -352,17 +352,7 @@ class ReapoSettings extends HTMLElement {
         .then(x => this.close())
     }
 
-    attributeChangedCallback(n, ov, nv) {
-        super.attributeChangedCallback(n, ov, nv);
-        console.dir(n)
-        console.dir(ov)
-        console.dir(nv)
-        //switch (n) {
-        //    case 'attr name that changed!':
-        //        ov !== nv // old val not equal new val
-        //        break;
-        //}
-    }
+    attributeChangedCallback(n, ov, nv){}
 
     open(detail) {
         if (detail) {
