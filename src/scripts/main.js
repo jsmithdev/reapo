@@ -226,3 +226,16 @@ function restart(){
 	app.relaunch()
 	app.exit(0)
 }
+
+/* Testing */
+//if (process.platform !== 'darwin') {
+//	return;
+//}
+const shellPath = require('shell-path')
+console.dir(process.platform)
+process.env.PATH = shellPath.sync() || [
+	'./node_modules/.bin',
+	'/.nodebrew/current/bin',
+	'/usr/local/bin',
+	process.env.PATH
+].join(':');

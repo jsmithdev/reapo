@@ -66,6 +66,7 @@ body {
     vertical-align: middle;
 }
 .text {
+    color: white;
     border: none;
     outline: none;
     background: transparent;
@@ -125,6 +126,8 @@ body {
     margin: auto;
     min-width: 420px;
     padding: 1rem;
+    color: white;
+    background: linear-gradient(-45deg, #00e6ff, #4f23d7);
 }
 
 /**

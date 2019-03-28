@@ -218,21 +218,20 @@ class Reapocreate extends HTMLElement {
         }
 
         const isSfdx = this.dom.select.value.toLowerCase().includes('salesforce')
-        
-        console.log(isSfdx)
-        console.log(this.dom.select)
-        
+                
         const isGit = input.toLowerCase().includes('.git') && input.toLowerCase().includes('http')
 
-        const name = isGit ? name.substring(name.lastIndexOf('/')+1, name.lastIndexOf('.')) : input
+        const name = isGit ? input.substring(input.lastIndexOf('/')+1, input.lastIndexOf('.')) : input
         
         const action = isGit ? this.gitter.bind(this)
             : isSfdx ? this.sfdxer.bind(this)
             : this.reaper.bind(this)
 
+        console.log("isSfdx",isSfdx)
+        console.log('isGit',isGit)
         console.dir(action)
 
-        action(name).then(x => {
+        action(input).then(x => {
 
             console.log('Action commited')
             console.log(x)
@@ -248,7 +247,13 @@ class Reapocreate extends HTMLElement {
                     }
                 )
             )
-
+            
+            this.dispatchEvent(
+                new CustomEvent(`close-reapo-modal`, { 
+                    bubbles: true, 
+                    composed: true
+                })
+            )
 
             new Promise(res => this.dispatchEvent(new CustomEvent(
                 `open-code`, 
@@ -262,8 +267,7 @@ class Reapocreate extends HTMLElement {
                         cmd: 'code .', 
                         cwd: `${path}/${name}`
                     }
-                }))
-            )
+                })))
             .then(console.info)
         })
     }

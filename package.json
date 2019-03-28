@@ -19,6 +19,11 @@
     "reapo"
   ],
   "author": "Jamie Smith",
+  "repository": {
+    "url": "https://github.com/jsmithdev/reapo.git",
+    "owner": "jsmithdev",
+    "type": "git"
+  },
   "license": "GPLV3",
   "config": {
     "forge": "./forge.config.js"
@@ -26,7 +31,8 @@
   "dependencies": {
     "electron-compile": "^6.4.4",
     "electron-squirrel-startup": "^1.0.0",
-    "fs-jetpack": "^2.2.2"
+    "fs-jetpack": "^2.2.2",
+    "shell-path": "^2.1.0"
   },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",

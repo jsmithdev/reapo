@@ -83,7 +83,7 @@ body {
     grid-column-gap: 20px;
     vertical-align: middle;
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 path {
     fill: "#4f23d7";
@@ -117,6 +117,12 @@ path {
                 <h3 class="title"></h3>
 
                 <div class="actions">
+                
+                    <div id="clear" title="Clear Terminal">
+                        <svg class="icon_small" viewBox="0 0 24 24">
+                            <path d="M12,2A9,9 0 0,0 3,11V22L6,19L9,22L12,19L15,22L18,19L21,22V11A9,9 0 0,0 12,2M9,8A2,2 0 0,1 11,10A2,2 0 0,1 9,12A2,2 0 0,1 7,10A2,2 0 0,1 9,8M15,8A2,2 0 0,1 17,10A2,2 0 0,1 15,12A2,2 0 0,1 13,10A2,2 0 0,1 15,8Z" />
+                        </svg>
+                    </div>
                 
                     <div id="sync" title="Git Status">
                         <svg class="icon_small" viewBox="0 0 24 24">
@@ -176,6 +182,7 @@ class ReapoModal extends HTMLElement {
             remove: doc.querySelector('#remove'),
             term: doc.querySelector('reapo-terminal'),
             moddate: doc.querySelector('.moddate'),
+            clear: doc.querySelector('#clear'),
         }
 	    
 		this.registerListeners()
@@ -188,6 +195,8 @@ class ReapoModal extends HTMLElement {
                 this.close()
             }
         }
+        
+        this.addEventListener(`close-${this.is}`, () => this.close())
         
         /* Delete Repo */
         this.dom.remove.onclick = e => {
@@ -208,7 +217,7 @@ class ReapoModal extends HTMLElement {
             )
         }
         
-        this.dom.sync.onclick = e => new Promise((res, rej) => 
+        this.dom.sync.onclick = e => new Promise((res, rej) => {
             this.dispatchEvent(new CustomEvent(
                 `exec-modal`, 
                 { 
@@ -221,9 +230,11 @@ class ReapoModal extends HTMLElement {
                     }
                 })
             )
-        )
+        })
         .then(res => this.dom.term.setAttribute('log', res))
         .catch(res => this.dom.term.setAttribute('log', res))
+   
+        this.dom.clear.onclick = e => this.dom.term.setAttribute('clear', true)
 	}
 	
     attributeChangedCallback(n, ov, nv) {  }

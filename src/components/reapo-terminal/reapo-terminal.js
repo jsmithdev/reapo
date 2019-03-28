@@ -83,7 +83,7 @@ class ReapoTerminal extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['path', 'name', 'log', 'focus']
+        return ['path', 'name', 'log', 'focus', 'clear']
     }
 
     connectedCallback() {
@@ -99,6 +99,7 @@ class ReapoTerminal extends HTMLElement {
         this.dom = {
             log: doc.querySelector('#log'),
             input: doc.querySelector('input'),
+            container: doc.querySelector('.container'),
         }
 	    
 		this.registerListeners()
@@ -125,17 +126,21 @@ class ReapoTerminal extends HTMLElement {
     attributeChangedCallback(n, ov, nv) {
 
         switch (n) {
-            case 'log': this.logger(nv)
-            case 'path': this.path = nv
-            case 'name': this.name = nv
-            case 'focus': setTimeout(() => this.dom.input.focus(), 0)
+            case 'log': this.logger(nv); break;
+            case 'path': this.path = nv; break;
+            case 'name': this.name = nv; break;
+            case 'clear': this.clear(); break;
+            case 'focus': setTimeout(() => this.dom.input.focus(), 0); break;
         }
     }
 
     exec(cmd){ 
         if(cmd === ''){ return }
-
         this.memory.banks.push(cmd)
+        this.dom.input.value = ''
+        
+        if(cmd.toLowerCase() == 'clear'){ this.clear();  return; }
+        
         new Promise((res, rej) => 
             this.dispatchEvent(new CustomEvent(
                 `exec-modal`, 
@@ -157,19 +162,26 @@ class ReapoTerminal extends HTMLElement {
     logger(s){
         
         
-        this.dom.log.textContent += `${this.name}: ${new Intl.DateTimeFormat('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric'
-        })
-        .format(new Date())}
+        this.dom.log.textContent += `
+${this.name}: ${new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+})
+.format(new Date())}
+
+${s}
+
+--------------------${this.randEmo()}--------------------${this.randEmo()}--------------------${this.randEmo()}--------------------
+
+`
         
-        ${s}
-        
-        
-        `
-        this.dom.log.scrollTo(0, this.dom.log.scrollHeight);
+
+
+        this.dom.container.scrollTop = this.dom.container.scrollHeight
     }
+
+
     
     remember(config){
         
@@ -187,7 +199,17 @@ class ReapoTerminal extends HTMLElement {
         console.log(this.memory.banks[this.memory.count])
 
         this.memory.count++
+    }
 
+    randEmo(){
+        const em = ['🦄','🚀','🎉','🧘','🔭','🎼','🍻','🏝','🐺','🐧']
+        return em[Math.floor(Math.random() * em.length)]
+    }
+
+    clear(){
+        this.dom.log.textContent = ''
+        this.dom.input.value = ''
+        console.log('cleared')
     }
 }
 
