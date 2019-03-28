@@ -47,7 +47,7 @@ const loadRepo = (config) => { // init repo
 	const projects = repo.list().map(name => repo.inspect(`${path}/${name}`, { times: true }))
 
 	const add = dir => {
-		
+		if(!dir){toast('Use Settings to set a Main Directory');return;}
 		const folder = document.createElement('reapo-folder')
 		folder.path = repo.cwd()
 		folder.name = dir.name
