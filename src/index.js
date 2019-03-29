@@ -1,6 +1,8 @@
 // jshint esversion:6, asi: true, laxcomma: true
 
-import { app, BrowserWindow } from 'electron'
+//import { app, BrowserWindow } from 'electron'
+const app = require('electron').app
+	, BrowserWindow = require('electron').BrowserWindow
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require

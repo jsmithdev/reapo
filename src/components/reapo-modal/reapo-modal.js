@@ -1,7 +1,7 @@
 // jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
-import reapoTerminal from '../reapo-terminal/reapo-terminal' 
+require('../reapo-terminal/reapo-terminal')
 
 const template = document.createElement('template')
 
