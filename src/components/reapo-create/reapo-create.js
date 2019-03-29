@@ -8,60 +8,12 @@ template.innerHTML = /*html*/`
 <style>
 
     svg {
-
-        height: 4rem;
-        max-width: 50%;
+        height: fit-content;
+        /* max-width: 50%; */
         cursor: pointer;
     }
     path {
         fill: #eee;
-    }
-
-    select {
-        width: 100%;
-        background: #3a208e;
-        color: white;
-        outline: none;
-        cursor: pointer;
-        border: none;
-        height: 1.25rem;
-    }
-    select:focus {
-        outline: none;
-    }
-
-
-
-    #new {
-        text-align: center;
-        background: #4f23d7;
-        border-radius: 0 0 5px 5px;
-        cursor: pointer;
-    }
-    #new input {
-        color: white;
-        -webkit-appearance: none;
-        background-color: #3a208e;
-        -webkit-rtl-ordering: logical;
-        cursor: text;
-        padding: 4px 0 5px 0;
-        width: calc(100% - 7px);
-        padding-left: 7px;
-        border-width: 0px;
-    }
-    #new input::placeholder {
-        color: #eee;
-    }
-
-    .title {
-
-        background: #011627;
-        color: white;
-        text-align: center;
-        border-radius: 5px 5px 0 0;
-        margin: 0;
-        height: 4rem;
-        padding-top: 5px;
     }
 
     .help {
@@ -78,6 +30,57 @@ template.innerHTML = /*html*/`
         border-radius: 10px;
         padding: .1rem .25rem;
     }
+    
+    .title {
+        background: #011627;
+        color: white;
+        text-align: center;
+        border-radius: 5px 5px 0 0;
+        margin: 0;    
+        height: 3rem;
+        padding-top: 1rem;
+    }
+
+    .action {
+        height: auto;
+        text-align: center;
+        background: #4f23d7;
+        border-radius: 0 0 5px 5px;
+        cursor: pointer;
+    }
+    .action input {
+        color: white;
+        -webkit-appearance: none;
+        background-color: #3a208e;
+        -webkit-rtl-ordering: logical;
+        cursor: text;
+        padding: 4px 0 5px 0;
+        width: 100%;
+        padding-left: 7px;
+        border-width: 0px;
+        outline-color: #ffd70e;
+    }
+    .action input::placeholder {
+        color: #eee;
+    }
+
+
+
+
+
+    select {
+        width: 100%;
+        background: #3a208e;
+        color: white;
+        outline-color: #011627;
+        cursor: pointer;
+        border: none;
+        height: 1.5rem;
+    }
+    select:focus {
+        outline-color: #011627;
+    }
+
 </style>
 
 <div>
@@ -91,9 +94,9 @@ template.innerHTML = /*html*/`
         <option>Salesforce Project</option>
     </select>
     
-    <div id="new" title="Give a name for a new repo or paste a .git uri 🦄">
+    <div class="action" title="Give a name for a new repo or paste a .git uri 🦄">
         
-        <input id="name" placeholder="Enter a name or a .git URL to clone" />
+        <input id="name" placeholder="Name of folder, project or .git URL" />
 
         <svg viewBox="0 0 24 24">
             <path d="M10,4L12,6H20A2,2 0 0,1 22,8V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z" />
@@ -102,7 +105,6 @@ template.innerHTML = /*html*/`
 </div>
 `
 
-//export class Reapocreate extends HTMLElement {
 class Reapocreate extends HTMLElement {
 
     constructor() {
@@ -130,7 +132,7 @@ class Reapocreate extends HTMLElement {
         this.dom = {
 
             select: doc.querySelector('select'),
-            new: doc.querySelector('#new'),
+            new: doc.querySelector('.action'),
             name: doc.querySelector('#name'),
         }
         
@@ -211,7 +213,6 @@ class Reapocreate extends HTMLElement {
     /* Create a Repo */
     createRepo(input, path) {
 
-
         if(!path){
             
             this.toast('Please set a Main Directory')
@@ -227,15 +228,11 @@ class Reapocreate extends HTMLElement {
             : isSfdx ? this.sfdxer.bind(this)
             : this.reaper.bind(this)
 
-        console.log("isSfdx",isSfdx)
-        console.log('isGit',isGit)
-        console.dir(action)
-
         action(input).then(x => {
 
             console.log('Action commited')
-            console.log(x)
-            this.toast(x)
+            console.dir(x)
+            this.toast(x.length > 200 ? `${x.substring(0, 200)}...` : x)
             
             this.dispatchEvent(
                 new CustomEvent(
@@ -248,16 +245,10 @@ class Reapocreate extends HTMLElement {
                 )
             )
             
-            this.dispatchEvent(
-                new CustomEvent(`close-reapo-modal`, { 
-                    bubbles: true, 
-                    composed: true
-                })
-            )
 
             new Promise(res => this.dispatchEvent(new CustomEvent(
-                `open-code`, 
-                { 
+                `open-code`,
+                {
                     bubbles: true, 
                     composed: true,
                     detail: {
@@ -267,8 +258,17 @@ class Reapocreate extends HTMLElement {
                         cmd: 'code .', 
                         cwd: `${path}/${name}`
                     }
-                })))
-            .then(console.info)
+                })
+            ))
+            .then(x => {
+                console.log(x)
+                this.dispatchEvent(
+                    new CustomEvent(`close-reapo-modal`, { 
+                        bubbles: true,
+                        composed: true
+                    })
+                )
+            })
         })
     }
 
@@ -286,6 +286,6 @@ class Reapocreate extends HTMLElement {
         )
     }
 }
-customElements.define(Reapocreate.is, Reapocreate)
 
+customElements.define(Reapocreate.is, Reapocreate)
 module.exports = Reapocreate

@@ -15,10 +15,12 @@ const fs = require('fs')
 	    close: ['Escape'],
 	    exit: ['KeyW'],
 	    restart: ['KeyR'],
+	    settings: ['KeyS'],
     };
 
 
 const dom = {
+	
 	body: document.querySelector('body'),
 	filter: document.querySelector('.filter'),
 	container: document.querySelector('.container'),
@@ -32,7 +34,7 @@ const dom = {
 const toast = msg => {
 
 	dom.footer.textContent = msg
-	setTimeout(() => dom.footer.textContent = '', 4000)
+	setTimeout(() => dom.footer.textContent = '', 5000)
 }
 
 /* Load Main Directory View */
@@ -81,14 +83,17 @@ loadRepo({ clear: true })
 		/* Close overlay on Esc press */
 		codes.close.includes(e.code) ? [dom.settings, dom.modal].map(el => el.close()) : null
 
-		/* Close overlay on Esc press */
+		/* Close overlay on Esc press hotkey */
 		e.ctrlKey && codes.exit.includes(e.code) ? require('electron').remote.getCurrentWindow().close() : null
 
-		/* Restart Reapo on Ctrl+R */
+		/* Restart Reapo on Ctrl+R hotkey */
 		e.ctrlKey && codes.restart.includes(e.code) ? restart() : null
 
-		/* Focus filter of Ctrl+F overlay on Esc press */
+		/* Focus filter of Ctrl+F overlay on Esc press hotkey */
 		e.ctrlKey && codes.find.includes(e.code) ? dom.filter.focus() : null
+
+		/* Open Settings hotkey */
+		e.ctrlKey && codes.settings.includes(e.code) ? dom.settings.open() : null
 	}
 }
 
@@ -146,13 +151,13 @@ loadRepo({ clear: true })
 	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
 	
 	/* Open in VS Code */
-	dom.container.addEventListener('open-code', e =>  // console.dir(e.detail))
-		exec(e.detail.cmd, { cwd: e.detail.cwd })
-		.then((ev, resp) => {
-			toast(`Opened ${e.detail.title} in VS Code 🦄`)
-			e.detail.res(resp, ev)
-		})
-	)
+	const code = e =>   exec(e.detail.cmd, { cwd: e.detail.cwd })
+						.then((ev, resp) => {
+							toast(`Opened ${e.detail.title} in VS Code 🦄`)
+							e.detail.res(resp, ev)
+						})
+	dom.container.addEventListener('open-code', e => code(e))
+	dom.settings.addEventListener('open-code', e => code(e))
 }
 
 

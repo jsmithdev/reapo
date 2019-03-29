@@ -68,30 +68,24 @@ template.innerHTML = /*html*/`
     <h3 class="title"></h3>
     <div class="actions">
 
-        <!-- <span class="moddate"></span> 
+        <div id="show" class="action" title="News">
+            <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12,10L8,14H11V20H13V14H16M19,4H5C3.89,4 3,4.9 3,6V18A2,2 0 0,0 5,20H9V18H5V8H19V18H15V20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4Z" />
+            </svg>
+        </div>
+
+        <div id="other" class="action" title="">
+            
+        </div>
+        <div id="code" class="action" title="Open in VS Code" >
+            <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6Z"/>
+            </svg>
+        </div>
         
-        <div class="actions-body">
-        -->
-
-            <div id="show" class="action" title="View in App" tabindex="1">
-                <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12,10L8,14H11V20H13V14H16M19,4H5C3.89,4 3,4.9 3,6V18A2,2 0 0,0 5,20H9V18H5V8H19V18H15V20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4Z" />
-                </svg>
-            </div>
-
-            <div id="other" class="action" title="">
-                
-            </div>
-            <div id="code" class="action" title="Open in VS Code" tabindex="1">
-                <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6Z"/>
-                </svg>
-            </div>
-        <!-- </div> -->
     </div>
 </div>`
 
-//export class ReapoFolder extends HTMLElement {      //<= es ver
 class ReapoFolder extends HTMLElement {
 
     constructor() {
@@ -197,7 +191,6 @@ class ReapoFolder extends HTMLElement {
             e.code != 'Tab' ? e.target.onclick(e) : null)
     }
 }
+
 customElements.define(ReapoFolder.is, ReapoFolder)
-
-
 module.exports = ReapoFolder
