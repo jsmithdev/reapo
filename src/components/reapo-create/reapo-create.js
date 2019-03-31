@@ -147,7 +147,7 @@ class Reapocreate extends HTMLElement {
 
             const name = this.dom.name.value
 
-            name ? this.createRepo(name, localStorage.path) : this.toast('Please enter a name or .git url')
+            name ? this.createRepo(name, localStorage.path) : this.toast('Please enter a name or .git url') // jshint ignore: line
         }
 
         /* If Enter is pressed in input, trigger new click */
