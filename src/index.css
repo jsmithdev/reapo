@@ -1,5 +1,6 @@
 
 :root {
+	background: #011627;
 	--color-icon: #4f23d7;
 	--color-icon-secondary: #ec00ff;
 	--shadow-drop: drop-shadow(12px 12px 7px rgba(0, 0, 0, 0.5));

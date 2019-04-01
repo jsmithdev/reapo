@@ -66,7 +66,7 @@ const loadRepo = (config) => { // init repo
 loadRepo({ clear: true })
 
 
-{ /* Global Listeners, bubble ups => gotta catch em all */
+{ /* Global Listeners, hotkey bubble ups => gotta catch em all */
 	
 	/* Toaster */
 	dom.body.addEventListener('toast', (e) => {
@@ -81,19 +81,19 @@ loadRepo({ clear: true })
 	dom.body.onkeyup = e => { //console.log(e.code+e.ctrlKey)
 		
 		/* Close overlay on Esc press */
-		codes.close.includes(e.code) ? [dom.settings, dom.modal].map(el => el.close()) : null
+		codes.close.includes(e.code) ? [dom.settings, dom.modal].map(el => el.close()) : null // jshint ignore: line
 
-		/* Close overlay on Esc press hotkey */
-		e.ctrlKey && codes.exit.includes(e.code) ? require('electron').remote.getCurrentWindow().close() : null
+		/* Close Reapo on Ctrl+W press */
+		e.ctrlKey && codes.exit.includes(e.code) ? require('electron').remote.getCurrentWindow().close() : null // jshint ignore: line
 
 		/* Restart Reapo on Ctrl+R hotkey */
-		e.ctrlKey && codes.restart.includes(e.code) ? restart() : null
+		e.ctrlKey && codes.restart.includes(e.code) ? restart() : null // jshint ignore: line
 
 		/* Focus filter of Ctrl+F overlay on Esc press hotkey */
-		e.ctrlKey && codes.find.includes(e.code) ? dom.filter.focus() : null
+		e.ctrlKey && codes.find.includes(e.code) ? dom.filter.focus() : null // jshint ignore: line
 
 		/* Open Settings hotkey */
-		e.ctrlKey && codes.settings.includes(e.code) ? dom.settings.open() : null
+		e.ctrlKey && codes.settings.includes(e.code) ? dom.settings.open() : null // jshint ignore: line
 	}
 }
 
@@ -138,11 +138,29 @@ loadRepo({ clear: true })
 		exec(cmd, { cwd: path })
 		.then(x => {
 			loadRepo({ clear: true })
-			dom.modal.close()
 			toast(x.stderr || x.stdout)
+			dom.modal.close()
 		})
 	})
 
+	/* Archive Repo */
+	dom.modal.addEventListener('archive', e => {
+		
+		const Archiver = require(__dirname+'/scripts/archieve')
+		
+		//delete node_package? might not have deps listed, maybe option later in settings #idea
+		console.dir(Archiver.directory)
+		//run thru handleRepo
+		Archiver.directory(e.detail)
+		.then(msg => {
+			console.log('made it back to Main')
+			console.log(msg)
+			toast(msg)
+			// Delete repo after toasting success msg
+			setTimeout(() => dom.modal.dom.remove.click(), 1500)
+		})
+		.catch(x => toast(x))
+	})
 }
 
 { /* Folders */
@@ -232,15 +250,14 @@ function restart(){
 	app.exit(0)
 }
 
-/* Testing */
-//if (process.platform !== 'darwin') {
-//	return;
-//}
-const shellPath = require('shell-path')
-console.dir(process.platform)
-process.env.PATH = shellPath.sync() || [
-	'./node_modules/.bin',
-	'/.nodebrew/current/bin',
-	'/usr/local/bin',
-	process.env.PATH
-].join(':');
+/* Help for unix PATH vars so reapo can run installed cli's on behalf of user */
+if (process.platform !== 'windows') {
+
+	const shellPath = require('shell-path')
+	process.env.PATH = shellPath.sync() || [
+		'./node_modules/.bin',
+		'/.nodebrew/current/bin',
+		'/usr/local/bin',
+		process.env.PATH
+	].join(':')
+}

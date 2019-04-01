@@ -39,7 +39,7 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
-    z-index: 899;
+    z-index: 99;
     padding-top: 12.5%;
 }
 
@@ -83,7 +83,7 @@ body {
     grid-column-gap: 20px;
     vertical-align: middle;
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 }
 path {
     fill: "#4f23d7";
@@ -135,6 +135,12 @@ path {
                             <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
                         </svg>
                     </div>
+                    
+                    <div id="archive" title="Archive">
+                        <svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
+                            <path d="M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z" />
+                        </svg>
+                    </div>
 
                     <div>
                         <u>Last Modified</u>
@@ -183,6 +189,7 @@ class ReapoModal extends HTMLElement {
             term: doc.querySelector('reapo-terminal'),
             moddate: doc.querySelector('.moddate'),
             clear: doc.querySelector('#clear'),
+            archive: doc.querySelector('#archive'),
         }
 	    
 		this.registerListeners()
@@ -203,7 +210,7 @@ class ReapoModal extends HTMLElement {
 
             const name = this.name
             
-            if(!confirm(`For reals, you wanna trash ${name}?`)){ return }
+            if(!confirm(`Would you like to trash ${name}?`)){ return }
 
             this.dispatchEvent(
                 new CustomEvent(
@@ -216,7 +223,8 @@ class ReapoModal extends HTMLElement {
                 )
             )
         }
-        
+
+        /* Run git status */
         this.dom.sync.onclick = e => new Promise((res, rej) => {
             this.dispatchEvent(new CustomEvent(
                 `exec-modal`, 
@@ -233,7 +241,27 @@ class ReapoModal extends HTMLElement {
         })
         .then(res => this.dom.term.setAttribute('log', res))
         .catch(res => this.dom.term.setAttribute('log', res))
-   
+
+        /* Run Archiver */
+        this.dom.archive.onclick = e => new Promise((resolve, reject) => {
+            this.dispatchEvent(new CustomEvent(
+                `archive`, 
+                { 
+                    bubbles: true, 
+                    composed: true,
+                    detail: {
+                        resolve, 
+                        reject,
+                        name: this.name,
+                        cwd: this.path+'/'
+                    }
+                })
+            )
+        })
+        .then(res => this.dom.term.setAttribute('log', res))
+        .catch(res => this.dom.term.setAttribute('log', res))
+        
+        /* Clear terminal */
         this.dom.clear.onclick = e => this.dom.term.setAttribute('clear', true)
 	}
 	
