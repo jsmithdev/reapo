@@ -263,7 +263,7 @@ class Reapocreate extends HTMLElement {
             .then(x => {
                 console.log(x)
                 this.dispatchEvent(
-                    new CustomEvent(`close-reapo-modal`, { 
+                    new CustomEvent(`close-reapo-details`, { 
                         bubbles: true,
                         composed: true
                     })

@@ -36,7 +36,7 @@ template.innerHTML = /*html*/`
 input {
     position: absolute;
     bottom: 0;
-    width: calc(100% - 9px);
+    width: 100%;
     color: white;
     font-size: 1.075rem;
     padding: 0.25rem;
@@ -118,7 +118,7 @@ class ReapoTerminal extends HTMLElement {
             /* Exec on Enter codes */
             this.codes.exec.includes(e.code) ? this.exec(this.dom.input.value) : null
 
-            /* remeber remember what is typed...bember... */
+            /* remember what is typed */
             this.codes.memory.includes(e.code) ? this.remember() : null
         }
     }
@@ -143,7 +143,7 @@ class ReapoTerminal extends HTMLElement {
         
         new Promise((res, rej) => 
             this.dispatchEvent(new CustomEvent(
-                `exec-modal`, 
+                `exec-cmd`, 
                 { 
                     bubbles: true, 
                     composed: true,
@@ -189,7 +189,7 @@ ${s}
         if(config){
             config.clear ? this.memory.count = 0 : null
         }
-
+        this.memory.banks.push(cmd)
         
         this.dom.input.value = this.memory.banks[this.memory.count]
 

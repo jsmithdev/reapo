@@ -1,7 +1,7 @@
 // jshint esversion:6, asi: true, laxcomma: true
 
 require('./components/reapo-menu/reapo-menu.js')
-require('./components/reapo-modal/reapo-modal.js')
+require('./components/reapo-details/reapo-details.js')
 require('./components/reapo-folder/reapo-folder.js')
 require('./components/reapo-settings/reapo-settings.js')
 
@@ -24,7 +24,7 @@ const dom = {
 	body: document.querySelector('body'),
 	filter: document.querySelector('.filter'),
 	container: document.querySelector('.container'),
-	modal: document.querySelector('reapo-modal'),
+	modal: document.querySelector('reapo-details'),
 	menu: document.querySelector('reapo-menu'),
 	settings: document.querySelector('reapo-settings'),
 	footer: document.querySelector('footer'),
@@ -111,19 +111,13 @@ loadRepo({ clear: true })
 	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
 	
 	/* Exec CMDs for User */
-	dom.modal.addEventListener('exec-modal', e => {
+	dom.modal.addEventListener('exec-cmd', e => {
 		
 		const { cmd, cwd, chain } = e.detail
 		
 		exec(cmd, { cwd })
-		.then(x => {
-			toast(x.stderr || x.stdout)
-			chain.res(x.stderr || x.stdout)
-		})
-		.catch(e => {
-			toast(e)
-			chain.rej(e)
-		})
+		.then(x => chain.res(x.stderr || x.stdout))
+		.catch(e => chain.rej(e))
 	})
 
 	/* Delete Repo */
@@ -151,12 +145,11 @@ loadRepo({ clear: true })
 		//delete node_package? might not have deps listed, maybe option later in settings #idea
 		console.dir(Archiver.directory)
 		//run thru handleRepo
-		Archiver.directory(e.detail)
+		Archiver.directory(e.detail, toast)
 		.then(msg => {
-			console.log('made it back to Main')
-			console.log(msg)
+			dom.modal.close()
 			toast(msg)
-			// Delete repo after toasting success msg
+			// Ask to Delete repo after toasting success msg
 			setTimeout(() => dom.modal.dom.remove.click(), 1500)
 		})
 		.catch(x => toast(x))

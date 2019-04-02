@@ -83,7 +83,7 @@ body {
     grid-column-gap: 20px;
     vertical-align: middle;
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 path {
     fill: "#4f23d7";
@@ -117,6 +117,12 @@ path {
                 <h3 class="title"></h3>
 
                 <div class="actions">
+                
+                    <div id="list" title="List Contents">
+                        <svg class="icon_small" viewBox="0 0 24 24">
+                            <path d="M7,5H21V7H7V5M7,13V11H21V13H7M4,4.5A1.5,1.5 0 0,1 5.5,6A1.5,1.5 0 0,1 4,7.5A1.5,1.5 0 0,1 2.5,6A1.5,1.5 0 0,1 4,4.5M4,10.5A1.5,1.5 0 0,1 5.5,12A1.5,1.5 0 0,1 4,13.5A1.5,1.5 0 0,1 2.5,12A1.5,1.5 0 0,1 4,10.5M7,19V17H21V19H7M4,16.5A1.5,1.5 0 0,1 5.5,18A1.5,1.5 0 0,1 4,19.5A1.5,1.5 0 0,1 2.5,18A1.5,1.5 0 0,1 4,16.5Z" />
+                        </svg>
+                    </div>
                 
                     <div id="clear" title="Clear Terminal">
                         <svg class="icon_small" viewBox="0 0 24 24">
@@ -164,7 +170,7 @@ class ReapoModal extends HTMLElement {
         this.attachShadow({mode: 'open'})
     }
     static get is() {
-        return 'reapo-modal'
+        return 'reapo-details'
     }
 
     static get observedAttributes() {
@@ -172,8 +178,8 @@ class ReapoModal extends HTMLElement {
     }
 
     connectedCallback() {
+
         this.shadowRoot.appendChild(template.content.cloneNode(true))
-        
         this.registerElements(this.shadowRoot)
     }
     registerElements(doc){
@@ -190,6 +196,7 @@ class ReapoModal extends HTMLElement {
             moddate: doc.querySelector('.moddate'),
             clear: doc.querySelector('#clear'),
             archive: doc.querySelector('#archive'),
+            list: doc.querySelector('#list'),
         }
 	    
 		this.registerListeners()
@@ -227,7 +234,7 @@ class ReapoModal extends HTMLElement {
         /* Run git status */
         this.dom.sync.onclick = e => new Promise((res, rej) => {
             this.dispatchEvent(new CustomEvent(
-                `exec-modal`, 
+                `exec-cmd`, 
                 { 
                     bubbles: true, 
                     composed: true,
@@ -260,9 +267,45 @@ class ReapoModal extends HTMLElement {
         })
         .then(res => this.dom.term.setAttribute('log', res))
         .catch(res => this.dom.term.setAttribute('log', res))
-        
+
         /* Clear terminal */
         this.dom.clear.onclick = e => this.dom.term.setAttribute('clear', true)
+
+        /* Run ls */
+        this.dom.list.onclick = e => new Promise((res, rej) => {
+            this.dispatchEvent(new CustomEvent(
+                `exec-cmd`,
+                {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        chain: { res, rej },
+                        cmd: `ls`,
+                        cwd: this.path+'/'+this.name
+                    }
+                })
+            )
+        })
+        .then(res => this.dom.term.setAttribute('log', res))
+        .catch(res => this.dom.term.setAttribute('log', res))
+
+        /* Run ls */
+        this.dom.list.onclick = e => new Promise((res, rej) => {
+            this.dispatchEvent(new CustomEvent(
+                `exec-cmd`,
+                {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        chain: { res, rej },
+                        cmd: `ls`,
+                        cwd: this.path+'/'+this.name
+                    }
+                })
+            )
+        })
+        .then(res => this.dom.term.setAttribute('log', res))
+        .catch(res => this.dom.term.setAttribute('log', res))
 	}
 	
     attributeChangedCallback(n, ov, nv) {  }
@@ -281,7 +324,7 @@ class ReapoModal extends HTMLElement {
 
             this.path = detail.path
             this.name = detail.name
-            //moddate
+            
             this.dom.term.path = this.path
             this.dom.term.name = this.name
             this.dom.term.setAttribute('focus', true)
@@ -293,16 +336,7 @@ class ReapoModal extends HTMLElement {
     close(){
         this.dom.overlay.classList.add('is-hidden')
     }
-
-    cleanStatus(str){
-        return str
-        .replace(/</gi, `:`)
-        .replace(/>/gi, `:`)
-        .replace(/master'./, `baster'.<br/>`)
-        .replace(/modified: /g, `modified: <br/>`)
-    }
 }
+
 customElements.define(ReapoModal.is, ReapoModal)
-
-
 module.exports = ReapoModal
