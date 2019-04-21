@@ -2,3 +2,4 @@ node_modules
 out
 .history
 scratch.js
+test.html

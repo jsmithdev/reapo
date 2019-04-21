@@ -38,21 +38,22 @@ body {
     padding: 0 10px
 }
 
-body::-webkit-scrollbar {
+:host ::-webkit-scrollbar {
 	width: .25em;
 }
 
-body::-webkit-scrollbar-track {
+:host ::-webkit-scrollbar-track {
 	background: #eee;
 	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
-body::-webkit-scrollbar-thumb {
-	background-color: #ec00ff;
+:host ::-webkit-scrollbar-thumb {
+	background-color: var(--color-light);
 	outline: 1px solid #525252;
 }
 
+/*
 footer {
     
     display: grid;
@@ -63,7 +64,8 @@ footer {
     vertical-align: middle;
     grid-template-rows: 2fr;
     grid-template-columns: 1fr 1fr 1fr;
-}
+}*/
+
 svg {
 
     height: 4rem;
@@ -71,7 +73,7 @@ svg {
     cursor: pointer;
 }
 path {
-    fill: #011627;
+    fill: var(--color-dark);
     /* fill-opacity: 0.5; */
     opacity: 0.5;
     /* stroke-opacity: 0.5; */
@@ -87,6 +89,7 @@ path {
     top: 0px;
     left: 0;
     width: 100%;
+    z-index: 99;
     height: 100%;
     max-height: 100%;
     background: rgba(0, 0, 0, 0.6);
@@ -94,7 +97,7 @@ path {
 }
 
 /**
- * Circle Styles       background: linear-gradient(#eee, #ddd, #4f23d7);
+ * Circle Styles       background: linear-gradient(#eee, #ddd, var(--color-mid));
  */
 
 .circle {
@@ -109,7 +112,7 @@ path {
     max-height: 95%;
     max-width: 85%;
     text-align: center;
-    /* fill: #011627; */
+    /* fill: var(--color-dark); */
     /* fill-opacity: 0.5; */
     /* opacity: 0.5; */
     /* stroke-opacity: 0.5; */
@@ -125,8 +128,8 @@ path {
     background: #DDD;
     content: "";
 
-    background-image: linear-gradient(bottom, #011627, #011627 25%, transparent 25%, transparent 100%);
-    background-image: -webkit-linear-gradient(bottom, #011627, #011627 25%, transparent 25%, transparent 100%)  
+    background-image: linear-gradient(bottom, var(--color-dark), var(--color-dark) 25%, transparent 25%, transparent 100%);
+    background-image: -webkit-linear-gradient(bottom, var(--color-dark), var(--color-dark) 25%, transparent 25%, transparent 100%)  
 }
 
 
@@ -191,7 +194,7 @@ path {
 }
 
 .subtitle {
-    background: #011627;
+    background: var(--color-dark);
     color: white;
     text-align: center;
     border-radius: 5px 5px 0 0;
@@ -201,7 +204,7 @@ path {
 }
 
 .close {
-    color: #011627;
+    color: var(--color-dark);
     font-size: 4rem;
     border: 3pt solid #3a208e;
     /* float: right; */
@@ -220,6 +223,24 @@ path {
 .container {
     height: 10rem;
     max-width: 26rem;
+}
+
+
+@media only screen and (max-width:900px){
+
+	/* styles for smaller than 900px; */
+    .modal-overlay {
+        overflow-x: auto;
+        grid-template-columns: 1fr;
+        height: 100%;
+    }
+    .circle__content {
+        margin-top: 4rem;
+        grid-row-gap: 0px;
+        grid-template-rows: 0px;
+        grid-template-columns: 1fr;
+        overflow-x: auto;
+    }
 }
 </style>
 

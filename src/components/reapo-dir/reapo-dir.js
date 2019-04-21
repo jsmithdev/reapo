@@ -19,7 +19,7 @@ svg {
     .help {
         font-size: 0.7rem;
         background: #ffd70e;
-        color: #011627;
+        color: var(--color-dark);
         border: 1pt solid #3a208e;
         width: 1em;
         height: 1em;
@@ -32,7 +32,7 @@ svg {
     }
     
     .title {
-        background: #011627;
+        background: var(--color-dark);
         color: white;
         text-align: center;
         border-radius: 5px 5px 0 0;
@@ -44,7 +44,7 @@ svg {
     .action {
         height: auto;
         text-align: center;
-        background: #4f23d7;
+        background: var(--color-mid);
         border-radius: 0 0 5px 5px;
         cursor: pointer;
     }

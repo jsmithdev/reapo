@@ -2,16 +2,17 @@
 const fs = require('fs')
 const dir = c => c.cwd+'archived/' // this is the dir used to house archives which are named for the repo chosen
 
-const directory = config => new Promise((res, rej) => 
-    fs.mkdir(dir(config), () => run(dir(config), config, res, rej)))
+const directory = (config, toast) => new Promise((res, rej) => 
+    fs.mkdir(dir(config), () => run(dir(config), config, res, rej, toast)))
 
 module.exports = { directory }
 
 
 
 
-function run(dir, config, res, rej){   console.dir(dir);  console.dir(config);
+function run(dir, config, res, rej, toast){   console.dir(dir);  console.dir(config);
 
+    let bank = 0
     const { cwd, name } = config
 
     const archiver = require('archiver')
@@ -36,7 +37,10 @@ function run(dir, config, res, rej){   console.dir(dir);  console.dir(config);
 
     // good practice to catch this error explicitly
     archive.on('error', err => rej(err))
-
+    archive.on('data', buf => {
+        bank += buf.length
+        toast(`Archiving, wrote ${bank}`)
+    })
     // pipe archive data to the file
     archive.pipe(output)
 

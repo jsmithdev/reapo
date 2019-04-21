@@ -1,8 +1,9 @@
 // jshint esversion:6, asi: true, laxcomma: true
 
-//import { app, BrowserWindow } from 'electron'
-const app = require('electron').app
-	, BrowserWindow = require('electron').BrowserWindow
+const path = require('path'),
+	  app = require('electron').app,
+	  BrowserWindow = require('electron').BrowserWindow,
+	  windowStateKeeper = require('electron-window-state');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -15,22 +16,34 @@ let mainWindow;
 
 const createWindow = () => {
 	
-	const path = require('path')
-
-	// Create the browser window.
-	mainWindow = new BrowserWindow({
-		width: 800,
-		height: 600,
+	// Load the previous state with fallback to defaults
+	let mainWindowState = windowStateKeeper({
+		defaultWidth: 1000,
+		defaultHeight: 800,
 		icon: path.join(__dirname + 'icon.png')
-	});
+	})
 
-	// and load the index.html of the app.
-	mainWindow.loadURL(`file://${__dirname}/index.html`);
+	// Create the window using the state information
+	mainWindow = new BrowserWindow({
+		'x': mainWindowState.x,
+		'y': mainWindowState.y,
+		'width': mainWindowState.width,
+		'height': mainWindowState.height
+	})
 
-	// Open the DevTools.
+	// Let us register listeners on the window, so we can update the state
+	// automatically (the listeners will be removed when the window is closed)
+	// and restore the maximized or full screen state
+	mainWindowState.manage(mainWindow)
+
+	// and load the index.html of the app
+	mainWindow.loadURL(`file://${__dirname}/index.html`)
+
+	// Open the DevTools
 	if(process.env.debug){
-		mainWindow.webContents.openDevTools();
+		mainWindow.webContents.openDevTools()
 	}
+
 	// Emitted when the window is closed.
 	mainWindow.on('closed', () => {
 		// Dereference the window object, usually you would store windows
@@ -58,6 +71,6 @@ app.on('activate', () => {
 	// On OS X it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
 	if (mainWindow === null) {
-		createWindow();
+		createWindow()
 	}
 })

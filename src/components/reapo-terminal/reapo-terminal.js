@@ -7,7 +7,7 @@ template.innerHTML = /*html*/`
 <style>
 
 .container {
-    background: #011627;
+    background: var(--color-dark);
     color: white;
     width: 100%;
     height: 70%;
@@ -18,12 +18,12 @@ template.innerHTML = /*html*/`
 	width: .25em;
 }
 .container::-webkit-scrollbar-track {
-	background: #011627;
+	background: var(--color-dark);
 	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 .container::-webkit-scrollbar-thumb {
-	background-color: #ec00ff;
+	background-color: var(--color-light);
 	outline: 1px solid #525252;
 }
 
@@ -36,18 +36,18 @@ template.innerHTML = /*html*/`
 input {
     position: absolute;
     bottom: 0;
-    width: calc(100% - 9px);
+    width: 100%;
     color: white;
     font-size: 1.075rem;
     padding: 0.25rem;
     background: #444;
     outline: none;
     border: none;
-    caret-color: #ec00ff;
+    caret-color: var(--color-light);
 }
 input::selection {
     color: white;
-    background: #ec00ff;
+    background: var(--color-light);
 }
 input[type=text]:focus, textarea:focus {
   box-shadow: 0 0 5px rgba(81, 203, 238, 1);
@@ -57,7 +57,7 @@ input[type=text]:focus, textarea:focus {
 }
 input::before {
     content: '$';
-    color: #ec00ff;
+    color: var(--color-light);
     font-weight: 600;
 }
 
@@ -118,7 +118,7 @@ class ReapoTerminal extends HTMLElement {
             /* Exec on Enter codes */
             this.codes.exec.includes(e.code) ? this.exec(this.dom.input.value) : null
 
-            /* remeber remember what is typed...bember... */
+            /* remember what is typed */
             this.codes.memory.includes(e.code) ? this.remember() : null
         }
     }
@@ -134,32 +134,32 @@ class ReapoTerminal extends HTMLElement {
         }
     }
 
-    exec(cmd){ 
+    exec(cmd){
+
         if(cmd === ''){ return }
         this.memory.banks.push(cmd)
         this.dom.input.value = ''
         
         if(cmd.toLowerCase() == 'clear'){ this.clear();  return; }
         
-        new Promise((res, rej) => 
-            this.dispatchEvent(new CustomEvent(
-                `exec-modal`, 
-                { 
-                    bubbles: true, 
-                    composed: true,
-                    detail: {
-                        cmd,
-                        cwd: this.path+'/'+this.name,
-                        chain: { res, rej },
-                    }
-                })
-            )
+        //new Promise((res, rej) => 
+        this.dispatchEvent(new CustomEvent(
+            `exec-cmd`, 
+            { 
+                bubbles: true,
+                composed: true,
+                detail: {
+                    cmd,
+                    cwd: this.path+'/'+this.name,
+                    responder: this.logger.bind(this)
+                }
+            })
         )
-        .then(res => this.logger(res))
-        .catch(e => this.logger(e))
     }
 
     logger(s){
+
+        if(s == 'exit'){ this.loggerExit(); return; }
         
         
         this.dom.log.textContent += `
@@ -172,12 +172,17 @@ ${this.name}: ${new Intl.DateTimeFormat('en-US', {
 
 ${s}
 
---------------------${this.randEmo()}--------------------${this.randEmo()}--------------------${this.randEmo()}--------------------
-
 `
         
 
 
+        this.dom.container.scrollTop = this.dom.container.scrollHeight
+    }
+    
+    loggerExit(){
+        this.dom.log.textContent += `
+--------------------${this.randEmo()}--------------------${this.randEmo()}--------------------${this.randEmo()}--------------------
+`
         this.dom.container.scrollTop = this.dom.container.scrollHeight
     }
 
@@ -189,7 +194,7 @@ ${s}
         if(config){
             config.clear ? this.memory.count = 0 : null
         }
-
+        this.memory.banks.push(cmd)
         
         this.dom.input.value = this.memory.banks[this.memory.count]
 
