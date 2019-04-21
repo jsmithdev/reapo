@@ -6,7 +6,6 @@ require('./components/reapo-folder/reapo-folder.js')
 require('./components/reapo-settings/reapo-settings.js')
 
 const fs = require('fs')
-	, util = require('util')
 	, path = localStorage.path ? localStorage.path : ''
     , repo = require('fs-jetpack').dir(path, {})
     , codes = {

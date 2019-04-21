@@ -7,7 +7,7 @@ template.innerHTML = /*html*/`
 <style>
 
 .container {
-    background: #011627;
+    background: var(--color-dark);
     color: white;
     width: 100%;
     height: 70%;
@@ -18,12 +18,12 @@ template.innerHTML = /*html*/`
 	width: .25em;
 }
 .container::-webkit-scrollbar-track {
-	background: #011627;
+	background: var(--color-dark);
 	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 .container::-webkit-scrollbar-thumb {
-	background-color: #ec00ff;
+	background-color: var(--color-light);
 	outline: 1px solid #525252;
 }
 
@@ -43,11 +43,11 @@ input {
     background: #444;
     outline: none;
     border: none;
-    caret-color: #ec00ff;
+    caret-color: var(--color-light);
 }
 input::selection {
     color: white;
-    background: #ec00ff;
+    background: var(--color-light);
 }
 input[type=text]:focus, textarea:focus {
   box-shadow: 0 0 5px rgba(81, 203, 238, 1);
@@ -57,7 +57,7 @@ input[type=text]:focus, textarea:focus {
 }
 input::before {
     content: '$';
-    color: #ec00ff;
+    color: var(--color-light);
     font-weight: 600;
 }
 
@@ -146,7 +146,7 @@ class ReapoTerminal extends HTMLElement {
         this.dispatchEvent(new CustomEvent(
             `exec-cmd`, 
             { 
-                bubbles: true, 
+                bubbles: true,
                 composed: true,
                 detail: {
                     cmd,

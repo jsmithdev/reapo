@@ -9,9 +9,9 @@ template.innerHTML = /*html*/`
     :root {
         width: 100%;
         text-align: right;
-        --color-icon: #4f23d7;
-        --color-icon-secondary: #ec00ff;
-        --shadow-drop: drop-shadow(12px 12px 7px rgba(0, 0, 0, 0.5));
+        --color-icon: var(--color-mid);
+        --color-icon-secondary: var(--color-light);
+        --shadow-drop: var(--shadow-drop);
     }
     :root:hover {
     }
@@ -22,8 +22,8 @@ template.innerHTML = /*html*/`
 
     
     svg {
-        fill: #ec00ff;
-        margin: .4rem .45rem .15rem .45rem;
+        fill: var(--color-light);
+        margin: 0.4rem;
         transform: rotate(0deg);
         transition-duration: 3s;
     }

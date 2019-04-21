@@ -19,7 +19,7 @@ template.innerHTML = /*html*/`
     .help {
         font-size: 0.7rem;
         background: #ffd70e;
-        color: #011627;
+        color: var(--color-dark);
         border: 1pt solid #3a208e;
         width: 1em;
         height: 1em;
@@ -32,7 +32,7 @@ template.innerHTML = /*html*/`
     }
     
     .title {
-        background: #011627;
+        background: var(--color-dark);
         color: white;
         text-align: center;
         border-radius: 5px 5px 0 0;
@@ -44,7 +44,7 @@ template.innerHTML = /*html*/`
     .action {
         height: auto;
         text-align: center;
-        background: #4f23d7;
+        background: var(--color-mid);
         border-radius: 0 0 5px 5px;
         cursor: pointer;
     }
@@ -72,13 +72,13 @@ template.innerHTML = /*html*/`
         width: 100%;
         background: #3a208e;
         color: white;
-        outline-color: #011627;
+        outline-color: var(--color-dark);
         cursor: pointer;
         border: none;
         height: 1.5rem;
     }
     select:focus {
-        outline-color: #011627;
+        outline-color: var(--color-dark);
     }
 
 </style>

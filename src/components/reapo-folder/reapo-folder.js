@@ -2,6 +2,7 @@
 'use strict()'
 
 const template = document.createElement('template')
+
 template.innerHTML = /*html*/`
 <style>
 
@@ -11,7 +12,7 @@ template.innerHTML = /*html*/`
   margin: 0 auto;
   cursor: pointer;
   border-radius: 5px;
-  background: #011627;
+  background: var(--color-dark);
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
@@ -22,18 +23,19 @@ template.innerHTML = /*html*/`
 .title {
     color: #EEE;
     padding-top: 42%;
+    font-weight: inherit;
 }
 
 .icon_small {
-    fill: #ec00ff;
     margin: 2px;
     vertical-align: middle;
+    fill: var(--color-light);
 }
 .actions {
     bottom: 0;
     height: 3.3rem;
     width: 100%;
-    background: #4f23d7;
+    background: var(--color-mid);
     border-radius: 0px 0px 5px 5px;
     vertical-align: middle;
     box-shadow: 0 -3px 5px 0px rgba(0,0,0,0.12);
@@ -68,7 +70,7 @@ template.innerHTML = /*html*/`
     <h3 class="title"></h3>
     <div class="actions">
 
-        <div id="show" class="action" title="Details">
+        <div id="show" class="action" title="Details" tabindex="0">
             <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12,10L8,14H11V20H13V14H16M19,4H5C3.89,4 3,4.9 3,6V18A2,2 0 0,0 5,20H9V18H5V8H19V18H15V20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4Z" />
             </svg>
@@ -78,7 +80,7 @@ template.innerHTML = /*html*/`
             
         </div>
 
-        <div id="code" class="action" title="Open in VS Code" >
+        <div id="code" class="action" title="Open in VS Code" tabindex="0">
             <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6Z"/>
             </svg>
@@ -96,14 +98,9 @@ class ReapoFolder extends HTMLElement {
 
         this.shadowRoot.appendChild(template.content.cloneNode(true))
 
-        this.dom = {
-            card: this.shadowRoot.querySelector('.card'),
-            code: this.shadowRoot.querySelector('#code'),
-            show: this.shadowRoot.querySelector('#show'),
-            moddate: this.shadowRoot.querySelector('.moddate'),
-            title: this.shadowRoot.querySelector('.title')
-        }
-
+        this.codes = {
+            action: ['Space', 'Enter'],
+        };
     }
     static get is() {
         return 'reapo-folder'
@@ -115,13 +112,22 @@ class ReapoFolder extends HTMLElement {
 
     connectedCallback() {
         
-        if(this.path && this.name && this.date){ this.ready() }
+        if(this.path && this.name && this.date){ 
+            this.registerElements() 
+        }
     }
 	
-    attributeChangedCallback(n, ov, nv) {
-    }
+    attributeChangedCallback(n, ov, nv) { }
 
-    ready(){
+    registerElements(){
+
+        this.dom = {
+            card: this.shadowRoot.querySelector('.card'),
+            code: this.shadowRoot.querySelector('#code'),
+            show: this.shadowRoot.querySelector('#show'),
+            moddate: this.shadowRoot.querySelector('.moddate'),
+            title: this.shadowRoot.querySelector('.title')
+        }
 
         /* Folder Name */
         this.dom.title.textContent = this.name
@@ -140,11 +146,13 @@ class ReapoFolder extends HTMLElement {
         this.title = `Name: ${this.name} \n Mod: ${this.moddate}`
 
 
+        this.registerListeners()
+    }
+
+    registerListeners(){
         
         /* Open in VS Code */
-        this.dom.code.onclick = e => {
-            e.cancelBubble = true
-            e.preventDefault()
+        this.dom.code.onclick = () => {
 
             this.dispatchEvent(new CustomEvent(
                 `open-code`, 
@@ -160,15 +168,13 @@ class ReapoFolder extends HTMLElement {
                 })
             )
         }
-        this.dom.code.addEventListener('keyup', e => 
-            e.code != 'Tab' ? e.target.onclick(e) : null)
+        /* Listen if user wants to key the action */
+        this.dom.code.addEventListener('keyup', e => this.codes.action.includes(e.code) ? e.target.onclick() : null)
             
 
-
         /* Modal to show extra info about repo (a lot todo there) */
-        this.dom.show.onclick = e => {
-            e.cancelBubble = true
-            e.preventDefault()
+        this.dom.show.onclick = () => {
+
             this.dispatchEvent(new CustomEvent(
                 `open-modal`, 
                 { 
@@ -184,8 +190,14 @@ class ReapoFolder extends HTMLElement {
                 })
             )
         }
-        this.dom.show.addEventListener('keyup', e => 
-            e.code != 'Tab' ? e.target.onclick(e) : null)
+        /* Listen if user wants to key the action */
+        this.dom.show.addEventListener('keyup', e => this.codes.action.includes(e.code) ? e.target.onclick(e) : null)
+
+        /* Use arrows to manuver like Tab*/
+        this.shadowRoot.onKeyup = e => {
+            console.dir(e)
+            console.log(e.code)
+        }
     }
 }
 

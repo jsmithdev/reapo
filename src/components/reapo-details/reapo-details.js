@@ -7,6 +7,11 @@ const template = document.createElement('template')
 
 template.innerHTML = /*html*/`
 <style>
+
+* {
+    font-weight: inherit;
+}
+
 body {
   /*margin: 40px auto;*/
   max-width: 650px;
@@ -50,7 +55,7 @@ body {
     height: 65%;
     margin: auto 0;
     text-align: left;
-    background: #011627;
+    background: var(--color-dark);
     position: relative;
     border-radius: 0px;
     display: inline-block;
@@ -85,24 +90,21 @@ body {
     grid-template-rows: 1fr;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
 }
-path {
-    fill: "#4f23d7";
-}
 
 .title {
+
+    width: 100%;
     color: white;
     padding: 1rem;
-    width: 100%;
     text-align: left;
-    text-decoration: underline;
-    
     font-size: 1.2rem;
+    text-decoration: underline;
 }
 
 .icon_small {
     width: 1.8rem;
     cursor: pointer;
-    fill: #ec00ff;
+    fill: var(--color-light);
 }
 
 
