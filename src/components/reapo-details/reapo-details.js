@@ -232,22 +232,21 @@ class ReapoModal extends HTMLElement {
         }
 
         /* Run git status */
-        this.dom.sync.onclick = e => new Promise((res, rej) => {
+        this.dom.sync.onclick = e => {
             this.dispatchEvent(new CustomEvent(
                 `exec-cmd`, 
                 { 
                     bubbles: true, 
                     composed: true,
                     detail: {
-                        chain: { res, rej },
                         cmd: `git status`,
-                        cwd: this.path+'/'+this.name
+                        cwd: this.path+'/'+this.name,
+                        responder: x => this.dom.term.setAttribute('log', x),
+                        exit: x => this.dom.term.loggerExit(),
                     }
                 })
             )
-        })
-        .then(res => this.dom.term.setAttribute('log', res))
-        .catch(res => this.dom.term.setAttribute('log', res))
+        }
 
         /* Run Archiver */
         this.dom.archive.onclick = e => new Promise((resolve, reject) => {
@@ -272,40 +271,20 @@ class ReapoModal extends HTMLElement {
         this.dom.clear.onclick = e => this.dom.term.setAttribute('clear', true)
 
         /* Run ls */
-        this.dom.list.onclick = e => new Promise((res, rej) => {
+        this.dom.list.onclick = e => {
             this.dispatchEvent(new CustomEvent(
                 `exec-cmd`,
                 {
                     bubbles: true,
                     composed: true,
                     detail: {
-                        chain: { res, rej },
                         cmd: `ls`,
-                        cwd: this.path+'/'+this.name
+                        cwd: this.path+'/'+this.name,
+                        responder: x => this.dom.term.setAttribute('log', x)
                     }
                 })
             )
-        })
-        .then(res => this.dom.term.setAttribute('log', res))
-        .catch(res => this.dom.term.setAttribute('log', res))
-
-        /* Run ls */
-        this.dom.list.onclick = e => new Promise((res, rej) => {
-            this.dispatchEvent(new CustomEvent(
-                `exec-cmd`,
-                {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        chain: { res, rej },
-                        cmd: `ls`,
-                        cwd: this.path+'/'+this.name
-                    }
-                })
-            )
-        })
-        .then(res => this.dom.term.setAttribute('log', res))
-        .catch(res => this.dom.term.setAttribute('log', res))
+        }
 	}
 	
     attributeChangedCallback(n, ov, nv) {  }
@@ -340,3 +319,10 @@ class ReapoModal extends HTMLElement {
 
 customElements.define(ReapoModal.is, ReapoModal)
 module.exports = ReapoModal
+/* 
+dd
+@electron-forge/cli @electron-forge/maker-deb @electron-forge/maker-rpm @electron-forge/maker-squirrel @electron-forge/maker-zip electron
+
+d
+npm uninstall archiver fs-jetpack shell-path electron-squirrel-startup electron-window-state 
+*/

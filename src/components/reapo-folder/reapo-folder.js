@@ -146,23 +146,19 @@ class ReapoFolder extends HTMLElement {
             e.cancelBubble = true
             e.preventDefault()
 
-            new Promise(res => 
-                this.dispatchEvent(new CustomEvent(
-                    `open-code`, 
-                    { 
-                        bubbles: true, 
-                        composed: true,
-                        detail: {
-                            res,
-                            from: this.is,
-                            title: this.name,
-                            cmd: 'code .', 
-                            cwd: `${this.path}/${this.name}`
-                        }
-                    })
-                )
+            this.dispatchEvent(new CustomEvent(
+                `open-code`, 
+                { 
+                    bubbles: true, 
+                    composed: true,
+                    detail: {
+                        from: this.is,
+                        title: this.name,
+                        cmd: 'code .', 
+                        cwd: `${this.path}/${this.name}`
+                    }
+                })
             )
-            .then(console.info)
         }
         this.dom.code.addEventListener('keyup', e => 
             e.code != 'Tab' ? e.target.onclick(e) : null)

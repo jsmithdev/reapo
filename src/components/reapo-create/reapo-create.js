@@ -127,6 +127,8 @@ class Reapocreate extends HTMLElement {
         this.registerElements(this.shadowRoot)
     }
 
+    attributeChangedCallback(n, ov, nv){}
+
     registerElements(doc) {
 
         this.dom = {
@@ -135,9 +137,10 @@ class Reapocreate extends HTMLElement {
             new: doc.querySelector('.action'),
             name: doc.querySelector('#name'),
         }
-        
+
         this.registerListeners()
     }
+
     registerListeners() {
 
         /* On new click, create repo */
@@ -154,52 +157,6 @@ class Reapocreate extends HTMLElement {
         this.dom.name.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.new.click() : null
     }
 
-    attributeChangedCallback(n, ov, nv){}
-
-    gitter(name){
-        return new Promise(res => {
-            this.dispatchEvent(
-                new CustomEvent(
-                    `new-git`,
-                    {
-                        bubbles: true,
-                        composed: true,
-                        detail: { name, res }
-                    }
-                )
-            )
-        })
-    }
-    reaper(name){
-        console.dir(this)
-        return new Promise(res => {
-            console.dir(this)
-            this.dispatchEvent(
-                new CustomEvent(
-                    `new-repo`,
-                    {
-                        bubbles: true,
-                        composed: true,
-                        detail: { name, res }
-                    }
-                )
-            )
-        })
-    }
-    sfdxer(name){
-        return new Promise(res => {
-            this.dispatchEvent(
-                new CustomEvent(
-                    `new-sfdx`,
-                    {
-                        bubbles: true,
-                        composed: true,
-                        detail: { name, res }
-                    }
-                )
-            )
-        })
-    }
 
     /* Clear inputs & Close */
     clear(){
@@ -224,55 +181,84 @@ class Reapocreate extends HTMLElement {
 
         const name = isGit ? input.substring(input.lastIndexOf('/')+1, input.lastIndexOf('.')) : input
         
-        const action = isGit ? this.gitter.bind(this)
-            : isSfdx ? this.sfdxer.bind(this)
-            : this.reaper.bind(this)
+        // make type
+        const type = isSfdx ? `new-sfdx`
+            : isGit ? `new-git`
+            : `new-repo`
 
-        action(input).then(x => {
+        // make cmd
+        const cmd = isSfdx ? `sfdx force:project:create --projectname ${name}`
+            : isGit ? `git clone ${git}`
+            : 'code .'
+        
+        const cwd = localStorage.path
 
-            console.log('Action commited')
-            console.dir(x)
-            this.toast(x.length > 200 ? `${x.substring(0, 200)}...` : x)
-            
-            this.dispatchEvent(
-                new CustomEvent(
-                    `refresh-repo`,
-                    {
-                        bubbles: true,
-                        composed: true,
-                        detail: { clear: true }
-                    }
-                )
-            )
-            
+        const event = newEvent(type, cmd, cwd, name)
 
-            new Promise(res => this.dispatchEvent(new CustomEvent(
-                `open-code`,
-                {
-                    bubbles: true, 
-                    composed: true,
-                    detail: {
-                        res,
-                        from: this.is,
-                        title: name,
-                        cmd: 'code .', 
-                        cwd: `${path}/${name}`
-                    }
-                })
-            ))
-            .then(x => {
-                console.log(x)
-                this.dispatchEvent(
-                    new CustomEvent(`close-reapo-details`, { 
-                        bubbles: true,
-                        composed: true
-                    })
-                )
-            })
-        })
+        console.dir(event)
+
+        this.dispatchEvent(event)
     }
 
+    newEvent(type, cmd, cwd, name){
 
+        return new CustomEvent(
+            type,
+            {
+                bubbles: true,
+                composed: true,
+                detail: { 
+                    cmd,
+                    cwd,
+                    responder: console.log,
+                    exit: cleanup
+                }
+            }
+        )
+    }
+
+    cleanup(x){
+
+        console.log('Action commited')
+        console.dir(x)
+        this.toast(x.length > 200 ? `${x.substring(0, 200)}...` : x)
+        
+        this.dispatchEvent(
+            new CustomEvent(
+                `refresh-repo`,
+                {
+                    bubbles: true,
+                    composed: true,
+                    detail: { clear: true }
+                }
+            )
+        )
+        
+
+        new Promise(res => this.dispatchEvent(new CustomEvent(
+            `open-code`,
+            {
+                bubbles: true, 
+                composed: true,
+                detail: {
+                    res,
+                    from: this.is,
+                    title: name,
+                    cmd: 'code .', 
+                    cwd: `${path}/${name}`
+                }
+            })
+        ))
+        .then(x => {
+            console.log(x)
+            this.dispatchEvent(
+                new CustomEvent(`close-reapo-details`, { 
+                    bubbles: true,
+                    composed: true
+                })
+            )
+        })
+    }
     toast(msg, res){
         this.dispatchEvent(
             new CustomEvent(

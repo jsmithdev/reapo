@@ -7,7 +7,6 @@ require('./components/reapo-settings/reapo-settings.js')
 
 const fs = require('fs')
 	, util = require('util')
-	, exec = util.promisify(require('child_process').exec)
 	, path = localStorage.path ? localStorage.path : ''
     , repo = require('fs-jetpack').dir(path, {})
     , codes = {
@@ -111,14 +110,7 @@ loadRepo({ clear: true })
 	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
 	
 	/* Exec CMDs for User */
-	dom.modal.addEventListener('exec-cmd', e => {
-		
-		const { cmd, cwd, chain } = e.detail
-		
-		exec(cmd, { cwd })
-		.then(x => chain.res(x.stderr || x.stdout))
-		.catch(e => chain.rej(e))
-	})
+	dom.modal.addEventListener('exec-cmd', e => execEvent(e))
 
 	/* Delete Repo */
 	dom.modal.addEventListener('delete-repo', e => {
@@ -162,11 +154,8 @@ loadRepo({ clear: true })
 	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
 	
 	/* Open in VS Code */
-	const code = e =>   exec(e.detail.cmd, { cwd: e.detail.cwd })
-						.then((ev, resp) => {
-							toast(`Opened ${e.detail.title} in VS Code 🦄`)
-							e.detail.res(resp, ev)
-						})
+	const code = e => exec(e.detail.cmd, e.detail.cwd, null, () => toast(`Opened ${e.detail.title} in VS Code 🦄`))
+	
 	dom.container.addEventListener('open-code', e => code(e))
 	dom.settings.addEventListener('open-code', e => code(e))
 }
@@ -193,51 +182,31 @@ loadRepo({ clear: true })
 	/* New blank Repo */
 	dom.settings.addEventListener('new-repo', (e) => {
 
-		const name = e.detail.name
-		const path = `${localStorage.path}/${name}`
-		const chain = e.detail.res
+		const { name, cmd, cwd, responder, exit } = e.detail
 
+		const path = `${cwd}/${name}`
 
 		fs.mkdir(path, { recursive: true }, (err) => {
 			if (err) throw err;
 
-			loadRepo({})
+			loadRepo({clear: true})
 			
-			exec('code .', { cwd: path })
-			.then(x => chain(`Created ${name} in ${path}`, x))
+			exec(cmd, path, responder, exit)
 		})
 	})
 
 	/* New git clone */
-	dom.settings.addEventListener('new-git', (e) => {
-
-		const git = e.detail.name
-		const path = localStorage.path
-		const chain = e.detail.res
-
-		exec(`git clone ${git}`, { cwd: path })
-		.then(x => chain(x.stderr || x.stdout, x))
-	})
+	dom.settings.addEventListener('new-git', (e) => execEvent(e))
 
 	/* New sfdx project */
-	dom.settings.addEventListener('new-sfdx', (e) => {
-
-		const name = e.detail.name
-		const cwd = localStorage.path
-		const chain = e.detail.res
-		
-		exec(`sfdx force:project:create --projectname ${name}`, { cwd })
-		.then(x => chain(x.stderr || x.stdout, x))
-		.catch(x => chain(x.stderr || x.stdout, x))
-	})
+	dom.settings.addEventListener('new-sfdx', e => execEvent(e))
 
 	/* Refresh Repos */
-	dom.settings.addEventListener('refresh-repo', (e) => {
-		loadRepo({ clear: true })
-	})
+	dom.settings.addEventListener('refresh-repo', e => loadRepo({ clear: true }))
 }
 
 function restart(){
+
 	const app = require('electron').remote.app
 	app.relaunch()
 	app.exit(0)
@@ -253,4 +222,30 @@ if (process.platform !== 'windows') {
 		'/usr/local/bin',
 		process.env.PATH
 	].join(':')
+}
+
+function execEvent(e){
+
+	console.dir(e)
+
+	const { cmd, cwd, responder, exit } = e.detail
+
+	console.log(`${cmd} ${cwd} ${responder} ${exit}`)
+		
+	exec(cmd, cwd, responder, exit)
+}
+
+/* Exec on behalf of user */
+function exec(cmd, cwd, responder, exit){
+
+	console.log('Exec on behalf of user')
+	console.log(`${cmd} ${cwd} ${responder} ${exit}`)
+
+	const exec = require('child_process').exec
+	const command = exec(cmd, { cwd })
+
+	command.stdout.on('data', data => responder ? responder(data.toString()) : console.log(data))
+	command.stderr.on('data', data => responder ? responder(data.toString()) : console.log(data))
+
+	command.on('exit', code => exit ? exit(`Process finished with exit code ${code.toString()}`) : responder('exit')) // code.toString()
 }

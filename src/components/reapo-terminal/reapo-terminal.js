@@ -134,32 +134,32 @@ class ReapoTerminal extends HTMLElement {
         }
     }
 
-    exec(cmd){ 
+    exec(cmd){
+
         if(cmd === ''){ return }
         this.memory.banks.push(cmd)
         this.dom.input.value = ''
         
         if(cmd.toLowerCase() == 'clear'){ this.clear();  return; }
         
-        new Promise((res, rej) => 
-            this.dispatchEvent(new CustomEvent(
-                `exec-cmd`, 
-                { 
-                    bubbles: true, 
-                    composed: true,
-                    detail: {
-                        cmd,
-                        cwd: this.path+'/'+this.name,
-                        chain: { res, rej },
-                    }
-                })
-            )
+        //new Promise((res, rej) => 
+        this.dispatchEvent(new CustomEvent(
+            `exec-cmd`, 
+            { 
+                bubbles: true, 
+                composed: true,
+                detail: {
+                    cmd,
+                    cwd: this.path+'/'+this.name,
+                    responder: this.logger.bind(this)
+                }
+            })
         )
-        .then(res => this.logger(res))
-        .catch(e => this.logger(e))
     }
 
     logger(s){
+
+        if(s == 'exit'){ this.loggerExit(); return; }
         
         
         this.dom.log.textContent += `
@@ -172,12 +172,17 @@ ${this.name}: ${new Intl.DateTimeFormat('en-US', {
 
 ${s}
 
---------------------${this.randEmo()}--------------------${this.randEmo()}--------------------${this.randEmo()}--------------------
-
 `
         
 
 
+        this.dom.container.scrollTop = this.dom.container.scrollHeight
+    }
+    
+    loggerExit(){
+        this.dom.log.textContent += `
+--------------------${this.randEmo()}--------------------${this.randEmo()}--------------------${this.randEmo()}--------------------
+`
         this.dom.container.scrollTop = this.dom.container.scrollHeight
     }
 
