@@ -4,8 +4,6 @@
 require('../reapo-dir/reapo-dir.js')
 require('../reapo-create/reapo-create.js')
 
-const ipcRenderer = require('electron').ipcRenderer
-
 const template = document.createElement('template')
 template.innerHTML = /*html*/`
 <style>
@@ -275,74 +273,77 @@ path {
 
 class ReapoSettings extends HTMLElement {
 
-    constructor() {
-        super()
-        this.codes = { action: ['Enter'], cancel: ['Esc'] }
-        this.attachShadow({ mode: 'open' })
-    }
+	constructor() {
+		super()
+		this.codes = { action: ['Enter'], cancel: ['Esc'] }
+		this.attachShadow({ mode: 'open' })
+	}
 
-    static get is() {
-        return 'reapo-settings'
-    }
+	static get is() {
+		return 'reapo-settings'
+	}
 
-    static get observedAttributes() {
-        return []
-    }
+	static get observedAttributes() {
+		return []
+	}
 
-    connectedCallback() {
+	connectedCallback() {
 
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
-        this.registerElements(this.shadowRoot)
-    }
+		this.shadowRoot.appendChild(template.content.cloneNode(true))
+		this.registerElements(this.shadowRoot)
+	}
 
-    attributeChangedCallback(n, ov, nv){ }
+	//attributeChangedCallback(n, ov, nv){ }
 
-    registerElements(doc) {
+	registerElements(doc) {
 
-        this.dom = {
+		this.dom = {
 
-            modal: doc.querySelector('.modal'),
-            close: doc.querySelector('.close'),
-            overlay: doc.querySelector('.modal-overlay'),
-        }
+			modal: doc.querySelector('.modal'),
+			close: doc.querySelector('.close'),
+			overlay: doc.querySelector('.modal-overlay'),
+			create: doc.querySelector('reapo-create'),
+		}
 
-        this.registerListeners()
-    }
+		this.registerListeners()
+	}
 
-    registerListeners() {
+	registerListeners() {
 
-        /* Close Settings */
-        [this.dom.overlay, this.dom.close].map(el => el.onclick = e => {
+		/* Close Settings */
+		[this.dom.overlay, this.dom.close].map(el => el.onclick = e => {
 
-            e.cancelBubble = true
+			e.cancelBubble = true
             
-            if (e.target === el) {
-                this.close()
-            }
-        })
-        this.addEventListener(`close-${this.is}`, () => this.close())
-    }
+			if (e.target === el) {
+				this.close()
+			}
+		})
 
-    open() {
-        this.dom.overlay.classList.remove('is-hidden')
-    }
+		this.dom.create.addEventListener('close-settings', () => this.close())
+	}
 
-    close() {
-        this.dom.overlay.classList.add('is-hidden')
-    }
+	open() {
+		this.dom.overlay.classList.remove('is-hidden')
+		this.dom.create.focus()
+	}
 
-    toast(msg, res){
-        this.dispatchEvent(
-            new CustomEvent(
-                `toast`,
-                {
-                    bubbles: true,
-                    composed: true,
-                    detail: { msg, res }
-                }
-            )
-        )
-    }
+	close() {
+		this.dom.overlay.classList.add('is-hidden')
+	}
+
+	toast(msg, res){
+		this.dispatchEvent(
+			new CustomEvent(
+				'toast',
+				{
+					bubbles: true,
+					composed: true,
+					detail: { msg, res }
+				}
+			)
+		)
+	}
 }
 
 customElements.define(ReapoSettings.is, ReapoSettings)

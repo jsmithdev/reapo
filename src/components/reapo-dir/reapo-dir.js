@@ -1,70 +1,68 @@
 // jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
-const ipcRenderer = require('electron').ipcRenderer
-
 const template = document.createElement('template')
 template.innerHTML = /*html*/`
 <style>
 
 svg {
-        height: fit-content;
-        /* max-width: 50%; */
-        cursor: pointer;
-    }
-    path {
-        fill: #eee;
-    }
+    height: fit-content;
+    /* max-width: 50%; */
+    cursor: pointer;
+}
+path {
+    fill: #eee;
+}
 
-    .help {
-        font-size: 0.7rem;
-        background: #ffd70e;
-        color: var(--color-dark);
-        border: 1pt solid #3a208e;
-        width: 1em;
-        height: 1em;
-        padding-left: .25rem;
-        padding-right: .25rem;
-        vertical-align: super;
-        cursor: help;
-        border-radius: 10px;
-        padding: .1rem .25rem;
-    }
-    
-    .title {
-        background: var(--color-dark);
-        color: white;
-        text-align: center;
-        border-radius: 5px 5px 0 0;
-        margin: 0;    
-        height: 3rem;
-        padding-top: 1rem;
-    }
+.help {
+    font-size: 0.7rem;
+    background: #ffd70e;
+    color: var(--color-dark);
+    border: 1pt solid #3a208e;
+    width: 1em;
+    height: 1em;
+    padding-left: .25rem;
+    padding-right: .25rem;
+    vertical-align: super;
+    cursor: help;
+    border-radius: 10px;
+    padding: .1rem .25rem;
+}
 
-    .action {
-        height: auto;
-        text-align: center;
-        background: var(--color-mid);
-        border-radius: 0 0 5px 5px;
-        cursor: pointer;
-    }
-    .action input {
-        color: white;
-        -webkit-appearance: none;
-        background-color: #3a208e;
-        -webkit-rtl-ordering: logical;
-        cursor: text;
-        padding: 4px 0 5px 0;
-        width: 100%;
-        padding-left: 7px;
-        border-width: 0px;
-        outline-color: #ffd70e;
+.title {
+    background: var(--color-dark);
+    color: white;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    margin: 0;    
+    height: 3rem;
+    padding-top: 1rem;
+}
 
-        line-height: 3;
-    }
-    .action input::placeholder {
-        color: #eee;
-    }
+.action {
+    height: auto;
+    text-align: center;
+    background: var(--color-mid);
+    border-radius: 0 0 5px 5px;
+    cursor: pointer;
+}
+.action input {
+    color: white;
+    -webkit-appearance: none;
+    background-color: #3a208e;
+    -webkit-rtl-ordering: logical;
+    cursor: text;
+    padding: 4px 0 5px 0;
+    width: 100%;
+    padding-left: 7px;
+    border-width: 0px;
+    outline-color: #ffd70e;
+
+    line-height: 3;
+}
+.action input::placeholder {
+    color: #eee;
+}
 
 </style>
 
@@ -85,107 +83,110 @@ svg {
 
 class ReapoDir extends HTMLElement {
 
-    constructor() {
-        super()
-        this.codes = { action: ['Enter'], cancel: ['Esc'] }
-        this.attachShadow({ mode: 'open' })
-    }
+	constructor() {
+		super()
+		this.codes = { action: ['Enter'], cancel: ['Esc'] }
+		this.attachShadow({ mode: 'open' })
+	}
 
-    static get is() {
-        return 'reapo-dir'
-    }
+	static get is() {
+		return 'reapo-dir'
+	}
 
-    static get observedAttributes() {
-        return []
-    }
+	static get observedAttributes() {
+		return []
+	}
 
-    connectedCallback() {
+	connectedCallback() {
 
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
-        this.registerElements(this.shadowRoot)
-    }
+		this.shadowRoot.appendChild(template.content.cloneNode(true))
+		this.registerElements(this.shadowRoot)
+	}
 
-    registerElements(doc) {
+	//attributeChangedCallback(n, ov, nv) { }
 
-        this.dom = {
 
-            action: doc.querySelector('.action'),
-            path: doc.querySelector('#path'),
-        }
+	registerElements(doc) {
 
-        this.dom.path.value = localStorage.path ? localStorage.path : ''
-                
-        this.registerListeners()
-    }
+		this.dom = {
 
-    registerListeners() {
-        
-        /* Save Main Directory */
-        this.dom.action.onclick = e => new Promise(res => {
+			action: doc.querySelector('.action'),
+			path: doc.querySelector('#path'),
+		}
 
-            const val = this.dom.path.value
+		this.dom.path.value = localStorage.path ? localStorage.path : ''
 
-            if(!val || val == localStorage.path || val+'/' == localStorage.path){ return }
+		this.registerListeners()
+	}
 
-            const path = val.slice(val.length - 1) == '/' ? val : `${val}/`
+	registerListeners() {
 
-            this.dispatchEvent(
-                new CustomEvent(
-                    `save-settings`,
-                    {
-                        bubbles: true,
-                        composed: true,
-                        detail: { res, path }
-                    }
-                )
-            )
-        })
-        .then(() => this.clear())
+		/* Save Main Directory */
+		this.dom.action.onclick = () => new Promise(res => {
 
-        /* If Enter is pressed in input, trigger click */
-        this.dom.path.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.path.click() : null
-    }
+			const val = this.dom.path.value
 
-    attributeChangedCallback(n, ov, nv){ }
+			if (!val || val == localStorage.path || val + '/' == localStorage.path) { return }
 
-    /* Clear inputs & Close */
-    clear(){
+			const path = val.slice(val.length - 1) == '/' ? val : `${val}/`
 
-        this.dispatchEvent(
-            new CustomEvent(`close-reapo-settings`, { 
-                bubbles: true,
-                composed: true
-            })
-        )
-        this.dom.path.value = ''
-    }
-    
-    toast(msg, res){
-        this.dispatchEvent(
-            new CustomEvent(
-                `toast`,
-                {
-                    bubbles: true,
-                    composed: true,
-                    detail: { msg, res }
-                }
-            )
-        )
-    }
-    
-    clear(msg, res){
-        this.dom.path.value = ''
-        this.dispatchEvent(
-            new CustomEvent(
-                `toast`,
-                {
-                    bubbles: true,
-                    composed: true,
-                    detail: { msg, res }
-                }
-            )
-        )
-    }
+			this.dispatchEvent(
+				new CustomEvent(
+					'save-settings',
+					{
+						bubbles: true,
+						composed: true,
+						detail: { res, path }
+					}
+				)
+			)
+		})
+			.then(msg => {
+				
+				this.clear()
+
+				this.dispatchEvent(
+					new CustomEvent(
+						'toast',
+						{
+							bubbles: true,
+							composed: true,
+							detail: { msg }
+						}
+					)
+				)
+			})
+
+		/* If Enter is pressed in input, trigger click */
+		this.dom.path.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.path.click() : null
+	}
+
+	/* Clear inputs & Close */
+	clear() {
+
+		this.dispatchEvent(
+			new CustomEvent('close-settings', {
+				bubbles: true,
+				composed: true
+			})
+		)
+		this.dom.path.value = ''
+
+		
+	}
+
+	toast(msg, res = () => {}) {
+		this.dispatchEvent(
+			new CustomEvent(
+				'toast',
+				{
+					bubbles: true,
+					composed: true,
+					detail: { msg, res }
+				}
+			)
+		)
+	}
 }
 
 customElements.define(ReapoDir.is, ReapoDir)

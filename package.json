@@ -21,6 +21,10 @@
     "web",
     "components"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsmithdev/reapo.git"
+  },
   "author": "Jamie Smith",
   "license": "MIT",
   "config": {

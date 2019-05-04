@@ -4,25 +4,25 @@
 
 ## Purpose
 
-Wanting a repo manager that:
+Wanting a repo manager that...
 
 - Compliments VS Code
-- Easily editable via vanilla web standards
+- Built with vanilla web components & standards
 - Like VS Code, is in the middle between
   - dumb (eg: OS file manager)
   - heavy (eg: gitkraken)
 
-Reapo has some tricks already like:
+Reapo has some tricks already like...
 
-- quick filter
+- quick filter (Ctrl+F)
 - quick open in VS Code
-- quick new repo or git clone
-  - auto opens in VS Code
+- quick new repo, Salesforce project or git clone (Ctrl+N)
+  - auto opens in VS Code on creation
 - quick run commands with
-  - shortcut icons for git sync, etc
-  - or via the terminal like interface below
+  - shortcut icons for ls, git sync, etc
+  - or via the terminal like interface (screenshot below)
 
-Early releases are [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub.
+ Releases are [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub.
 
 Any todos are under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub.
 

@@ -166,157 +166,157 @@ body {
 
 class ReapoModal extends HTMLElement {
 
-    constructor() {
-        super()
+	constructor() {
+		super()
         
-        this.attachShadow({mode: 'open'})
-    }
-    static get is() {
-        return 'reapo-details'
-    }
+		this.attachShadow({mode: 'open'})
+	}
+	static get is() {
+		return 'reapo-details'
+	}
 
-    static get observedAttributes() {
-        return []
-    }
+	static get observedAttributes() {
+		return []
+	}
 
-    connectedCallback() {
+	connectedCallback() {
 
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
-        this.registerElements(this.shadowRoot)
-    }
-    registerElements(doc){
-        //console.log('registerElements')
+		this.shadowRoot.appendChild(template.content.cloneNode(true))
+		this.registerElements(this.shadowRoot)
+	}
+	registerElements(doc){
+		//console.log('registerElements')
         
-        this.dom = {
-            sync: doc.querySelector('#sync'),
-            modal: doc.querySelector('.modal'),
-            log: doc.querySelector('.terminal-log'),
-            overlay: doc.querySelector('.modal-overlay'),
-            title: doc.querySelector('.title'),
-            remove: doc.querySelector('#remove'),
-            term: doc.querySelector('reapo-terminal'),
-            moddate: doc.querySelector('.moddate'),
-            clear: doc.querySelector('#clear'),
-            archive: doc.querySelector('#archive'),
-            list: doc.querySelector('#list'),
-        }
-	    
+		this.dom = {
+			sync: doc.querySelector('#sync'),
+			modal: doc.querySelector('.modal'),
+			log: doc.querySelector('.terminal-log'),
+			overlay: doc.querySelector('.modal-overlay'),
+			title: doc.querySelector('.title'),
+			remove: doc.querySelector('#remove'),
+			term: doc.querySelector('reapo-terminal'),
+			moddate: doc.querySelector('.moddate'),
+			clear: doc.querySelector('#clear'),
+			archive: doc.querySelector('#archive'),
+			list: doc.querySelector('#list'),
+		}
+	
 		this.registerListeners()
-    }
+	}
 	registerListeners(){
         
-        /* Close Modal */
-        this.dom.overlay.onclick = e => {
-            if (e.target == this.dom.overlay) {
-                this.close()
-            }
-        }
+		/* Close Modal */
+		this.dom.overlay.onclick = e => {
+			if (e.target == this.dom.overlay) {
+				this.close()
+			}
+		}
         
-        this.addEventListener(`close-${this.is}`, () => this.close())
+		this.addEventListener(`close-${this.is}`, () => this.close())
         
-        /* Delete Repo */
-        this.dom.remove.onclick = e => {
+		/* Delete Repo */
+		this.dom.remove.onclick = () => {
 
-            const name = this.name
+			const name = this.name
             
-            if(!confirm(`Would you like to trash ${name}?`)){ return }
+			if(!confirm(`Would you like to trash ${name}?`)){ return }
 
-            this.dispatchEvent(
-                new CustomEvent(
-                    `delete-repo`,
-                    {
-                        bubbles: true,
-                        composed: true,
-                        detail: { name }
-                    }
-                )
-            )
-        }
+			this.dispatchEvent(
+				new CustomEvent(
+					'delete-repo',
+					{
+						bubbles: true,
+						composed: true,
+						detail: { name }
+					}
+				)
+			)
+		}
 
-        /* Run git status */
-        this.dom.sync.onclick = e => {
-            this.dispatchEvent(new CustomEvent(
-                `exec-cmd`, 
-                { 
-                    bubbles: true, 
-                    composed: true,
-                    detail: {
-                        cmd: `git status`,
-                        cwd: this.path+'/'+this.name,
-                        responder: x => this.dom.term.setAttribute('log', x),
-                        exit: x => this.dom.term.loggerExit(),
-                    }
-                })
-            )
-        }
+		/* Run git status */
+		this.dom.sync.onclick = () => {
+			this.dispatchEvent(new CustomEvent(
+				'exec-cmd', 
+				{ 
+					bubbles: true, 
+					composed: true,
+					detail: {
+						cmd: 'git status',
+						cwd: this.path+'/'+this.name,
+						responder: x => this.dom.term.setAttribute('log', x),
+						exit: () => this.dom.term.loggerExit(),
+					}
+				})
+			)
+		}
 
-        /* Run Archiver */
-        this.dom.archive.onclick = e => new Promise((resolve, reject) => {
-            this.dispatchEvent(new CustomEvent(
-                `archive`, 
-                { 
-                    bubbles: true, 
-                    composed: true,
-                    detail: {
-                        resolve, 
-                        reject,
-                        name: this.name,
-                        cwd: this.path+'/'
-                    }
-                })
-            )
-        })
-        .then(res => this.dom.term.setAttribute('log', res))
-        .catch(res => this.dom.term.setAttribute('log', res))
+		/* Run Archiver */
+		this.dom.archive.onclick = () => new Promise((resolve, reject) => {
+			this.dispatchEvent(new CustomEvent(
+				'archive', 
+				{ 
+					bubbles: true, 
+					composed: true,
+					detail: {
+						resolve, 
+						reject,
+						name: this.name,
+						cwd: this.path+'/'
+					}
+				})
+			)
+		})
+			.then(res => this.dom.term.setAttribute('log', res))
+			.catch(res => this.dom.term.setAttribute('log', res))
 
-        /* Clear terminal */
-        this.dom.clear.onclick = e => this.dom.term.setAttribute('clear', true)
+		/* Clear terminal */
+		this.dom.clear.onclick = () => this.dom.term.setAttribute('clear', true)
 
-        /* Run ls */
-        this.dom.list.onclick = e => {
-            this.dispatchEvent(new CustomEvent(
-                `exec-cmd`,
-                {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                        cmd: `ls`,
-                        cwd: this.path+'/'+this.name,
-                        responder: x => this.dom.term.setAttribute('log', x)
-                    }
-                })
-            )
-        }
+		/* Run ls */
+		this.dom.list.onclick = () => {
+			this.dispatchEvent(new CustomEvent(
+				'exec-cmd',
+				{
+					bubbles: true,
+					composed: true,
+					detail: {
+						cmd: 'ls',
+						cwd: this.path+'/'+this.name,
+						responder: x => this.dom.term.setAttribute('log', x)
+					}
+				})
+			)
+		}
 	}
 	
-    attributeChangedCallback(n, ov, nv) {  }
+	//attributeChangedCallback(n, ov, nv) {  }
 
-    open(detail){
+	open(detail){
 
-        if(detail){
-            if(this.caller != detail.from){
-                while(this.dom.log.lastChild){
-                    this.dom.removeChild(this.dom.log.lastChild)
-                }
-            }
-            this.caller = detail.from
-            this.dom.title.textContent = detail.name
-            this.dom.moddate.textContent = detail.moddate
+		if(detail){
+			if(this.caller != detail.from){
+				while(this.dom.log.lastChild){
+					this.dom.removeChild(this.dom.log.lastChild)
+				}
+			}
+			this.caller = detail.from
+			this.dom.title.textContent = detail.name
+			this.dom.moddate.textContent = detail.moddate
 
-            this.path = detail.path
-            this.name = detail.name
+			this.path = detail.path
+			this.name = detail.name
             
-            this.dom.term.path = this.path
-            this.dom.term.name = this.name
-            this.dom.term.setAttribute('focus', true)
-        }
+			this.dom.term.path = this.path
+			this.dom.term.name = this.name
+			this.dom.term.setAttribute('focus', true)
+		}
         
-        this.dom.overlay.classList.remove('is-hidden')
-    }
+		this.dom.overlay.classList.remove('is-hidden')
+	}
 
-    close(){
-        this.dom.overlay.classList.add('is-hidden')
-    }
+	close(){
+		this.dom.overlay.classList.add('is-hidden')
+	}
 }
 
 customElements.define(ReapoModal.is, ReapoModal)

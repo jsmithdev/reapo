@@ -1,8 +1,6 @@
 // jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
-const ipcRenderer = require('electron').ipcRenderer
-
 const template = document.createElement('template')
 template.innerHTML = /*html*/`
 <style>
@@ -107,170 +105,174 @@ template.innerHTML = /*html*/`
 
 class Reapocreate extends HTMLElement {
 
-    constructor() {
-        super()
-        this.codes = { action: ['Enter'], cancel: ['Esc'] }
-        this.attachShadow({ mode: 'open' })
-    }
+	constructor() {
+		super()
+		this.codes = { action: ['Enter'], cancel: ['Esc'] }
+		this.attachShadow({ mode: 'open' })
+	}
 
-    static get is() {
-        return 'reapo-create'
-    }
+	static get is() {
+		return 'reapo-create'
+	}
 
-    static get observedAttributes() {
-        return []
-    }
+	static get observedAttributes() {
+		return []
+	}
 
-    connectedCallback() {
+	connectedCallback() {
 
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
-        this.registerElements(this.shadowRoot)
-    }
+		this.shadowRoot.appendChild(template.content.cloneNode(true))
+		this.registerElements(this.shadowRoot)
+	}
 
-    attributeChangedCallback(n, ov, nv){}
+	//attributeChangedCallback(n, ov, nv) { }
 
-    registerElements(doc) {
+	registerElements(doc) {
 
-        this.dom = {
+		this.dom = {
 
-            select: doc.querySelector('select'),
-            new: doc.querySelector('.action'),
-            name: doc.querySelector('#name'),
-        }
+			select: doc.querySelector('select'),
+			new: doc.querySelector('.action'),
+			name: doc.querySelector('#name'),
+		}
 
-        this.registerListeners()
-    }
+		this.registerListeners()
+	}
 
-    registerListeners() {
+	registerListeners() {
 
-        /* On new click, create repo */
-        this.dom.new.onclick = e => {
-            // If no name, don't create
-            if(e.target == this.dom.name){ return }
+		/* On new click, create repo */
+		this.dom.new.onclick = e => {
+			// If no name, don't create
+			if (e.target == this.dom.name) { return }
 
-            const name = this.dom.name.value
+			const name = this.dom.name.value
 
-            name ? this.createRepo(name, localStorage.path) : this.toast('Please enter a name or .git url') // jshint ignore: line
-        }
+			name ? this.createRepo(name, localStorage.path) : this.toast('Please enter a name or .git url') // jshint ignore: line
+		}
 
-        /* If Enter is pressed in input, trigger new click */
-        this.dom.name.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.new.click() : null
-    }
+		/* If Enter is pressed in input, trigger new click */
+		this.dom.name.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.new.click() : null
+	}
 
 
-    /* Clear inputs & Close */
-    clear(){
-    
-        this.dom.name.value = ''
-        this.dom.select.value = ''
-        this.offsetParent.click()
-    }
+	/* Clear inputs & Close */
+	clear() {
 
-    
-    /* Create a Repo */
-    createRepo(input, path) {
+		this.dom.name.value = ''
+		this.dom.select.value = ''
+		this.offsetParent.click()
+	}
 
-        if(!path){
-            
-            this.toast('Please set a Main Directory')
-        }
+	/* Create a Repo */
+	createRepo(input, path) {
 
-        const isSfdx = this.dom.select.value.toLowerCase().includes('salesforce')
-                
-        const isGit = input.toLowerCase().includes('.git') && input.toLowerCase().includes('http')
+		if (!path) {
 
-        const name = isGit ? input.substring(input.lastIndexOf('/')+1, input.lastIndexOf('.')) : input
-        
-        // make type
-        const type = isSfdx ? `new-sfdx`
-            : isGit ? `new-git`
-            : `new-repo`
+			this.toast('Please set a Main Directory')
+		}
 
-        // make cmd
-        const cmd = isSfdx ? `sfdx force:project:create --projectname ${name}`
-            : isGit ? `git clone ${git}`
-            : 'code .'
-        
-        const cwd = localStorage.path
+		const isSfdx = this.dom.select.value.toLowerCase().includes('salesforce')
 
-        const event = newEvent(type, cmd, cwd, name)
+		const isGit = input.toLowerCase().includes('.git') && input.toLowerCase().includes('http')
 
-        console.dir(event)
+		const name = isGit ? input.substring(input.lastIndexOf('/') + 1, input.lastIndexOf('.')) : input
 
-        this.dispatchEvent(event)
-    }
+		// make type
+		const type = isSfdx ? 'new-sfdx'
+			: isGit ? 'new-git'
+				: 'new-repo'
 
-    newEvent(type, cmd, cwd, name){
+		// make cmd
+		const cmd = isSfdx ? `sfdx force:project:create --projectname ${name}`
+			: isGit ? `git clone ${input}`
+				: 'code .'
 
-        return new CustomEvent(
-            type,
-            {
-                bubbles: true,
-                composed: true,
-                detail: { 
-                    cmd,
-                    cwd,
-                    responder: console.log,
-                    exit: cleanup
-                }
-            }
-        )
-    }
+		const cwd = localStorage.path
 
-    cleanup(x){
+		const event = this.newEvent(type, cmd, cwd, name, path)
 
-        console.log('Action commited')
-        console.dir(x)
-        this.toast(x.length > 200 ? `${x.substring(0, 200)}...` : x)
-        
-        this.dispatchEvent(
-            new CustomEvent(
-                `refresh-repo`,
-                {
-                    bubbles: true,
-                    composed: true,
-                    detail: { clear: true }
-                }
-            )
-        )
-        
+		this.dispatchEvent(event)
 
-        new Promise(res => this.dispatchEvent(new CustomEvent(
-            `open-code`,
-            {
-                bubbles: true, 
-                composed: true,
-                detail: {
-                    res,
-                    from: this.is,
-                    title: name,
-                    cmd: 'code .', 
-                    cwd: `${path}/${name}`
-                }
-            })
-        ))
-        .then(x => {
-            console.log(x)
-            this.dispatchEvent(
-                new CustomEvent(`close-reapo-details`, { 
-                    bubbles: true,
-                    composed: true
-                })
-            )
-        })
-    }
-    toast(msg, res){
-        this.dispatchEvent(
-            new CustomEvent(
-                `toast`,
-                {
-                    bubbles: true,
-                    composed: true,
-                    detail: { msg, res }
-                }
-            )
-        )
-    }
+	}
+
+	newEvent(type, cmd, cwd, name, path) {
+
+		const exit = x => this.cleanup(x, name, path, cmd.includes('git'))
+
+		return new CustomEvent(
+			type,
+			{
+				bubbles: true,
+				composed: true,
+				detail: {
+					name,
+					path,
+					cmd,
+					cwd,
+					exit,
+					responder: () => {}
+				}
+			}
+		)
+	}
+
+	cleanup(x, name, path, open) {
+		
+		this.toast(x.length > 200 ? `${x.substring(0, 200)}...` : x)
+
+		this.dispatchEvent(
+			new CustomEvent(
+				'refresh-repo',
+				{
+					bubbles: true,
+					composed: true,
+					detail: { clear: true }
+				}
+			)
+		)
+
+		this.dispatchEvent(
+			new CustomEvent('close-settings', {
+				bubbles: true,
+				composed: true
+			})
+		)
+
+		if (open && name && path) {
+
+			this.dispatchEvent(new CustomEvent(
+				'open-code',
+				{
+					bubbles: true,
+					composed: true,
+					detail: {
+						from: this.is,
+						title: name,
+						cmd: 'code .',
+						cwd: `${path}/${name}`
+					}
+				})
+			)
+		}
+	}
+
+	toast(msg, res) {
+		this.dispatchEvent(
+			new CustomEvent(
+				'toast',
+				{
+					bubbles: true,
+					composed: true,
+					detail: { msg, res }
+				}
+			)
+		)
+	}
+
+	focus(){
+		this.dom.name.focus()
+	}
 }
 
 customElements.define(Reapocreate.is, Reapocreate)

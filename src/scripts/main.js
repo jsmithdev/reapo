@@ -7,15 +7,14 @@ require('./components/reapo-settings/reapo-settings.js')
 
 const fs = require('fs')
 	, path = localStorage.path ? localStorage.path : ''
-    , repo = require('fs-jetpack').dir(path, {})
-    , codes = {
-	    find: ['KeyF'],
-	    close: ['Escape'],
-	    exit: ['KeyW'],
-	    restart: ['KeyR'],
-	    settings: ['KeyS'],
-    };
-
+	, repo = require('fs-jetpack').dir(path, {})
+	, codes = {
+		find: ['KeyF'],
+		close: ['Escape'],
+		exit: ['KeyW'],
+		restart: ['KeyR'],
+		settings: ['KeyS', 'KeyN'],
+	}
 
 const dom = {
 	
@@ -47,15 +46,18 @@ const loadRepo = (config) => { // init repo
 	const projects = repo.list().map(name => repo.inspect(`${path}/${name}`, { times: true }))
 
 	const add = dir => {
-		if(!dir){toast('Use Settings to set a Main Directory');return;}
+		
+		if (!dir) { toast('Use Settings to set a Main Directory'); return }
+
 		const folder = document.createElement('reapo-folder')
+
 		folder.path = repo.cwd()
 		folder.name = dir.name
 		folder.date = dir.modifyTime
 
 		dom.container.appendChild(folder)
 	}
-	//console.dir(projects)
+	
 	projects.map(add)
 
 	// give some empty space #todo do better
@@ -72,7 +74,7 @@ loadRepo({ clear: true })
 		toast(e.detail.msg)
 
 		if(typeof e.detail.res == 'function'){
-			res('toasted')
+			//res('toasted')
 		}
 	})
 
@@ -116,16 +118,14 @@ loadRepo({ clear: true })
 		
 		const name = e.detail.name
 		const path = localStorage.path
-		const chain = e.detail.res
-
+		//const chain = e.detail.res
 		const cmd = `rm -Rf ${path}${name}`
+		
+		exec(cmd)
 
-		exec(cmd, { cwd: path })
-		.then(x => {
-			loadRepo({ clear: true })
-			toast(x.stderr || x.stdout)
-			dom.modal.close()
-		})
+		loadRepo({ clear: true })
+		//toast(x.stderr || x.stdout)
+		dom.modal.close()
 	})
 
 	/* Archive Repo */
@@ -133,17 +133,17 @@ loadRepo({ clear: true })
 		
 		const Archiver = require(__dirname+'/scripts/archieve')
 		
-		//delete node_package? might not have deps listed, maybe option later in settings #idea
-		console.dir(Archiver.directory)
+		//delete node_package? might not have deps listed, maybe option later in settings #todo #idea
+		//console.dir(Archiver.directory)
 		//run thru handleRepo
 		Archiver.directory(e.detail, toast)
-		.then(msg => {
-			dom.modal.close()
-			toast(msg)
-			// Ask to Delete repo after toasting success msg
-			setTimeout(() => dom.modal.dom.remove.click(), 1500)
-		})
-		.catch(x => toast(x))
+			.then(msg => {
+				dom.modal.close()
+				toast(msg)
+				// Ask to Delete repo after toasting success msg
+				setTimeout(() => dom.modal.dom.remove.click(), 1500)
+			})
+			.catch(x => toast(x))
 	})
 }
 
@@ -172,10 +172,10 @@ loadRepo({ clear: true })
 		const path = e.detail.path
 		const msg = `Saved ${path}`
 
-        localStorage.path = path
+		localStorage.path = path
 		toast(msg)
-        loadRepo({ clear: true })
-        e.detail.res(msg)
+		loadRepo({ clear: true })
+		e.detail.res(msg)
 	})
 
 	/* New blank Repo */
@@ -186,7 +186,8 @@ loadRepo({ clear: true })
 		const path = `${cwd}/${name}`
 
 		fs.mkdir(path, { recursive: true }, (err) => {
-			if (err) throw err;
+			
+			if (err) throw err
 
 			loadRepo({clear: true})
 			
@@ -201,7 +202,7 @@ loadRepo({ clear: true })
 	dom.settings.addEventListener('new-sfdx', e => execEvent(e))
 
 	/* Refresh Repos */
-	dom.settings.addEventListener('refresh-repo', e => loadRepo({ clear: true }))
+	dom.settings.addEventListener('refresh-repo', () => loadRepo({ clear: true }))
 }
 
 function restart(){
@@ -215,6 +216,7 @@ function restart(){
 if (process.platform !== 'windows') {
 
 	const shellPath = require('shell-path')
+	
 	process.env.PATH = shellPath.sync() || [
 		'./node_modules/.bin',
 		'/.nodebrew/current/bin',
@@ -225,26 +227,24 @@ if (process.platform !== 'windows') {
 
 function execEvent(e){
 
-	console.dir(e)
-
 	const { cmd, cwd, responder, exit } = e.detail
 
-	console.log(`${cmd} ${cwd} ${responder} ${exit}`)
-		
 	exec(cmd, cwd, responder, exit)
 }
 
 /* Exec on behalf of user */
 function exec(cmd, cwd, responder, exit){
 
-	console.log('Exec on behalf of user')
-	console.log(`${cmd} ${cwd} ${responder} ${exit}`)
+	//console.log('Exec on behalf of user')
+	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
 
 	const exec = require('child_process').exec
-	const command = exec(cmd, { cwd })
+	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
 
-	command.stdout.on('data', data => responder ? responder(data.toString()) : console.log(data))
-	command.stderr.on('data', data => responder ? responder(data.toString()) : console.log(data))
-
-	command.on('exit', code => exit ? exit(`Process finished with exit code ${code.toString()}`) : responder('exit')) // code.toString()
+	if(typeof responder === 'function'){
+		command.stdout.on('data', data => responder(data.toString()))
+		command.stderr.on('data', data => responder(data.toString()))
+	}
+	
+	command.on('exit', code => exit ? exit(`Process finished with exit code ${code.toString()}`) : responder ? responder('exit') : null) // code.toString()
 }
