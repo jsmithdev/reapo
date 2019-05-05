@@ -80,7 +80,7 @@ body {
     grid-template-columns: 1fr 1fr;
 }
 .actions {
-    color: #FFF;
+    color: var(--color-lightest);
     display: grid;
     grid-row-gap: 20px;
     align-items: center;

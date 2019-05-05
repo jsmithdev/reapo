@@ -21,7 +21,7 @@ template.innerHTML = /*html*/`
 }
 
 .title {
-    color: #EEE;
+    color: var(--color-lightest);
     padding-top: 42%;
     font-weight: inherit;
 }

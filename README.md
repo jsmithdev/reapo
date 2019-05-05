@@ -2,9 +2,17 @@
 
 ## A repo manager built with vanilla web standards 🎉
 
+![shot](https://i.imgur.com/ZKqvCKn.png)
+
+### Releases are under [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub
+
+### Any todos are under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub
+
+---
+
 ## Purpose
 
-Wanting a repo manager that...
+Wanted a repo manager that
 
 - Compliments VS Code
 - Built with vanilla web components & standards
@@ -12,7 +20,7 @@ Wanting a repo manager that...
   - dumb (eg: OS file manager)
   - heavy (eg: gitkraken)
 
-Reapo has some tricks already like...
+Some functions include
 
 - quick filter (Ctrl+F)
 - quick open in VS Code
@@ -22,41 +30,31 @@ Reapo has some tricks already like...
   - shortcut icons for ls, git sync, etc
   - or via the terminal like interface (screenshot below)
 
- Releases are [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub.
-
-Any todos are under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub.
-
----
-
-![shot](https://i.imgur.com/ZKqvCKn.png)
-
 ---
 
 ## Develop Reapo
 
-Rebased to use electron-forge. To install Electron Forge:
+### Clone it
 
-```npm i -g electron-forge```
+```git clone https://github.com/jsmithdev/reapo.git && cd reapo```
 
-### To install
-
-After cloning the repo and/or opening the reapo dir:
+### Install it
 
 ```npm i```
 
-### To start
+### Start it
 
 ```npm run start```
 
-### To package
+### Package it
 
 ```npm run package```
 
-### To make (create an installer for your OS)
+### Make it (create an installer for your current OS)
 
 ```npm run make```
 
-### To publish
+### Publish it
 
 ```npm run publish```
 

@@ -27,6 +27,34 @@ const dom = {
 	footer: document.querySelector('footer'),
 }
 
+
+{	// Handle Theming
+	const setTheme = theme => {	
+		for (const key in theme){
+			document.documentElement.style.setProperty(key, theme[key]);
+		}
+	}
+
+	// Get custom theme
+	const storage = localStorage.getItem('theme')
+
+	// If theme is set use it else use default theme and set it
+	const theme = storage === 'object' ? storage : {
+		'--color-lightest': '#EEE',
+		'--color-accent': '#00e6ff',
+		'--color-light': '#ec00ff',
+		'--color-mid': '#4f23d7',
+		'--color-dark': '#011627',
+		'--color-highlight': '#ffd70e',
+		'--shadow-drop': 'drop-shadow(12px 12px 7px rgba(0, 0, 0, 0.5))',
+		'--shadow-top': '0px 2px 4px 0 rgba(0, 0, 0, 0.2), 0px -4px 10px 0px rgba(0, 0, 0, 0.2)',
+	}
+
+	setTheme(theme)
+
+	if(storage !== 'object'){ localStorage.setItem('theme', theme) }
+}
+
 /* Toaster */
 const toast = msg => {
 

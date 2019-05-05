@@ -3,15 +3,24 @@
 	
 	font-family: 'Open Sans', sans-serif;
 	font-weight: 200;
+	/*
+	Setting with JS for custom themes 
 
-	--color-white: #011627;
-	--color-lighter: #00e6ff;
+	document.documentElement.style.setProperty('--color-variable', '#hexcode');
+
+	--color-lightest: #EEE;
+	--color-accent: #00e6ff;
 	--color-light: #ec00ff;
-	--color-dark: #011627;
 	--color-mid: #4f23d7;
+	--color-dark: #011627;
 
+	--color-highlight: #ffd70e;
+	
+	
+	
 	--shadow-drop: drop-shadow(12px 12px 7px rgba(0, 0, 0, 0.5));
 	--shadow-top: 0px 2px 4px 0 rgba(0, 0, 0, 0.2), 0px -4px 10px 0px rgba(0, 0, 0, 0.2);
+	*/
 }
 
 html, body {
@@ -21,7 +30,7 @@ html, body {
 	height: 100%;
 	background-size: 400% 400%;
 	font-family: Georgia, 'Times New Roman', Times, serif;
-	background: linear-gradient(-45deg, var(--color-lighter), var(--color-mid));
+	background: linear-gradient(-45deg, var(--color-accent), var(--color-mid));
 }
 
 body {
@@ -36,7 +45,7 @@ body {
 
 footer {
 	
-	color: #FFF;
+	color: var(--color-lightest);
     font-size: 1.2rem;
 	background: var(--color-mid);
     position: fixed;
@@ -114,7 +123,7 @@ footer {
 	min-width: 12rem;
 	text-align: center;
 	border-radius: 5px;
-	background: #eee;
+	background: var(--color-lightest);
 }
 
 @-webkit-keyframes AnimationName {

@@ -41,7 +41,7 @@ body {
 }
 
 :host ::-webkit-scrollbar-track {
-	background: #eee;
+	background: var(--color-lightest);
 	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
@@ -94,26 +94,21 @@ path {
     z-index: 99;
 }
 
-/**
- * Circle Styles       background: linear-gradient(#eee, #ddd, var(--color-mid));
- */
+/*
+background: linear-gradient(var(--color-lightest), #ddd, var(--color-mid));
+*/
 
 .circle {
-    /* position: relative; */
+    
     display: -webkit-box;
     margin: 0 auto;
     color: white;
-    /* background: rgba(14, 38, 58, 0.7); */
     height: 95%;
     border-radius: 50%;
     vertical-align: middle;
     max-height: 95%;
     max-width: 85%;
     text-align: center;
-    /* fill: var(--color-dark); */
-    /* fill-opacity: 0.5; */
-    /* opacity: 0.5; */
-    /* stroke-opacity: 0.5; */
 }
 
 .circle:after {
@@ -213,7 +208,7 @@ path {
     width: 5rem;
     text-align: center;
     border-radius: 5rem;
-    background: #eee;
+    background: var(--color-lightest);
     cursor: pointer;
     z-index: 9000;
     user-select: none;

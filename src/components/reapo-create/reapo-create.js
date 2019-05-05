@@ -11,14 +11,14 @@ template.innerHTML = /*html*/`
         cursor: pointer;
     }
     path {
-        fill: #eee;
+        fill: var(--color-lightest);
     }
 
     .help {
         font-size: 0.7rem;
-        background: #ffd70e;
+        background: var(--color-highlight);
         color: var(--color-dark);
-        border: 1pt solid #3a208e;
+        border: 1pt solid var(--color-mid);
         width: 1em;
         height: 1em;
         padding-left: .25rem;
@@ -49,17 +49,17 @@ template.innerHTML = /*html*/`
     .action input {
         color: white;
         -webkit-appearance: none;
-        background-color: #3a208e;
+        background-color: var(--color-mid);
         -webkit-rtl-ordering: logical;
         cursor: text;
         padding: 4px 0 5px 0;
         width: 100%;
         padding-left: 7px;
         border-width: 0px;
-        outline-color: #ffd70e;
+        outline-color: var(--color-highlight);
     }
     .action input::placeholder {
-        color: #eee;
+        color: var(--color-lightest);
     }
 
 
@@ -68,7 +68,7 @@ template.innerHTML = /*html*/`
 
     select {
         width: 100%;
-        background: #3a208e;
+        background: var(--color-mid);
         color: white;
         outline-color: var(--color-dark);
         cursor: pointer;
