@@ -1,7 +1,7 @@
 // jshint esversion:6, asi: true, laxcomma: true
 
 const path = require('path')
-const icon = path.resolve(`${__dirname}/resources/icon.png`)
+const icon = path.resolve(`${__dirname}/assets/icons/png/icon.icns`)
 
 module.exports = {
 

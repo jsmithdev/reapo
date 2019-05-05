@@ -20,15 +20,15 @@ const createWindow = () => {
 	let mainWindowState = windowStateKeeper({
 		defaultWidth: 1000,
 		defaultHeight: 800,
-		icon: path.join(__dirname + 'icon.png')
+		icon: path.resolve(`${__dirname}/../assets/icons/png/128x128.png`)
 	})
 
 	// Create the window using the state information
 	mainWindow = new BrowserWindow({
-		'x': mainWindowState.x,
-		'y': mainWindowState.y,
-		'width': mainWindowState.width,
-		'height': mainWindowState.height
+		x: mainWindowState.x,
+		y: mainWindowState.y,
+		width: mainWindowState.width,
+		height: mainWindowState.height,
 	})
 
 	// Let us register listeners on the window, so we can update the state
