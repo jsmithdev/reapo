@@ -4,6 +4,8 @@ require('./components/reapo-menu/reapo-menu.js')
 require('./components/reapo-details/reapo-details.js')
 require('./components/reapo-folder/reapo-folder.js')
 require('./components/reapo-settings/reapo-settings.js')
+require('./components/reapo-theme/reapo-theme.js')
+require('./components/color-picker/color-picker.js')
 
 const fs = require('fs')
 	, path = localStorage.path ? localStorage.path : ''
@@ -25,21 +27,24 @@ const dom = {
 	menu: document.querySelector('reapo-menu'),
 	settings: document.querySelector('reapo-settings'),
 	footer: document.querySelector('footer'),
+	themeButton: document.querySelector('.themeContainer'),
+	themer: document.querySelector('reapo-theme'),
 }
 
 
 {	// Handle Theming
 	const setTheme = theme => {	
 		for (const key in theme){
-			document.documentElement.style.setProperty(key, theme[key]);
+			document.documentElement.style.setProperty(key, theme[key])
 		}
 	}
 
 	// Get custom theme
 	const storage = localStorage.getItem('theme')
+	const data =  storage ? JSON.parse(storage) : null
 
 	// If theme is set use it else use default theme and set it
-	const theme = storage === 'object' ? storage : {
+	const theme = data === 'object' ? data : {
 		'--color-lightest': '#EEE',
 		'--color-accent': '#00e6ff',
 		'--color-light': '#ec00ff',
@@ -50,9 +55,15 @@ const dom = {
 		'--shadow-top': '0px 2px 4px 0 rgba(0, 0, 0, 0.2), 0px -4px 10px 0px rgba(0, 0, 0, 0.2)',
 	}
 
+
+
 	setTheme(theme)
 
-	if(storage !== 'object'){ localStorage.setItem('theme', theme) }
+	if(storage !== 'object'){ localStorage.setItem('theme', JSON.stringify(theme)) }
+	console.dir(dom.themer)
+	dom.themeButton.onclick = () => {
+		dom.themer.open()
+	}
 }
 
 /* Toaster */
