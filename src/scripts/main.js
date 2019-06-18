@@ -247,6 +247,7 @@ loadRepo({ clear: true })
 function restart(){
 
 	const app = require('electron').remote.app
+	
 	app.relaunch()
 }
 
