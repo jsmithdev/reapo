@@ -248,7 +248,6 @@ function restart(){
 
 	const app = require('electron').remote.app
 	app.relaunch()
-	app.exit(0)
 }
 
 /* Help for unix PATH vars so reapo can run installed cli's on behalf of user */
