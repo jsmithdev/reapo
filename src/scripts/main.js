@@ -60,7 +60,7 @@ const dom = {
 	setTheme(theme)
 
 	if(storage !== 'object'){ localStorage.setItem('theme', JSON.stringify(theme)) }
-	console.dir(dom.themer)
+	//console.dir(dom.themer)
 	dom.themeButton.onclick = () => {
 		dom.themer.open()
 	}
@@ -183,6 +183,38 @@ loadRepo({ clear: true })
 				setTimeout(() => dom.modal.dom.remove.click(), 1500)
 			})
 			.catch(x => toast(x))
+	})
+
+	/* Git Link Repo */
+	dom.modal.addEventListener('gitlink', e => {
+		
+		const cmd = `git remote -v`
+
+		const responder = data => {
+
+			const check = data.indexOf('.git') > 0
+			const check2 = data.indexOf('http') > 0
+			
+			if(check){
+
+				const url = data.substring(data.indexOf('https'), data.indexOf('.git')+4)
+				
+				require("electron").shell.openExternal(url)
+			}
+			else if(check2) {
+				
+				const raw = data.substring(data.indexOf('http') , data.length)
+				const url = raw.substring(0, raw.indexOf(' '))
+				
+				require("electron").shell.openExternal(url)
+
+			}
+			else {
+				toast(`😕 ${data.substring(0, 250)}...`)
+			}
+		}
+		
+		exec(cmd, e.detail.cwd, responder)
 	})
 }
 

@@ -77,8 +77,9 @@ body {
     grid-column-gap: 20px;
     vertical-align: middle;
     grid-template-rows: 2fr;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(7, 1fr);
 }
+
 .actions {
     color: var(--color-lightest);
     display: grid;
@@ -88,7 +89,18 @@ body {
     grid-column-gap: 20px;
     vertical-align: middle;
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(6, 69px);
+}
+.metadata {
+    color: var(--color-lightest);
+    display: grid;
+    grid-row-gap: 20px;
+    align-items: center;
+    justify-items: center;
+    grid-column-gap: 20px;
+    vertical-align: middle;
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(2, 1fr);
 }
 
 .title {
@@ -106,7 +118,9 @@ body {
     cursor: pointer;
     fill: var(--color-light);
 }
-
+.moddate {
+	color: white;
+}
 
 </style>
 
@@ -116,46 +130,48 @@ body {
 
             <div class="container">
 
-                <h3 class="title"></h3>
+				<div>
+					<h3 class="title"></h3>
+					<pre class="moddate"></pre>
+				</div>
+			
+			
+				<div id="gitlink" title="Open in Github">
+					<svg class="icon_small" viewBox="0 0 24 24">
+						<path fil d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" />
+					</svg>
+				</div>
+				
+				<div id="list" title="List Contents">
+					<svg class="icon_small" viewBox="0 0 24 24">
+						<path d="M7,5H21V7H7V5M7,13V11H21V13H7M4,4.5A1.5,1.5 0 0,1 5.5,6A1.5,1.5 0 0,1 4,7.5A1.5,1.5 0 0,1 2.5,6A1.5,1.5 0 0,1 4,4.5M4,10.5A1.5,1.5 0 0,1 5.5,12A1.5,1.5 0 0,1 4,13.5A1.5,1.5 0 0,1 2.5,12A1.5,1.5 0 0,1 4,10.5M7,19V17H21V19H7M4,16.5A1.5,1.5 0 0,1 5.5,18A1.5,1.5 0 0,1 4,19.5A1.5,1.5 0 0,1 2.5,18A1.5,1.5 0 0,1 4,16.5Z" />
+					</svg>
+				</div>
+			
+				<div id="clear" title="Clear Terminal">
+					<svg class="icon_small" viewBox="0 0 24 24">
+						<path d="M12,2A9,9 0 0,0 3,11V22L6,19L9,22L12,19L15,22L18,19L21,22V11A9,9 0 0,0 12,2M9,8A2,2 0 0,1 11,10A2,2 0 0,1 9,12A2,2 0 0,1 7,10A2,2 0 0,1 9,8M15,8A2,2 0 0,1 17,10A2,2 0 0,1 15,12A2,2 0 0,1 13,10A2,2 0 0,1 15,8Z" />
+					</svg>
+				</div>
+			
+				<div id="sync" title="Git Status">
+					<svg class="icon_small" viewBox="0 0 24 24">
+						<path d="M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z" />
+					</svg>
+				</div>
 
-                <div class="actions">
-                
-                    <div id="list" title="List Contents">
-                        <svg class="icon_small" viewBox="0 0 24 24">
-                            <path d="M7,5H21V7H7V5M7,13V11H21V13H7M4,4.5A1.5,1.5 0 0,1 5.5,6A1.5,1.5 0 0,1 4,7.5A1.5,1.5 0 0,1 2.5,6A1.5,1.5 0 0,1 4,4.5M4,10.5A1.5,1.5 0 0,1 5.5,12A1.5,1.5 0 0,1 4,13.5A1.5,1.5 0 0,1 2.5,12A1.5,1.5 0 0,1 4,10.5M7,19V17H21V19H7M4,16.5A1.5,1.5 0 0,1 5.5,18A1.5,1.5 0 0,1 4,19.5A1.5,1.5 0 0,1 2.5,18A1.5,1.5 0 0,1 4,16.5Z" />
-                        </svg>
-                    </div>
-                
-                    <div id="clear" title="Clear Terminal">
-                        <svg class="icon_small" viewBox="0 0 24 24">
-                            <path d="M12,2A9,9 0 0,0 3,11V22L6,19L9,22L12,19L15,22L18,19L21,22V11A9,9 0 0,0 12,2M9,8A2,2 0 0,1 11,10A2,2 0 0,1 9,12A2,2 0 0,1 7,10A2,2 0 0,1 9,8M15,8A2,2 0 0,1 17,10A2,2 0 0,1 15,12A2,2 0 0,1 13,10A2,2 0 0,1 15,8Z" />
-                        </svg>
-                    </div>
-                
-                    <div id="sync" title="Git Status">
-                        <svg class="icon_small" viewBox="0 0 24 24">
-                            <path d="M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z" />
-                        </svg>
-                    </div>
+				<div id="remove" title="Delete">
+					<svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
+						<path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+					</svg>
+				</div>
+				
+				<div id="archive" title="Archive">
+					<svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
+						<path d="M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z" />
+					</svg>
+				</div>
 
-                    <div id="remove" title="Delete">
-                        <svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
-                            <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
-                        </svg>
-                    </div>
-                    
-                    <div id="archive" title="Archive">
-                        <svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
-                            <path d="M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z" />
-                        </svg>
-                    </div>
-
-                    <div>
-                        <u>Last Modified</u>
-                        <pre class="moddate"></pre>
-                    </div>
-
-                </div>
             </div>
 
             <reapo-terminal></reapo-terminal>
@@ -199,6 +215,7 @@ class ReapoModal extends HTMLElement {
 			clear: doc.querySelector('#clear'),
 			archive: doc.querySelector('#archive'),
 			list: doc.querySelector('#list'),
+			gitlink: doc.querySelector('#gitlink'),
 		}
 	
 		this.registerListeners()
@@ -281,6 +298,22 @@ class ReapoModal extends HTMLElement {
 					composed: true,
 					detail: {
 						cmd: 'ls',
+						cwd: this.path+'/'+this.name,
+						responder: x => this.dom.term.setAttribute('log', x)
+					}
+				})
+			)
+		}
+
+		/* gitlink - go to github link in package.xml if exists */
+		this.dom.gitlink.onclick = () => {
+			console.log('gitlink reapdeets')
+			this.dispatchEvent(new CustomEvent(
+				'gitlink',
+				{
+					bubbles: true,
+					composed: true,
+					detail: {
 						cwd: this.path+'/'+this.name,
 						responder: x => this.dom.term.setAttribute('log', x)
 					}
