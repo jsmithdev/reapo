@@ -253,7 +253,7 @@ export class ReapoModal extends HTMLElement {
 
 		/* Open in VS Code / <> icon */
 		this.dom.code.onclick = () => {
-
+			console.log('mmmmmm')
 			this.dispatchEvent(new CustomEvent(
 				'open-code', 
 				{ 
@@ -262,7 +262,7 @@ export class ReapoModal extends HTMLElement {
 					detail: {
 						from: this.is,
 						title: this.name,
-						cmd: 'code .', 
+						cmd: `code ${this.path}/${this.name}`, 
 						cwd: `${this.path}/${this.name}`
 					}
 				})

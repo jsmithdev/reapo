@@ -147,3 +147,32 @@ ipcMain.on('mk-dir', async (event, path) => {
 		})
 	})
 });
+
+
+
+ipcMain.on('vs-code', async (event, data) => {
+	return new Promise((resolve, reject) => {
+
+		const { cmd, cwd, exit } = data
+		
+		execute(cmd, cwd, resolve, exit)
+	})
+});
+
+
+
+/* Exec on behalf of user */
+function execute(cmd, cwd, responder, exit){
+
+	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
+
+	const exec = require('child_process').exec
+	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
+
+	if(typeof responder === 'function'){
+		command.stdout.on('data', data => responder(data.toString()))
+		command.stderr.on('data', data => responder(data.toString()))
+	}
+	
+	command.on('exit', code => exit ? exit(`Process finished with exit code ${code.toString()}`) : responder ? responder('exit') : null) // code.toString()
+}

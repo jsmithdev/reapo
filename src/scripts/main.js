@@ -213,18 +213,6 @@ loadRepo({ clear: true })
 	})
 }
 
-{ /* Folders */
-	
-	/* Open in VS Code */
-	const openVsCode = e => 
-		exec(e.detail.cmd, e.detail.cwd, null, () => 
-			toast(`Opened ${e.detail.title} in VS Code 🦄`))
-	
-	dom.container.addEventListener('open-code', openVsCode)
-	dom.settings.addEventListener('open-code', openVsCode)
-	dom.details.addEventListener('open-code', openVsCode)
-}
-
 
 
 { /* Settings Menu */
@@ -288,7 +276,7 @@ function execEvent(event){
 /* Exec on behalf of user */
 function exec(cmd, cwd, responder, exit){
 
-	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
+	console.log(`${cmd} ${cwd} ${responder} ${exit}`)
 
 	const exec = require('child_process').exec
 	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
@@ -329,7 +317,7 @@ async function Archive(e){
 }
 
 
-require('electron').remote.getCurrentWindow().close
+const closeRepo = require('electron').remote.getCurrentWindow().close
 
 /* IPC Commms */
 function quit() {
@@ -357,4 +345,21 @@ async function newRepo(event) {
 	catch(error){
 		toast(error)
 	}
+}
+
+
+{ /* Open in VS Code */
+
+	const openVsCode = event => {
+
+		ipcRenderer.send('vs-code', event.detail)
+		ipcRenderer.on('vs-code', (event, result) => {
+			
+			toast(`Opened ${e.detail.title} in VS Code 🦄`)
+		})
+	}
+
+	dom.container.addEventListener('open-code', openVsCode)
+	dom.settings.addEventListener('open-code', openVsCode)
+	dom.details.addEventListener('open-code', (e) => openVsCode(e))
 }
