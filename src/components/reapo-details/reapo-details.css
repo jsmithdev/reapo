@@ -1,0 +1,120 @@
+
+
+body {
+  /*margin: 40px auto;*/
+  max-width: 650px;
+  line-height: 1.6;
+  font-size: 18px;
+  color: #444;
+  padding: 0 10px
+}
+
+.is-hidden {
+  display: none;
+}
+
+.button-close {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.modal-overlay {
+    position: fixed;
+    text-align: center;
+    vertical-align: middle;
+    top: 0px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99;
+    padding-top: 12.5%;
+}
+
+.card {
+    width: 95%;
+    opacity: .9;
+    z-index: 20;
+    height: 65%;
+    margin: auto 0;
+    text-align: left;
+    background: var(--color-dark);
+    position: relative;
+    border-radius: 0px;
+    display: inline-block;
+    max-height: calc(100% - 150px);
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+.card:hover {
+	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 0 10px 0 rgba(0, 0, 0, 0.22);
+}
+
+
+.container {
+    padding:0 .5rem 0 .5rem;
+    display: grid;
+    grid-row-gap: 20px;
+    align-items: center;
+    justify-items: center;
+    grid-column-gap: 20px;
+    vertical-align: middle;
+    grid-template-rows: 2fr;
+    grid-template-columns: repeat(8, 1fr);
+}
+
+.actions {
+    color: var(--color-lightest);
+    display: grid;
+    grid-row-gap: 20px;
+    align-items: center;
+    justify-items: center;
+    grid-column-gap: 20px;
+    vertical-align: middle;
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(6, 69px);
+}
+.metadata {
+    color: var(--color-lightest);
+    display: grid;
+    grid-row-gap: 20px;
+    align-items: center;
+    justify-items: center;
+    grid-column-gap: 20px;
+    vertical-align: middle;
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+
+.info {
+
+    padding:0 .5rem 0 .5rem;
+    display: grid;
+    grid-row-gap: 20px;
+    align-items: center;
+    justify-items: center;
+    grid-column-gap: 20px;
+    vertical-align: middle;
+    grid-template-rows: 2fr;
+    grid-template-columns: 1fr 1fr;
+}
+.title {
+	
+    color: white;
+    font-weight: 400;
+}
+
+.icon_small {
+    width: 1.8rem;
+    cursor: pointer;
+    fill: var(--color-light);
+}
+.moddate {
+	color: white;
+}

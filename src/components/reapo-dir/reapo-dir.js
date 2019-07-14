@@ -1,4 +1,3 @@
-// jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
 const template = document.createElement('template')
@@ -16,7 +15,7 @@ path {
 
 .help {
 
-    font-size: 0.7rem;
+	font-size: 0.7rem;
     width: 1em;
     height: 1em;
     padding-left: .25rem;
@@ -177,6 +176,7 @@ class ReapoDir extends HTMLElement {
 	}
 
 	toast(msg, res = () => {}) {
+		
 		this.dispatchEvent(
 			new CustomEvent(
 				'toast',

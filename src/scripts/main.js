@@ -7,29 +7,31 @@ require('./components/reapo-settings/reapo-settings.js')
 require('./components/reapo-theme/reapo-theme.js')
 require('./components/color-picker/color-picker.js')
 
-const fs = require('fs')
-	, path = localStorage.path ? localStorage.path : ''
-	, repo = require('fs-jetpack').dir(path, {})
-	, codes = {
-		find: ['KeyF'],
-		close: ['Escape'],
-		exit: ['KeyW'],
-		restart: ['KeyR'],
-		settings: ['KeyS', 'KeyN'],
-	}
+const { mkdir } = require('fs')
+const { shell } = require('electron')
+const path = localStorage.path ? localStorage.path : ''
+const repo = require('fs-jetpack').dir(path, {})
+const codes = {
+	find: ['KeyF'],
+	exit: ['KeyW'],
+	restart: ['KeyR'],
+	close: ['Escape'],
+	settings: ['KeyS', 'KeyN'],
+}
 
 const dom = {
 	
 	body: document.querySelector('body'),
 	filter: document.querySelector('.filter'),
 	container: document.querySelector('.container'),
-	modal: document.querySelector('reapo-details'),
+	details: document.querySelector('reapo-details'),
 	menu: document.querySelector('reapo-menu'),
 	settings: document.querySelector('reapo-settings'),
 	footer: document.querySelector('footer'),
 	themeButton: document.querySelector('.themeContainer'),
 	themer: document.querySelector('reapo-theme'),
 }
+
 
 
 {	// Handle Theming
@@ -55,12 +57,12 @@ const dom = {
 		'--shadow-top': '0px 2px 4px 0 rgba(0, 0, 0, 0.2), 0px -4px 10px 0px rgba(0, 0, 0, 0.2)',
 	}
 
-
-
 	setTheme(theme)
 
-	if(storage !== 'object'){ localStorage.setItem('theme', JSON.stringify(theme)) }
-	//console.dir(dom.themer)
+	if(storage !== 'object'){ 
+		localStorage.setItem('theme', JSON.stringify(theme))
+	}
+
 	dom.themeButton.onclick = () => {
 		dom.themer.open()
 	}
@@ -85,7 +87,7 @@ const loadRepo = (config) => { // init repo
 	const projects = repo.list().map(name => repo.inspect(`${path}/${name}`, { times: true }))
 
 	const add = dir => {
-		
+
 		if (!dir) { toast('Use Settings to set a Main Directory'); return }
 
 		const folder = document.createElement('reapo-folder')
@@ -120,7 +122,7 @@ loadRepo({ clear: true })
 	dom.body.onkeyup = e => { //console.log(e.code+e.ctrlKey)
 		
 		/* Close overlay on Esc press */
-		codes.close.includes(e.code) ? [dom.settings, dom.modal].map(el => el.close()) : null // jshint ignore: line
+		codes.close.includes(e.code) ? [dom.settings, dom.details].map(el => el.close()) : null // jshint ignore: line
 
 		/* Close Reapo on Ctrl+W press */
 		e.ctrlKey && codes.exit.includes(e.code) ? require('electron').remote.getCurrentWindow().close() : null // jshint ignore: line
@@ -144,16 +146,16 @@ loadRepo({ clear: true })
 	)
 }
 
-{ /* Repo Details / Modal */
+{ /* Repo Details */
 
 	/* Opener */
-	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
+	dom.container.addEventListener('open-details', e => dom.details.open(e.detail))
 	
 	/* Exec CMDs for User */
-	dom.modal.addEventListener('exec-cmd', e => execEvent(e))
+	dom.details.addEventListener('exec-cmd', e => execEvent(e))
 
 	/* Delete Repo */
-	dom.modal.addEventListener('delete-repo', e => {
+	dom.details.addEventListener('delete-repo', e => {
 		
 		const name = e.detail.name
 		const path = localStorage.path
@@ -164,31 +166,25 @@ loadRepo({ clear: true })
 
 		loadRepo({ clear: true })
 		//toast(x.stderr || x.stdout)
-		dom.modal.close()
+		dom.details.close()
 	})
 
 	/* Archive Repo */
-	dom.modal.addEventListener('archive', e => {
+	dom.details.addEventListener('archive', Archive)
+
+	/* open-directory */
+	dom.details.addEventListener('open-directory', event => {
 		
-		const Archiver = require(__dirname+'/scripts/archieve')
-		
-		//delete node_package? might not have deps listed, maybe option later in settings #todo #idea
-		//console.dir(Archiver.directory)
-		//run thru handleRepo
-		Archiver.directory(e.detail, toast)
-			.then(msg => {
-				dom.modal.close()
-				toast(msg)
-				// Ask to Delete repo after toasting success msg
-				setTimeout(() => dom.modal.dom.remove.click(), 1500)
-			})
-			.catch(x => toast(x))
+		const { path } = event.detail
+
+		shell.showItemInFolder(path)
 	})
 
+
 	/* Git Link Repo */
-	dom.modal.addEventListener('gitlink', e => {
+	dom.details.addEventListener('gitlink', e => {
 		
-		const cmd = `git remote -v`
+		const cmd = 'git remote -v'
 
 		const responder = data => {
 
@@ -199,14 +195,14 @@ loadRepo({ clear: true })
 
 				const url = data.substring(data.indexOf('https'), data.indexOf('.git')+4)
 				
-				require("electron").shell.openExternal(url)
+				shell.openExternal(url)
 			}
 			else if(check2) {
 				
 				const raw = data.substring(data.indexOf('http') , data.length)
 				const url = raw.substring(0, raw.indexOf(' '))
 				
-				require("electron").shell.openExternal(url)
+				shell.openExternal(url)
 
 			}
 			else {
@@ -220,14 +216,14 @@ loadRepo({ clear: true })
 
 { /* Folders */
 	
-	/* Opener */
-	dom.container.addEventListener('open-modal', e => dom.modal.open(e.detail))
-	
 	/* Open in VS Code */
-	const code = e => exec(e.detail.cmd, e.detail.cwd, null, () => toast(`Opened ${e.detail.title} in VS Code 🦄`))
+	const openVsCode = e => 
+		exec(e.detail.cmd, e.detail.cwd, null, () => 
+			toast(`Opened ${e.detail.title} in VS Code 🦄`))
 	
-	dom.container.addEventListener('open-code', e => code(e))
-	dom.settings.addEventListener('open-code', e => code(e))
+	dom.container.addEventListener('open-code', openVsCode)
+	dom.settings.addEventListener('open-code', openVsCode)
+	dom.details.addEventListener('open-code', openVsCode)
 }
 
 
@@ -256,7 +252,7 @@ loadRepo({ clear: true })
 
 		const path = `${cwd}/${name}`
 
-		fs.mkdir(path, { recursive: true }, (err) => {
+		mkdir(path, { recursive: true }, (err) => {
 			
 			if (err) throw err
 
@@ -296,9 +292,9 @@ if (process.platform !== 'windows') {
 	].join(':')
 }
 
-function execEvent(e){
+function execEvent(event){
 
-	const { cmd, cwd, responder, exit } = e.detail
+	const { cmd, cwd, responder, exit } = event.detail
 
 	exec(cmd, cwd, responder, exit)
 }
@@ -306,7 +302,6 @@ function execEvent(e){
 /* Exec on behalf of user */
 function exec(cmd, cwd, responder, exit){
 
-	//console.log('Exec on behalf of user')
 	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
 
 	const exec = require('child_process').exec
@@ -318,4 +313,31 @@ function exec(cmd, cwd, responder, exit){
 	}
 	
 	command.on('exit', code => exit ? exit(`Process finished with exit code ${code.toString()}`) : responder ? responder('exit') : null) // code.toString()
+}
+
+
+/**
+ * @description ZIP directory then offer to delete original | 
+ * 				Toast response
+ * @param {Event} e 
+ */
+async function Archive(e){
+
+	const Archiver = require(__dirname+'/scripts/archieve')
+	
+	//delete node_package? might not have deps listed, maybe option later in settings #todo #idea
+	//console.dir(Archiver.directory)
+	//run thru handleRepo
+	try {
+
+		const msg = await Archiver.directory(e.detail, toast)
+
+		dom.details.close()
+		toast(msg)
+		// Ask to Delete repo after toasting success msg
+		setTimeout(() => dom.details.dom.remove.click(), 1500)
+	}
+	catch(error){
+		toast(error)
+	}
 }

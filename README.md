@@ -2,7 +2,7 @@
 
 ## A repo manager built with vanilla web standards 🎉
 
-![shot](https://i.imgur.com/ZKqvCKn.png)
+![shot](https://i.imgur.com/KV5YAAR.png)
 
 ### Releases are under [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub
 

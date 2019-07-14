@@ -6,135 +6,26 @@ require('../reapo-terminal/reapo-terminal')
 const template = document.createElement('template')
 
 template.innerHTML = /*html*/`
-<style>
 
-* {
-    font-weight: inherit;
-}
+<link rel="stylesheet" href="./components/reapo-details/reapo-details.css">
 
-body {
-  /*margin: 40px auto;*/
-  max-width: 650px;
-  line-height: 1.6;
-  font-size: 18px;
-  color: #444;
-  padding: 0 10px
-}
-
-.is-hidden {
-  display: none;
-}
-
-.button-close {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-
-.modal-overlay {
-    position: fixed;
-    text-align: center;
-    vertical-align: middle;
-    top: 0px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 99;
-    padding-top: 12.5%;
-}
-
-.card {
-    width: 95%;
-    opacity: .9;
-    z-index: 20;
-    height: 65%;
-    margin: auto 0;
-    text-align: left;
-    background: var(--color-dark);
-    position: relative;
-    border-radius: 0px;
-    display: inline-block;
-    max-height: calc(100% - 150px);
-    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.16);
-}
-.card:hover {
-	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 0 10px 0 rgba(0, 0, 0, 0.22);
-}
-
-
-.container {
-    padding:0 .5rem 0 .5rem;
-    display: grid;
-    grid-row-gap: 20px;
-    align-items: center;
-    justify-items: center;
-    grid-column-gap: 20px;
-    vertical-align: middle;
-    grid-template-rows: 2fr;
-    grid-template-columns: repeat(7, 1fr);
-}
-
-.actions {
-    color: var(--color-lightest);
-    display: grid;
-    grid-row-gap: 20px;
-    align-items: center;
-    justify-items: center;
-    grid-column-gap: 20px;
-    vertical-align: middle;
-    grid-template-rows: 1fr;
-    grid-template-columns: repeat(6, 69px);
-}
-.metadata {
-    color: var(--color-lightest);
-    display: grid;
-    grid-row-gap: 20px;
-    align-items: center;
-    justify-items: center;
-    grid-column-gap: 20px;
-    vertical-align: middle;
-    grid-template-rows: 1fr;
-    grid-template-columns: repeat(2, 1fr);
-}
-
-.title {
-
-    width: 100%;
-    color: white;
-    padding: 1rem;
-    text-align: left;
-    font-size: 1.2rem;
-    text-decoration: underline;
-}
-
-.icon_small {
-    width: 1.8rem;
-    cursor: pointer;
-    fill: var(--color-light);
-}
-.moddate {
-	color: white;
-}
-
-</style>
 
 <body>
     <div class="is-hidden modal-overlay">
         <div class="card">
 
+			<div class="info">
+				<h3 class="title"></h3>
+				<pre class="moddate"></pre>
+			</div>
+		
             <div class="container">
 
-				<div>
-					<h3 class="title"></h3>
-					<pre class="moddate"></pre>
+				<div id="code" title="Open in VS Code" tabindex="0">
+					<svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+						<path d="M14.6,16.6L19.2,12L14.6,7.4L16,6L22,12L16,18L14.6,16.6M9.4,16.6L4.8,12L9.4,7.4L8,6L2,12L8,18L9.4,16.6Z"/>
+					</svg>
 				</div>
-			
 			
 				<div id="gitlink" title="Open in Github">
 					<svg class="icon_small" viewBox="0 0 24 24">
@@ -145,6 +36,12 @@ body {
 				<div id="list" title="List Contents">
 					<svg class="icon_small" viewBox="0 0 24 24">
 						<path d="M7,5H21V7H7V5M7,13V11H21V13H7M4,4.5A1.5,1.5 0 0,1 5.5,6A1.5,1.5 0 0,1 4,7.5A1.5,1.5 0 0,1 2.5,6A1.5,1.5 0 0,1 4,4.5M4,10.5A1.5,1.5 0 0,1 5.5,12A1.5,1.5 0 0,1 4,13.5A1.5,1.5 0 0,1 2.5,12A1.5,1.5 0 0,1 4,10.5M7,19V17H21V19H7M4,16.5A1.5,1.5 0 0,1 5.5,18A1.5,1.5 0 0,1 4,19.5A1.5,1.5 0 0,1 2.5,18A1.5,1.5 0 0,1 4,16.5Z" />
+					</svg>
+				</div>
+			
+				<div id="dir" title="Open Folder">
+					<svg class="icon_small" viewBox="0 0 24 24">
+						<path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z" />
 					</svg>
 				</div>
 			
@@ -160,17 +57,18 @@ body {
 					</svg>
 				</div>
 
+				<div id="archive" title="Archive">
+					<svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
+						<path d="M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z" />
+					</svg>
+				</div>
+
 				<div id="remove" title="Delete">
 					<svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
 						<path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
 					</svg>
 				</div>
 				
-				<div id="archive" title="Archive">
-					<svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
-						<path d="M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z" />
-					</svg>
-				</div>
 
             </div>
 
@@ -200,38 +98,70 @@ class ReapoModal extends HTMLElement {
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 		this.registerElements(this.shadowRoot)
 	}
+
+	/**
+	 * @description Accumulate DOM Elements to be used
+	 */
 	registerElements(doc){
 		//console.log('registerElements')
         
 		this.dom = {
-			sync: doc.querySelector('#sync'),
+
+			term: doc.querySelector('reapo-terminal'),
+
 			modal: doc.querySelector('.modal'),
+			title: doc.querySelector('.title'),
+			moddate: doc.querySelector('.moddate'),
 			log: doc.querySelector('.terminal-log'),
 			overlay: doc.querySelector('.modal-overlay'),
-			title: doc.querySelector('.title'),
-			remove: doc.querySelector('#remove'),
-			term: doc.querySelector('reapo-terminal'),
-			moddate: doc.querySelector('.moddate'),
-			clear: doc.querySelector('#clear'),
-			archive: doc.querySelector('#archive'),
-			list: doc.querySelector('#list'),
-			gitlink: doc.querySelector('#gitlink'),
+
+			code: doc.getElementById('code'),
+			dir: doc.getElementById('dir'),
+			sync: doc.getElementById('sync'),
+			list: doc.getElementById('list'),
+			clear: doc.getElementById('clear'),
+			remove: doc.getElementById('remove'),
+			archive: doc.getElementById('archive'),
+			gitlink: doc.getElementById('gitlink'),
 		}
 	
 		this.registerListeners()
 	}
+
+	/**
+	 * @description Add Element Listeners
+	 */
 	registerListeners(){
+		
+		
+		/* Open directory in OS file manager */
+		this.dom.dir.onclick = () => {
+
+			const path = this.dir+this.name
+				
+			this.dispatchEvent(
+				new CustomEvent(
+					'open-directory',
+					{
+						bubbles: true,
+						composed: true,
+						detail: { path }
+					}
+				)
+			)
+		}
+		this.addEventListener(`close-${this.is}`, this.close)
         
-		/* Close Modal */
+        
+		/* Close */
 		this.dom.overlay.onclick = e => {
 			if (e.target == this.dom.overlay) {
 				this.close()
 			}
 		}
+		this.addEventListener(`close-${this.is}`, this.close)
         
-		this.addEventListener(`close-${this.is}`, () => this.close())
-        
-		/* Delete Repo */
+		/* Delete Repo / trash can */
 		this.dom.remove.onclick = () => {
 
 			const name = this.name
@@ -250,7 +180,7 @@ class ReapoModal extends HTMLElement {
 			)
 		}
 
-		/* Run git status */
+		/* Run git status / sync icon */
 		this.dom.sync.onclick = () => {
 			this.dispatchEvent(new CustomEvent(
 				'exec-cmd', 
@@ -267,7 +197,7 @@ class ReapoModal extends HTMLElement {
 			)
 		}
 
-		/* Run Archiver */
+		/* Run Archiver / box icon */
 		this.dom.archive.onclick = () => new Promise((resolve, reject) => {
 			this.dispatchEvent(new CustomEvent(
 				'archive', 
@@ -289,7 +219,7 @@ class ReapoModal extends HTMLElement {
 		/* Clear terminal */
 		this.dom.clear.onclick = () => this.dom.term.setAttribute('clear', true)
 
-		/* Run ls */
+		/* Run ls / list icon */
 		this.dom.list.onclick = () => {
 			this.dispatchEvent(new CustomEvent(
 				'exec-cmd',
@@ -305,9 +235,9 @@ class ReapoModal extends HTMLElement {
 			)
 		}
 
-		/* gitlink - go to github link in package.xml if exists */
+		/* gitlink - go to github link in package.xml if exists / github icon */
 		this.dom.gitlink.onclick = () => {
-			console.log('gitlink reapdeets')
+			
 			this.dispatchEvent(new CustomEvent(
 				'gitlink',
 				{
@@ -320,6 +250,27 @@ class ReapoModal extends HTMLElement {
 				})
 			)
 		}
+
+
+		/* Open in VS Code / <> icon */
+		this.dom.code.onclick = () => {
+
+			this.dispatchEvent(new CustomEvent(
+				'open-code', 
+				{ 
+					bubbles: true, 
+					composed: true,
+					detail: {
+						from: this.is,
+						title: this.name,
+						cmd: 'code .', 
+						cwd: `${this.path}/${this.name}`
+					}
+				})
+			)
+		}
+		/* Listen if user wants to key the action */
+		//this.setKeyupAction(this.dom.code)
 	}
 	
 	//attributeChangedCallback(n, ov, nv) {  }

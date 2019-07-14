@@ -1,4 +1,3 @@
-// jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
 const template = document.createElement('template')
@@ -7,23 +6,28 @@ template.innerHTML = /*html*/`
 <style>
 
 .card {
-  width: 10rem;
-  height: 10rem;
-  margin: 0 auto;
-  cursor: pointer;
-  border-radius: 5px;
-  background: var(--color-dark);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+	
+    margin: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    background: var(--color-dark);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 .card:hover {
   box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
 .title {
+	min-height: 1.75vw;
+    user-select: none;
+    cursor: pointer;
     color: var(--color-lightest);
-    padding-top: 42%;
+    padding: 1rem;
     font-weight: inherit;
+    word-break: break-word;
+    line-height: 1;
+    padding-top: 3rem;
 }
 
 .icon_small {
@@ -32,15 +36,13 @@ template.innerHTML = /*html*/`
     fill: var(--color-light);
 }
 .actions {
-    bottom: 0;
-    height: 3.3rem;
-    width: 100%;
+	bottom: 0;
+	height: 4.25vh;
+    width: -webkit-fill-available;
     background: var(--color-mid);
     border-radius: 0px 0px 5px 5px;
     vertical-align: middle;
     box-shadow: 0 -3px 5px 0px rgba(0,0,0,0.12);
-
-
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 2fr;
@@ -49,8 +51,7 @@ template.innerHTML = /*html*/`
     justify-items: center;
     align-items: center;
 }
-.actions-body {
-}
+
 .action {
     width: 25px;
     height: 25px;
@@ -70,7 +71,7 @@ template.innerHTML = /*html*/`
     <h3 class="title"></h3>
     <div class="actions">
 
-        <div id="show" class="action" title="Details" tabindex="0">
+        <div id="details" class="action" title="Details" tabindex="0">
             <svg class="icon_small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12,10L8,14H11V20H13V14H16M19,4H5C3.89,4 3,4.9 3,6V18A2,2 0 0,0 5,20H9V18H5V8H19V18H15V20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4Z" />
             </svg>
@@ -91,115 +92,137 @@ template.innerHTML = /*html*/`
 
 class ReapoFolder extends HTMLElement {
 
-    constructor() {
-        super()
+	constructor() {
+		super()
         
-        this.attachShadow({mode: 'open'})
+		this.attachShadow({mode: 'open'})
 
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
+		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
-        this.codes = {
-            action: ['Space', 'Enter'],
-        };
-    }
-    static get is() {
-        return 'reapo-folder'
-    }
+		this.codes = {
+			action: ['Space', 'Enter'],
+		}
+	}
 
-    static get observedAttributes() {
-        return ['title', 'path', 'name', 'date']
-    }
+	static get is() {
+		return 'reapo-folder'
+	}
 
-    connectedCallback() {
+	static get observedAttributes() {
+		return ['title', 'path', 'name', 'date']
+	}
+
+	connectedCallback() {
         
-        if(this.path && this.name && this.date){ 
-            this.registerElements() 
-        }
-    }
+		if(this.path && this.name && this.date){ 
+			this.registerElements() 
+		}
+	}
 	
-    attributeChangedCallback(n, ov, nv) { }
+	//attributeChangedCallback(n, ov, nv) { }
 
-    registerElements(){
+	/**
+	 * @description Accumulate DOM Elements to be used
+	 */
+	registerElements(){
 
-        this.dom = {
-            card: this.shadowRoot.querySelector('.card'),
-            code: this.shadowRoot.querySelector('#code'),
-            show: this.shadowRoot.querySelector('#show'),
-            moddate: this.shadowRoot.querySelector('.moddate'),
-            title: this.shadowRoot.querySelector('.title')
-        }
+		this.dom = {
+			
+			code: this.shadowRoot.getElementById('code'),
+			details: this.shadowRoot.getElementById('details'),
 
-        /* Folder Name */
-        this.dom.title.textContent = this.name
+			card: this.shadowRoot.querySelector('.card'),
+			title: this.shadowRoot.querySelector('.title'),
+			moddate: this.shadowRoot.querySelector('.moddate'),
+		}
 
-        /* Surface Modified Date */
-        this.moddate = new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric'
-        })
-        .format(new Date(this.date))
+		/* Folder Name */
+		this.dom.title.textContent = this.name
 
-        this.title = `Name: ${this.name} \n Mod: ${this.moddate}`
+		/* Surface Modified Date */
+		this.moddate = new Intl
+			.DateTimeFormat('en-US', {
+				year: 'numeric',
+				month: 'numeric',
+				day: 'numeric',
+				hour: 'numeric',
+				minute: 'numeric',
+				second: 'numeric'
+			})
+			.format(new Date(this.date))
 
+		this.title = `${this.name} \n Last Modified: ${this.moddate}`
 
-        this.registerListeners()
-    }
+		this.textContent = 'asdf'
 
-    registerListeners(){
+		this.registerListeners()
+	}
+
+	registerListeners(){
         
-        /* Open in VS Code */
-        this.dom.code.onclick = () => {
+		/* Open in VS Code */
+		this.dom.code.onclick = () => {
 
-            this.dispatchEvent(new CustomEvent(
-                `open-code`, 
-                { 
-                    bubbles: true, 
-                    composed: true,
-                    detail: {
-                        from: this.is,
-                        title: this.name,
-                        cmd: 'code .', 
-                        cwd: `${this.path}/${this.name}`
-                    }
-                })
-            )
-        }
-        /* Listen if user wants to key the action */
-        this.dom.code.addEventListener('keyup', e => this.codes.action.includes(e.code) ? e.target.onclick() : null)
-            
+			this.dispatchEvent(new CustomEvent(
+				'open-code', 
+				{ 
+					bubbles: true, 
+					composed: true,
+					detail: {
+						from: this.is,
+						title: this.name,
+						cmd: 'code .', 
+						cwd: `${this.path}/${this.name}`
+					}
+				})
+			)
+		}
+		/* Listen if user wants to key the action */
+		this.setKeyupAction(this.dom.code)
 
-        /* Modal to show extra info about repo (a lot todo there) */
-        this.dom.show.onclick = () => {
 
-            this.dispatchEvent(new CustomEvent(
-                `open-modal`, 
-                { 
-                    bubbles: true, 
-                    composed: true,
-                    detail: {
-                        from: this.is,
-                        name: this.name, 
-                        moddate: this.moddate, 
-                        title: this.title, 
-                        path: this.path
-                    }
-                })
-            )
-        }
-        /* Listen if user wants to key the action */
-        this.dom.show.addEventListener('keyup', e => this.codes.action.includes(e.code) ? e.target.onclick(e) : null)
+		/* Show details about repo */
+		this.dom.details.onclick = () => {
 
-        /* Use arrows to manuver like Tab*/
-        this.shadowRoot.onKeyup = e => {
-            console.dir(e)
-            console.log(e.code)
-        }
-    }
+			this.dispatchEvent(new CustomEvent(
+				'open-details', 
+				{ 
+					bubbles: true, 
+					composed: true,
+					detail: {
+						from: this.is,
+						name: this.name, 
+						moddate: this.moddate, 
+						title: this.title, 
+						path: this.path
+					}
+				})
+			)
+		}
+		/* Listen if user wants to key the action */
+		this.setKeyupAction(this.dom.details)
+
+
+		/* Folder top / title click open details */
+		this.dom.title.onclick = this.dom.details.onclick
+	}
+
+	/**
+	 * @description Set keyup listener
+	 * 
+	 * @param {Element} el 
+	 */
+	setKeyupAction(el){
+		
+		el.addEventListener('keyup', e => {
+
+			if( this.codes.action.includes(e.code) ){
+				e.target.onclick(e)
+			}
+		})
+	}
 }
 
 customElements.define(ReapoFolder.is, ReapoFolder)
+
 module.exports = ReapoFolder

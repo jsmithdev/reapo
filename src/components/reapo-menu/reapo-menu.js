@@ -44,39 +44,32 @@ template.innerHTML = /*html*/`
 //export class ReapoMenu extends HTMLElement {
 class ReapoMenu extends HTMLElement {
 
-    constructor() {
-        super()
+	constructor() {
+		super()
 
-        this.codes = {
-            action: ['Space', 'Enter', 'Return']
-        }
+		this.codes = {
+			action: ['Space', 'Enter', 'Return']
+		}
         
-        this.attachShadow({mode: 'open'})
+		this.attachShadow({mode: 'open'})
 
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
+		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
-        this.dom = {
-            menu: this.shadowRoot.getElementById('menu')
-        }
-    }
-    static get is() {
-        return 'reapo-menu'
-    }
+		this.dom = {
+			menu: this.shadowRoot.getElementById('menu')
+		}
+	}
+	static get is() {
+		return 'reapo-menu'
+	}
 
-    static get observedAttributes() {
-        return []
-    }
+	static get observedAttributes() {
+		return []
+	}
 
-    connectedCallback() {
+	connectedCallback() {
         
-    }
-	
-    attributeChangedCallback(n, ov, nv) {
-
-        switch (n) {
-            case 'attrName': {}
-        }
-    }
+	}
 }
 customElements.define(ReapoMenu.is, ReapoMenu)
 
