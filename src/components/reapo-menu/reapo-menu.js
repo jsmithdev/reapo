@@ -41,8 +41,7 @@ template.innerHTML = /*html*/`
 </div>`
 
 
-//export class ReapoMenu extends HTMLElement {
-class ReapoMenu extends HTMLElement {
+export class ReapoMenu extends HTMLElement {
 
 	constructor() {
 		super()
@@ -71,6 +70,5 @@ class ReapoMenu extends HTMLElement {
         
 	}
 }
-customElements.define(ReapoMenu.is, ReapoMenu)
 
-module.exports = ReapoMenu
+customElements.define(ReapoMenu.is, ReapoMenu)

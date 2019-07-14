@@ -81,7 +81,7 @@ path {
 </div>
 `
 
-class ReapoDir extends HTMLElement {
+export class ReapoDir extends HTMLElement {
 
 	constructor() {
 		super()
@@ -129,7 +129,7 @@ class ReapoDir extends HTMLElement {
 			if (!val || val == localStorage.path || val + '/' == localStorage.path) { return }
 
 			const path = val.slice(val.length - 1) == '/' ? val : `${val}/`
-
+			console.log('sve '+path)
 			this.dispatchEvent(
 				new CustomEvent(
 					'save-settings',
@@ -191,4 +191,3 @@ class ReapoDir extends HTMLElement {
 }
 
 customElements.define(ReapoDir.is, ReapoDir)
-module.exports = ReapoDir

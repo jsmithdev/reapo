@@ -90,7 +90,8 @@ template.innerHTML = /*html*/`
     </div>
 </div>`
 
-class ReapoFolder extends HTMLElement {
+
+export class ReapoFolder extends HTMLElement {
 
 	constructor() {
 		super()
@@ -224,5 +225,3 @@ class ReapoFolder extends HTMLElement {
 }
 
 customElements.define(ReapoFolder.is, ReapoFolder)
-
-module.exports = ReapoFolder

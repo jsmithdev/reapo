@@ -1,9 +1,20 @@
 <html>
 
+<script type="module" src="app://./components/color-picker/color-picker.js"></script>
+<script type="module" src="app://./components/reapo-create/reapo-create.js"></script>
+<script type="module" src="app://./components/reapo-details/reapo-details.js"></script>
+<script type="module" src="app://./components/reapo-dir/reapo-dir.js"></script>
+<script type="module" src="app://./components/reapo-folder/reapo-folder.js"></script>
+<script type="module" src="app://./components/reapo-menu/reapo-menu.js"></script>
+<script type="module" src="app://./components/reapo-settings/reapo-settings.js"></script>
+<script type="module" src="app://./components/reapo-terminal/reapo-terminal.js"></script>
+<script type="module" src="app://./components/reapo-theme/reapo-theme.js"></script>
+
+
 <head>
 	<title>Reapo</title>
 	<meta charset="utf-8" />
-	<link rel="stylesheet" href="./index.css" />
+	<link rel="stylesheet" href="app://./index.css" />
 </head>
 
 <body>
@@ -13,8 +24,8 @@
 		<div class="header center">
 
 			<div class="themeContainer">
-				<svg class="theme" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-					<path d="M20.71,4.63L19.37,3.29C19,2.9 18.35,2.9 17.96,3.29L9,12.25L11.75,15L20.71,6.04C21.1,5.65 21.1,5 20.71,4.63M7,14A3,3 0 0,0 4,17C4,18.31 2.84,19 2,19C2.92,20.22 4.5,21 6,21A4,4 0 0,0 10,17A3,3 0 0,0 7,14Z" />
+				<svg class="icon_small" viewBox="0 0 24 24">
+					<path d="M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z" />
 				</svg>
 			</div>
 
@@ -38,7 +49,7 @@
 	<reapo-settings></reapo-settings>
 	<reapo-theme></reapo-theme>
 
-	<script src="scripts/main.js"></script>
+	<script src="app://./scripts/main.js"></script>
 
 </body>
 

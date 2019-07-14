@@ -1,9 +1,6 @@
 // jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
-require('../reapo-dir/reapo-dir.js')
-require('../reapo-create/reapo-create.js')
-
 const template = document.createElement('template')
 template.innerHTML = /*html*/`
 <style>
@@ -257,6 +254,13 @@ background: linear-gradient(var(--color-lightest), #ddd, var(--color-mid));
             <div class="container">
                 <reapo-create></reapo-create>
             </div>
+        
+            <div class="container">
+
+                <svg class="theme" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.71,4.63L19.37,3.29C19,2.9 18.35,2.9 17.96,3.29L9,12.25L11.75,15L20.71,6.04C21.1,5.65 21.1,5 20.71,4.63M7,14A3,3 0 0,0 4,17C4,18.31 2.84,19 2,19C2.92,20.22 4.5,21 6,21A4,4 0 0,0 10,17A3,3 0 0,0 7,14Z" />
+                </svg>
+            </div>
 
         </div>      
         </div>
@@ -266,7 +270,7 @@ background: linear-gradient(var(--color-lightest), #ddd, var(--color-mid));
     </div>
 </body>`
 
-class ReapoSettings extends HTMLElement {
+export class ReapoSettings extends HTMLElement {
 
 	constructor() {
 		super()
@@ -342,4 +346,3 @@ class ReapoSettings extends HTMLElement {
 }
 
 customElements.define(ReapoSettings.is, ReapoSettings)
-module.exports = ReapoSettings

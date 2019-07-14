@@ -1,9 +1,66 @@
-// jshint esversion:6, asi: true, laxcomma: true
 
 const path = require('path')
-const app = require('electron').app
-const BrowserWindow = require('electron').BrowserWindow
+
 const windowStateKeeper = require('electron-window-state')
+
+const { app, protocol, ipcMain, shell, BrowserWindow } = require('electron');
+
+
+// Base path used to resolve modules
+const base = app.getAppPath();
+
+// Protocol will be "app://./…"
+const scheme = 'app'
+
+{ 	/* Protocol */
+  	// Registering must be done before app::ready fires
+	// (Optional) Technically not a standard scheme but works as needed
+	  
+	protocol.registerSchemesAsPrivileged([{ 
+		scheme, 
+		privileges: { 
+			standard: true, 
+			secure: true, 
+			supportFetchAPI: true 
+		} 
+	}])
+
+  	//protocol.registerStandardSchemes([scheme], { secure: true });
+
+	// Create protocol
+	require('./scripts/create-protocol')(scheme, base)
+}
+
+
+{ /* BrowserWindow */
+
+/*   let browserWindow;
+
+	const createWindow = () => {
+	if (browserWindow) return;
+	browserWindow = new BrowserWindow();
+
+	// Option A — using the custom protocol
+	// browserWindow.loadURL('app://./index.html');
+
+	// Option B — directly from file
+	browserWindow.loadFile('index.html');
+  } */
+
+  app.isReady()
+    ? createWindow()
+    : app.on('ready', createWindow);
+}
+
+
+
+// todo make this the default Moin Repo/Directory
+const home = app.getPath('home')
+console.log(home)
+
+
+
+
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -14,7 +71,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-const createWindow = () => {
+function createWindow() {
 	
 	// Load the previous state with fallback to defaults
 	let mainWindowState = windowStateKeeper({
@@ -29,6 +86,9 @@ const createWindow = () => {
 		y: mainWindowState.y,
 		width: mainWindowState.width,
 		height: mainWindowState.height,
+		webPreferences: {
+			nodeIntegration: true
+		}
 	})
 
 	// Let us register listeners on the window, so we can update the state
@@ -37,7 +97,7 @@ const createWindow = () => {
 	mainWindowState.manage(mainWindow)
 
 	// and load the index.html of the app
-	mainWindow.loadURL(`file://${__dirname}/index.html`)
+	mainWindow.loadURL(`app://./index.html`)
 
 	// Open the DevTools
 	if(process.env.debug){
@@ -56,7 +116,7 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+//app.on('ready', createWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -67,10 +127,23 @@ app.on('window-all-closed', () => {
 	}
 })
 
-app.on('activate', () => {
+/* app.on('activate', () => {
 	// On OS X it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
 	if (mainWindow === null) {
 		createWindow()
 	}
-})
+}) */
+
+
+
+
+/* IPC Comms */
+
+ipcMain.on('mk-dir', async (event, path) => {
+	return new Promise((resolve, reject) => {
+		mkdir(path, { recursive: true }, error => {
+			error ? reject(error) : resolve()
+		})
+	})
+});

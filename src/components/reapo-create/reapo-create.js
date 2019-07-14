@@ -103,7 +103,7 @@ template.innerHTML = /*html*/`
 </div>
 `
 
-class Reapocreate extends HTMLElement {
+export class Reapocreate extends HTMLElement {
 
 	constructor() {
 		super()
@@ -276,4 +276,3 @@ class Reapocreate extends HTMLElement {
 }
 
 customElements.define(Reapocreate.is, Reapocreate)
-module.exports = Reapocreate

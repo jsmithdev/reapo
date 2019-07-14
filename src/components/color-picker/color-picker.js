@@ -201,7 +201,7 @@ template.innerHTML = /*html*/`
 </div>
 `
 
-class ColorPicker extends HTMLElement {
+export class ColorPicker extends HTMLElement {
 
 	constructor() {
 		super()
@@ -282,8 +282,8 @@ class ColorPicker extends HTMLElement {
 		}
 	}
 }
+
 customElements.define(ColorPicker.is, ColorPicker)
-module.exports = ColorPicker
 
 
 

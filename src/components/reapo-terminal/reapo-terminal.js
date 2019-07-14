@@ -13,8 +13,8 @@ template.innerHTML = /*html*/`
 </div>
 `
 
-//export class ReapoTerminal extends HTMLElement {
-class ReapoTerminal extends HTMLElement {
+
+export class ReapoTerminal extends HTMLElement {
 
 	constructor() {
 		super()
@@ -169,8 +169,6 @@ ${s}
 }
 
 customElements.define(ReapoTerminal.is, ReapoTerminal)
-
-module.exports = ReapoTerminal
 
 
 /* 

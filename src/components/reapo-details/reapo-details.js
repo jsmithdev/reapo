@@ -1,7 +1,6 @@
 // jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
-require('../reapo-terminal/reapo-terminal')
 
 const template = document.createElement('template')
 
@@ -78,7 +77,7 @@ template.innerHTML = /*html*/`
     </div>
 </body>`
 
-class ReapoModal extends HTMLElement {
+export class ReapoModal extends HTMLElement {
 
 	constructor() {
 		super()
@@ -304,11 +303,4 @@ class ReapoModal extends HTMLElement {
 }
 
 customElements.define(ReapoModal.is, ReapoModal)
-module.exports = ReapoModal
-/* 
-dd
-@electron-forge/cli @electron-forge/maker-deb @electron-forge/maker-rpm @electron-forge/maker-squirrel @electron-forge/maker-zip electron
 
-d
-npm uninstall archiver fs-jetpack shell-path electron-squirrel-startup electron-window-state 
-*/

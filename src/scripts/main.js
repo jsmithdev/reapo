@@ -1,16 +1,14 @@
 // jshint esversion:6, asi: true, laxcomma: true
 
-require('./components/reapo-menu/reapo-menu.js')
-require('./components/reapo-details/reapo-details.js')
-require('./components/reapo-folder/reapo-folder.js')
-require('./components/reapo-settings/reapo-settings.js')
-require('./components/reapo-theme/reapo-theme.js')
-require('./components/color-picker/color-picker.js')
+const { ipcRenderer, shell } = require('electron')
 
-const { mkdir } = require('fs')
-const { shell } = require('electron')
 const path = localStorage.path ? localStorage.path : ''
+
 const repo = require('fs-jetpack').dir(path, {})
+
+console.log('heelo')
+
+
 const codes = {
 	find: ['KeyF'],
 	exit: ['KeyW'],
@@ -125,7 +123,7 @@ loadRepo({ clear: true })
 		codes.close.includes(e.code) ? [dom.settings, dom.details].map(el => el.close()) : null // jshint ignore: line
 
 		/* Close Reapo on Ctrl+W press */
-		e.ctrlKey && codes.exit.includes(e.code) ? require('electron').remote.getCurrentWindow().close() : null // jshint ignore: line
+		e.ctrlKey && codes.exit.includes(e.code) ? quit() : null // jshint ignore: line
 
 		/* Restart Reapo on Ctrl+R hotkey */
 		e.ctrlKey && codes.restart.includes(e.code) ? restart() : null // jshint ignore: line
@@ -246,21 +244,8 @@ loadRepo({ clear: true })
 	})
 
 	/* New blank Repo */
-	dom.settings.addEventListener('new-repo', (e) => {
+	dom.settings.addEventListener('new-repo', newRepo)
 
-		const { name, cmd, cwd, responder, exit } = e.detail
-
-		const path = `${cwd}/${name}`
-
-		mkdir(path, { recursive: true }, (err) => {
-			
-			if (err) throw err
-
-			loadRepo({clear: true})
-			
-			exec(cmd, path, responder, exit)
-		})
-	})
 
 	/* New git clone */
 	dom.settings.addEventListener('new-git', (e) => execEvent(e))
@@ -336,6 +321,37 @@ async function Archive(e){
 		toast(msg)
 		// Ask to Delete repo after toasting success msg
 		setTimeout(() => dom.details.dom.remove.click(), 1500)
+	}
+	catch(error){
+		toast(error)
+	}
+}
+
+
+require('electron').remote.getCurrentWindow().close
+
+/* IPC Commms */
+function quit() {
+
+	closeRepo()
+}
+
+
+async function newRepo(event) {
+
+	try {
+			
+		const { name, cmd, cwd, responder, exit } = event.detail
+
+		const path = `${cwd}/${name}`
+
+		ipcRenderer.send('mk-dir', path)
+		ipcRenderer.on('mk-dir', (event, result) => {
+
+			loadRepo({clear: true})
+			
+			exec(cmd, path, responder, exit)
+		})
 	}
 	catch(error){
 		toast(error)

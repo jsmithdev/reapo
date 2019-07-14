@@ -54,7 +54,8 @@ template.innerHTML = /*html*/`
 	</div>
 </div>`
 
-class ReapoTheme extends HTMLElement {
+
+export class ReapoTheme extends HTMLElement {
 
 	constructor() {
 		super()
@@ -150,4 +151,3 @@ class ReapoTheme extends HTMLElement {
 	}
 }
 customElements.define(ReapoTheme.is, ReapoTheme)
-module.exports = ReapoTheme

@@ -29,7 +29,7 @@ html, body {
 	margin: 0;
 	padding: 0;
 	width: 100%;
-	height: 100%;
+	height: initial;
 	background-size: 400% 400%;
 	font-family: Georgia, 'Times New Roman', Times, serif;
 	background: linear-gradient(-45deg, var(--color-accent), var(--color-mid));
@@ -84,7 +84,6 @@ footer {
 	width: 100%;
 	padding: .2rem;
 	display: grid;
-	padding-top: 3.2rem;
     background: var(--color-dark);
     vertical-align: middle;
     grid-template-columns: 1fr 1fr 1fr;
