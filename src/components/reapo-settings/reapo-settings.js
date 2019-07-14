@@ -48,18 +48,6 @@ body {
 	outline: 1px solid #525252;
 }
 
-/*
-footer {
-    
-    display: grid;
-    grid-row-gap: 20px;
-    align-items: center;
-    justify-items: center;
-    grid-column-gap: 20px;
-    vertical-align: middle;
-    grid-template-rows: 2fr;
-    grid-template-columns: 1fr 1fr 1fr;
-}*/
 
 svg {
 
@@ -149,7 +137,7 @@ background: linear-gradient(var(--color-lightest), #ddd, var(--color-mid));
     grid-column-gap: 20px;
     vertical-align: middle;
     grid-template-rows: 2fr;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .title {
@@ -257,9 +245,7 @@ background: linear-gradient(var(--color-lightest), #ddd, var(--color-mid));
         
             <div class="container">
 
-                <svg class="theme" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20.71,4.63L19.37,3.29C19,2.9 18.35,2.9 17.96,3.29L9,12.25L11.75,15L20.71,6.04C21.1,5.65 21.1,5 20.71,4.63M7,14A3,3 0 0,0 4,17C4,18.31 2.84,19 2,19C2.92,20.22 4.5,21 6,21A4,4 0 0,0 10,17A3,3 0 0,0 7,14Z" />
-                </svg>
+                <reapo-theme></reapo-theme>
             </div>
 
         </div>      
@@ -348,6 +334,68 @@ export class ReapoSettings extends HTMLElement {
 customElements.define(ReapoSettings.is, ReapoSettings)
 
 /* 
+
+/* 
+
+.theme {
+
+	fill: var(--color-light);
+    margin: 0.4rem;
+}
+.theme > path {
+	fill: var(--color-light);
+    margin: 0.4rem;
+    transform: rotate(0deg);
+    transition-duration: 3s;
+}
+
+animation: AnimationName 30s ease infinite;
+
+@-webkit-keyframes AnimationName {
+	0% {
+		background-position: 0% 50%
+	}
+	50% {
+		background-position: 100% 50%
+	}
+	100% {
+		background-position: 0% 50%
+	}
+}
+
+@-moz-keyframes AnimationName {
+	0% {
+		background-position: 0% 50%
+	}
+	50% {
+		background-position: 100% 50%
+	}
+	100% {
+		background-position: 0% 50%
+	}
+}
+
+@keyframes AnimationName {
+	0% {
+		background-position: 0% 50%
+	}
+	50% {
+		background-position: 100% 50%
+	}
+	100% {
+		background-position: 0% 50%
+	}
+}
+
+
+
+
+
+
+
+
+
+
 
     
     themeButton: document.querySelector('.themeContainer'),

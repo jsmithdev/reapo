@@ -26,8 +26,6 @@ template.innerHTML = /*html*/`
 .card {
 	padding: 1rem;
     border-radius: 5px;
-    max-width: 100%;
-    min-height: 20rem;
     background: #EEE;
 }
 .colorContainer {
@@ -42,16 +40,19 @@ template.innerHTML = /*html*/`
 }
 </style>
 
-<div class="is-hidden modal-overlay">
-	<div class="card">
 
-		<div class="colorContainer"></div>
-		
-		<color-picker color="#ee6f0a" theme="normal"></color-picker>
+<div class="card">
 
-		<br />
-		<button class="save">Save</button>
-	</div>
+	<div class="colorContainer"></div>
+	
+	
+	<color-picker color="#ee6f0a" theme="normal"></color-picker>
+	
+
+	<br />
+	<button class="save">Save</button>
+
+	
 </div>`
 
 
@@ -81,7 +82,6 @@ export class ReapoTheme extends HTMLElement {
 		this.dom = {
 			
 			save: doc.querySelector('.save'),
-			overlay: doc.querySelector('.modal-overlay'),
 			picker: doc.querySelector('color-picker'),
 			colorContainer: doc.querySelector('.colorContainer'),
 		}
@@ -90,14 +90,17 @@ export class ReapoTheme extends HTMLElement {
 	}
 	registerListeners() {
 
-		/* Close Modal */
+		/* Close Modal 
 		this.dom.overlay.onclick = e => {
 			if (e.target == this.dom.overlay) {
 				this.close()
 			}
 		}
 		this.addEventListener(`close-${this.is}`, () => this.close())
-
+		*/
+		
+		
+		
 		this.dom.save.onclick = () => this.handleSave()
 
 		this.init()
@@ -142,12 +145,12 @@ export class ReapoTheme extends HTMLElement {
 	}
 
 
-	open(){
+	/* open(){
 		this.dom.overlay.classList.remove('is-hidden')
 	}
 
 	close(){
 		this.dom.overlay.classList.add('is-hidden')
-	}
+	} */
 }
 customElements.define(ReapoTheme.is, ReapoTheme)
