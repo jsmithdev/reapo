@@ -25,11 +25,31 @@ module.exports = {
 	},
 	{
 		name: '@electron-forge/maker-deb',
-		config: { }
+		config: {
+			options: {
+				maintainer: 'Jamie Smith',
+				homepage: 'https://github.com/jsmithdev/reapo'
+			}
+		}
 	},
 	{
 		name: '@electron-forge/maker-rpm',
 		config: {}
-	}
-	]
+	}]
 }
+
+
+/* 
+
+	{
+		name: '@electron-forge/maker-snap',
+		config: {
+			features: {
+			audio: false,
+			mpris: 'com.reapo.mpris',
+			webgl: false
+			},
+			summary: 'Repo manager built with web standards'
+	}
+},
+*/
