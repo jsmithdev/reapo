@@ -13,8 +13,7 @@ template.innerHTML = /*html*/`
         --color-icon-secondary: var(--color-light);
         --shadow-drop: var(--shadow-drop);
     }
-    :root:hover {
-    }
+    
     .container {
         width: 100%;
         text-align: right;

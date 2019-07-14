@@ -6,7 +6,6 @@ const path = localStorage.path ? localStorage.path : ''
 
 const repo = require('fs-jetpack').dir(path, {})
 
-console.log('heelo')
 
 
 const codes = {
@@ -26,8 +25,7 @@ const dom = {
 	menu: document.querySelector('reapo-menu'),
 	settings: document.querySelector('reapo-settings'),
 	footer: document.querySelector('footer'),
-	themeButton: document.querySelector('.themeContainer'),
-	themer: document.querySelector('reapo-theme'),
+	refreshReapo: document.querySelector('.refreshReapo'),
 }
 
 
@@ -61,9 +59,6 @@ const dom = {
 		localStorage.setItem('theme', JSON.stringify(theme))
 	}
 
-	dom.themeButton.onclick = () => {
-		dom.themer.open()
-	}
 }
 
 /* Toaster */
@@ -108,7 +103,7 @@ loadRepo({ clear: true })
 { /* Global Listeners, hotkey bubble ups => gotta catch em all */
 	
 	/* Toaster */
-	dom.body.addEventListener('toast', (e) => {
+	dom.body.addEventListener('toast', e => {
 
 		toast(e.detail.msg)
 
@@ -177,6 +172,12 @@ loadRepo({ clear: true })
 
 		shell.showItemInFolder(path)
 	})
+
+	/* refresh-directory */
+	dom.refreshReapo.onclick = () => {
+		loadRepo({ clear: true })
+		toast(`Refreshed directory 🦄`)
+	}
 
 
 	/* Git Link Repo */
