@@ -95,6 +95,7 @@ function createWindow() {
 	// automatically (the listeners will be removed when the window is closed)
 	// and restore the maximized or full screen state
 	mainWindowState.manage(mainWindow)
+	
 
 	// and load the index.html of the app
 	mainWindow.loadURL(`app://./index.html`)
@@ -140,9 +141,11 @@ app.on('window-all-closed', () => {
 
 /* IPC Comms */
 
-ipcMain.on('mk-dir', async (event, path) => {
+ipcMain.on('mk-dir', (event, path) => {
+	console.log('back backender')
 	return new Promise((resolve, reject) => {
 		mkdir(path, { recursive: true }, error => {
+			console.log(error)
 			error ? reject(error) : resolve()
 		})
 	})

@@ -31,13 +31,13 @@ html, body {
 	width: 100%;
 	height: initial;
 	/* background-size: 400% 400%; */
+
 	font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 body {
 
 	display: contents;
-    overflow: hidden;
 	align-items: center;
 	justify-content: center;
 	font-family: sans-serif;
