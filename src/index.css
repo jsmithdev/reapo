@@ -79,7 +79,7 @@ footer {
 	grid-area: content;
 	overflow-y: auto;
     height: inherit;
-    padding-bottom: 7rem;
+    margin-bottom: 3rem;
 }
 .footer {
 	grid-area: footer;
