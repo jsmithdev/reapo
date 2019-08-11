@@ -4,14 +4,6 @@
   "version": "0.0.9",
   "description": "A repo manager coded in easily editable, deliciously vanilla web standards 🎉",
   "main": "src/index.js",
-  "scripts": {
-    ".": "npm run start",
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
-  },
   "keywords": [
     "repo",
     "manager",
@@ -45,5 +37,13 @@
     "@electron-forge/maker-squirrel": "^6.0.0-beta.41",
     "@electron-forge/maker-zip": "^6.0.0-beta.41",
     "electron": "^5.0.6"
+  },
+  "scripts": {
+    ".": "npm run start",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
   }
 }
