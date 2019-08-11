@@ -135,7 +135,6 @@ footer {
 	max-width: 3rem;
 	cursor: pointer;
 	border-radius: 50%;
-	background: var(--color-mid);
 	text-align: right;
 }
 
@@ -182,6 +181,5 @@ svg:hover {
     max-width: 3rem;
     cursor: pointer;
     border-radius: 50%;
-    background: var(--color-mid);
     text-align: right;
 }
