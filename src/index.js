@@ -1,6 +1,7 @@
 
 const path = require('path')
 
+const mkdir = require('mkdirp')
 const windowStateKeeper = require('electron-window-state')
 
 const { app, protocol, ipcMain, shell, BrowserWindow } = require('electron');
@@ -22,7 +23,7 @@ const scheme = 'app'
 			standard: true, 
 			secure: true, 
 			supportFetchAPI: true 
-		} 
+		}
 	}])
 
   	//protocol.registerStandardSchemes([scheme], { secure: true });
@@ -34,18 +35,6 @@ const scheme = 'app'
 
 { /* BrowserWindow */
 
-/*   let browserWindow;
-
-	const createWindow = () => {
-	if (browserWindow) return;
-	browserWindow = new BrowserWindow();
-
-	// Option A — using the custom protocol
-	// browserWindow.loadURL('app://./index.html');
-
-	// Option B — directly from file
-	browserWindow.loadFile('index.html');
-  } */
 
   app.isReady()
     ? createWindow()
@@ -56,9 +45,6 @@ const scheme = 'app'
 
 // todo make this the default Moin Repo/Directory
 const home = app.getPath('home')
-console.log(home)
-
-
 
 
 
@@ -128,26 +114,25 @@ app.on('window-all-closed', () => {
 	}
 })
 
-/* app.on('activate', () => {
-	// On OS X it's common to re-create a window in the app when the
-	// dock icon is clicked and there are no other windows open.
-	if (mainWindow === null) {
-		createWindow()
-	}
-}) */
 
 
+/* IPC Communications: Used to run backend processes like executing commands, CRUD,  */
 
+ipcMain.on('mk-dir', (event, data) => {
+	
+	const { name, cmd, cwd } = data
 
-/* IPC Comms */
+	const path = `${cwd}${name}`
 
-ipcMain.on('mk-dir', (event, path) => {
-	console.log('back backender')
-	return new Promise((resolve, reject) => {
-		mkdir(path, { recursive: true }, error => {
-			console.log(error)
-			error ? reject(error) : resolve()
-		})
+	mkdir(path, { recursive: true }, error => {
+		
+		if(error){
+			console.error(error)
+		}
+		
+		// Auto open in vs code upon success
+		execute(cmd, cwd)
+		event.sender.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
 	})
 });
 

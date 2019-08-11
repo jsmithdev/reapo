@@ -166,7 +166,7 @@ export class Reapocreate extends HTMLElement {
 
 	/* Create a Repo */
 	createRepo(input, path) {
-
+		
 		if (!path) {
 
 			this.toast('Please set a Main Directory')
@@ -186,7 +186,7 @@ export class Reapocreate extends HTMLElement {
 		// make cmd
 		const cmd = isSfdx ? `sfdx force:project:create --projectname ${name}`
 			: isGit ? `git clone ${input}`
-				: 'code .'
+				: 'code '+name
 
 		const cwd = localStorage.path
 
@@ -211,7 +211,7 @@ export class Reapocreate extends HTMLElement {
 					cmd,
 					cwd,
 					exit,
-					responder: () => {}
+					responder: () => loadRepo({clear: true})
 				}
 			}
 		)

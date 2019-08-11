@@ -278,7 +278,7 @@ function execEvent(event){
 /* Exec on behalf of user */
 function exec(cmd, cwd, responder, exit){
 
-	console.log(`${cmd} ${cwd} ${responder} ${exit}`)
+	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
 
 	const exec = require('child_process').exec
 	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
@@ -328,25 +328,17 @@ function quit() {
 }
 
 
-async function newRepo(event) {
+function newRepo(event) {
 
-	try {
-			
-		const { name, cmd, cwd, responder, exit } = event.detail
+	const { responder, exit } = event.detail
+	
+	ipcRenderer.send('mk-dir', event.detail)
 
-		const path = `${cwd}/${name}`
-
-		ipcRenderer.send('mk-dir', path)
-		ipcRenderer.on('mk-dir', (event, result) => {
-
-			loadRepo({clear: true})
-			
-			exec(cmd, path, responder, exit)
-		})
-	}
-	catch(error){
-		toast(error)
-	}
+	ipcRenderer.on('mk-dir-res', (event, msg) => {
+		
+		responder()
+		exit(msg)
+	})
 }
 
 
