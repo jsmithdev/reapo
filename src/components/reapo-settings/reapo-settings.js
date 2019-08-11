@@ -29,7 +29,7 @@ body {
     line-height: 1.6;
     font-size: 18px;
     color: #444;
-    padding: 0 10px
+    padding: 0 10px;
 }
 
 :host ::-webkit-scrollbar {

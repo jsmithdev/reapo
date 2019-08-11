@@ -36,7 +36,7 @@ html, body {
 }
 
 body {
-
+	overflow: hidden;
 	display: contents;
 	align-items: center;
 	justify-content: center;
@@ -79,7 +79,7 @@ footer {
 	grid-area: content;
 	overflow-y: auto;
     height: inherit;
-    padding-bottom: 4rem;
+    padding-bottom: 7rem;
 }
 .footer {
 	grid-area: footer;
