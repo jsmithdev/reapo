@@ -215,9 +215,10 @@ export class ReapoFolder extends HTMLElement {
 	 */
 	setKeyupAction(el){
 		
-		el.addEventListener('keyup', e => {
+		el.addEventListener('keydown', e => {
 
 			if( this.codes.action.includes(e.code) ){
+				e.preventDefault()
 				e.target.onclick(e)
 			}
 		})
