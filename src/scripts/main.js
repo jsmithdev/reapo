@@ -168,9 +168,11 @@ loadRepo({ clear: true })
 	/* open-directory */
 	dom.details.addEventListener('open-directory', event => {
 		
-		const { path } = event.detail
+		const { folder } = event.detail
+		
+		const filepath = `${path}${folder}/.`
 
-		shell.showItemInFolder(path)
+		shell.showItemInFolder( filepath )
 	})
 
 	/* refresh-directory */

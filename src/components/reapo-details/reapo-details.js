@@ -136,7 +136,7 @@ export class ReapoModal extends HTMLElement {
 		/* Open directory in OS file manager */
 		this.dom.dir.onclick = () => {
 
-			const path = this.dir+this.name
+			const folder = this.dir+this.name
 				
 			this.dispatchEvent(
 				new CustomEvent(
@@ -144,7 +144,7 @@ export class ReapoModal extends HTMLElement {
 					{
 						bubbles: true,
 						composed: true,
-						detail: { path }
+						detail: { folder }
 					}
 				)
 			)
