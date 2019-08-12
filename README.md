@@ -3,11 +3,12 @@
 
 ## A repo manager built with web components 
 
-<img src="https://i.imgur.com/KV5YAAR.png" width="75%" height="auto" >
+<img src="https://i.imgur.com/2EA6Fin.png" width="75%" height="auto" >
+<img src="https://i.imgur.com/MCDnB0o.png" width="75%" height="auto" >
 
 ### Early releases are under [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub
 
-### Todos are under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub
+### Todos and issues are under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub
 
 ---
 
