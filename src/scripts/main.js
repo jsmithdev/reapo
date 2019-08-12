@@ -76,6 +76,7 @@ const loadRepo = (config) => { // init repo
 			dom.container.removeChild(dom.container.lastChild)
 		}
 	}
+	
 
 	const projects = repo.list().map(name => repo.inspect(`${path}/${name}`, { times: true }))
 
@@ -92,7 +93,7 @@ const loadRepo = (config) => { // init repo
 		dom.container.appendChild(folder)
 	}
 	
-	projects.map(add)
+	projects.filter(isDir).map(add)
 
 	// give some empty space #todo do better
 	Array.from(Array(4).keys()).map(() => dom.container.appendChild(document.createElement('div')))
@@ -100,7 +101,19 @@ const loadRepo = (config) => { // init repo
 loadRepo({ clear: true })
 
 
-{ /* Global Listeners, hotkey bubble ups => gotta catch em all */
+/**
+ * @description simple check if string is name of directory
+ * @param {String} name, String destructured from object
+ */
+function isDir( { name } ){
+	
+	return name.indexOf('.') < 0 
+		? true 
+		: name.length - name.indexOf('.') < 3
+}
+
+
+{ /* Global Listeners, hotkey bubble ups */
 	
 	/* Toaster */
 	dom.body.addEventListener('toast', e => {
@@ -130,6 +143,7 @@ loadRepo({ clear: true })
 		e.ctrlKey && codes.settings.includes(e.code) ? dom.settings.open() : null // jshint ignore: line
 	}
 }
+
 
 { /* Filtering */
 	dom.filter.addEventListener('keyup', e =>
