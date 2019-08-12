@@ -26,21 +26,34 @@ module.exports = {
 	{
 		name: '@electron-forge/maker-deb',
 		config: {
-			options: {
-				maintainer: 'Jamie Smith',
-				homepage: 'https://github.com/jsmithdev/reapo'
-			}
+			productName: "Reapo",
+			maintainer: "Jamie Smith",
+			homepage: "https://github.com/jsmithdev/reapo",
+			icon: "resources/icon.png",
+			categories: ['Development']
 		}
-	},
-	{
-		name: '@electron-forge/maker-rpm',
-		config: {}
-	}]
+	}],
+	publishers: {
+		name: '@electron-forge/publisher-github',
+		config: {
+		  repository: {
+			owner: 'jsmithdev',
+			name: 'reapo'
+		  },
+		  prerelease: true
+		}
+	  }
 }
 
 
 /* 
+,
+	{
+		name: '@electron-forge/maker-rpm',
+		config: {}
+	}
 
+	
 	{
 		name: '@electron-forge/maker-snap',
 		config: {
