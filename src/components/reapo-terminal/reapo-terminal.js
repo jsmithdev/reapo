@@ -64,6 +64,12 @@ export class ReapoTerminal extends HTMLElement {
 			/* remember what is typed */
 			this.codes.memory.includes(e.code) ? this.remember() : null
 		}
+
+		this.dom.log.onclick = () => {
+			if(!this.dom.log.textContent){
+				this.dom.input.focus()
+			}
+		}
 	}
 
 	attributeChangedCallback(attribute, old_value, value) {
