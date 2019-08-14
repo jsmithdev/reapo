@@ -1,4 +1,3 @@
-// jshint esversion:6, asi: true, laxcomma: true
 
 const { ipcRenderer, shell } = require('electron')
 
@@ -371,3 +370,5 @@ function newRepo(event) {
 	dom.settings.addEventListener('open-code', openVsCode)
 	dom.details.addEventListener('open-code', (e) => openVsCode(e))
 }
+
+window.scrollTo(0, 0) 
