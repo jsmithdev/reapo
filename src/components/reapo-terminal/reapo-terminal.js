@@ -9,7 +9,7 @@ template.innerHTML = /*html*/`
 
 <div class="container">
     <pre id="log"></pre>
-    <input />
+    <input placeholder="Command away..." />
 </div>
 `
 
