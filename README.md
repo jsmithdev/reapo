@@ -1,10 +1,10 @@
 
 # <img src="https://i.imgur.com/mkLNLOB.png" width="45" height="auto" > Reapo 
 
-## A repo manager built with web components 
+## A hackable repo manager built with web components & standards
 
-<img src="https://i.imgur.com/2EA6Fin.png" width="75%" height="auto" >
-<img src="https://i.imgur.com/MCDnB0o.png" width="75%" height="auto" >
+<img src="https://i.imgur.com/PJT204r.png" width="75%" height="auto" >
+<img src="https://i.imgur.com/bLdQgx8.png" width="75%" height="auto" >
 
 ### Early releases are under [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub
 
@@ -14,12 +14,12 @@
 
 ## Purpose
 
-Wanted a fun repo manager that
+Wanted a repo manager that
 
 - Opens & works quickly then gets out of the way
-- Built with vanilla web components/standards to easily to extend and hack on
+- Built with web components & standards to easily to extend and hack on
 - Compliments vs code; In between
-  - simple (eg: OS file manager)
+  - dumb (eg: OS file manager)
   - complex (eg: Gitkraken)
 
 
@@ -36,8 +36,6 @@ Some functions include
     - Open in OS file manager
     - Clear terminal
     - Delete
-
-Personally use Linux so R&D is done there but Mac & Windows support is more or less baked in and could be on the same level of priority if need arises (eg: someone else uses, finds and opens an issue on Github)
 
 ---
 
