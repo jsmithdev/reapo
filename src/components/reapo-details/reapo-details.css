@@ -55,15 +55,18 @@ body {
 	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 0 10px 0 rgba(0, 0, 0, 0.22);
 }
 
-
 .container {
-    padding:0 .5rem 0 .5rem;
+    
+    vertical-align: middle;
+    margin-bottom: 1rem;
+    padding: 0 .5rem 10px .5rem;
+    border-bottom: 1pt solid var(--color-light);
+
     display: grid;
-    grid-row-gap: 20px;
     align-items: center;
     justify-items: center;
+    grid-row-gap: 20px;
     grid-column-gap: 20px;
-    vertical-align: middle;
     grid-template-rows: 2fr;
     grid-template-columns: repeat(8, 1fr);
 }
