@@ -1,46 +1,43 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
-/* These vars are to work throughout for easy theming */
-/*
-
-Setting with JS for custom themes 
-
-document.documentElement.style.setProperty('--color-variable', '#hexcode');
-
---color-lightest: #EEE;
---color-accent: #00e6ff;
---color-light: #ec00ff;
---color-mid: #4f23d7;
---color-dark: #011627;
-
---color-highlight: #ffd70e;
-
---shadow-drop: drop-shadow(12px 12px 7px rgba(0, 0, 0, 0.5));
---shadow-top: 0px 2px 4px 0 rgba(0, 0, 0, 0.2), 0px -4px 10px 0px rgba(0, 0, 0, 0.2);
-
+/**
+  *  
+  *  Colors set as CSS Varibles  
+  *  
+  *  These vars are to work throughout for easy theming 
+  *  Values are set in /scripts/main.js
+  *  
+  *  document.documentElement.style.setProperty('--color-variable', '#hexcode');
+  *  
+  *  --color-lightest: #EEE;
+  *  --color-accent: #00e6ff;
+  *  --color-light: #ec00ff;
+  *  --color-mid: #4f23d7;
+  *  --color-dark: #011627;
+  *  
+  *  --color-highlight: #ffd70e;
+  *  
+  *  --shadow-drop: drop-shadow(12px 12px 7px rgba(0, 0, 0, 0.5));
+  *  --shadow-top: 0px 2px 4px 0 rgba(0, 0, 0, 0.2), 0px -4px 10px 0px rgba(0, 0, 0, 0.2);
+  *  
 */
 
-
 html, body {
-	
-	font-family: 'Roboto', sans-serif;
+
 	font-weight: 400;
+	font-family: 'Ubuntu', sans-serif;
 
 	margin: 0;
 	padding: 0;
 	width: 100%;
 	height: initial;
-	/* background-size: 400% 400%; */
-
-	font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 body {
-	overflow: hidden;
+	
 	display: contents;
 	align-items: center;
 	justify-content: center;
-	font-family: sans-serif;
 	padding: 0 0 50px 0;
 	background: linear-gradient(-45deg, var(--color-accent), var(--color-mid));
 	background-attachment: fixed;
@@ -66,8 +63,11 @@ footer {
 
 /* App Frame */
 #app {
+
 	width: 100%;
 	height: -webkit-fill-available;
+
+    overflow-y: hidden;
 
 	display: grid;
 	grid-template-columns: auto;
@@ -75,38 +75,47 @@ footer {
 
 	grid-template-areas: "header" "content" "footer";
 }
-.content {
-	grid-area: content;
-	overflow-y: auto;
-    height: inherit;
-    margin-bottom: 3rem;
-}
-.footer {
-	grid-area: footer;
-}
+
 .header {
 
-	padding: .25rem;
-	grid-area: header;
-    background: var(--color-dark);
-	box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.35), 0px -4px 10px 0px rgba(0, 0, 0, 0.35);
-	
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 2fr;
+	grid-area: header;
+	align-items: center;
     justify-items: center;
-    align-items: center;
+	grid-template-rows: 2fr;
+    grid-template-columns: 1fr 1fr 1fr;
+	
+	padding: .25rem;
+	background: var(--color-dark);
+	border-bottom: 1pt solid var(--color-light);
+	box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.35), 0px -4px 10px 0px rgba(0, 0, 0, 0.35);
+}
+
+.content {
+    height: inherit;
+	overflow-y: auto;
+	grid-area: content;
+    margin-bottom: 3rem;
 }
 
 .container {
 
 	width: 100%;
-	display: grid;
-    max-height: 92.2%;
+	max-height: 92.2%;
+	
 	text-align: center;
+	margin-bottom: 7rem;
+
+	display: grid;
 	grid-column-gap: 10px;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
+
+.footer {
+	grid-area: footer;
+}
+
+
 
 /* scroll */
 .content::-webkit-scrollbar {
@@ -127,8 +136,8 @@ footer {
 
 
 
-
-
+/* todo make header a web component <reapo-header/> */
+/* Header */
 #menu {
 	width: 100%;
 	margin: auto;
@@ -160,13 +169,12 @@ footer {
 	border-radius: 5px;
 	background: var(--color-lightest);
 }
-
  
 svg {
 	fill: var(--color-light);
 	margin: 0.4rem;
 	transform: rotate(0deg);
-	transition-duration: 3s;
+    transition-duration: 1s;
 }
 svg:hover {
 	filter: var(--shadow-drop);
@@ -174,7 +182,6 @@ svg:hover {
 	transition-duration: 6s;
 }
 
-/* Theme */
 .refreshReapo {
 	width: 100%;
     margin: auto;
