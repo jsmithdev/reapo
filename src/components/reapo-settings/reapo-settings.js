@@ -66,13 +66,17 @@ body {
 }
 
 .content {
+
     height: 100%;
+    vertical-align: middle;
+
     display: grid;
     grid-row-gap: 20px;
     align-items: center;
     justify-items: center;
     grid-column-gap: 20px;
-    vertical-align: middle;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(auto-fit, minmax(325px, 1fr));
 }
 
 .title {
