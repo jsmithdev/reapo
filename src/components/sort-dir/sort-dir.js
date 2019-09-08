@@ -19,6 +19,7 @@ template.innerHTML = /*html*/`
 
 svg {
     width: 100%;
+    height: 42px;
     margin: 0.15rem;
     fill: var(--color-light);
 }
