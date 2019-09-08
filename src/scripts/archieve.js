@@ -37,10 +37,14 @@ function run(dir, config, res, rej, toast){   console.dir(dir);  console.dir(con
 
     // good practice to catch this error explicitly
     archive.on('error', err => rej(err))
-    archive.on('data', buf => {
-        bank += buf.length
-        toast(`Archiving, wrote ${bank}`)
-    })
+
+    if(typeof toast === 'function'){
+        archive.on('data', buf => {
+            bank += buf.length
+            toast(`Archiving, wrote ${bank}`)
+        })
+    }
+
     // pipe archive data to the file
     archive.pipe(output)
 

@@ -2,6 +2,9 @@
 const path = require('path')
 
 const mkdir = require('mkdirp')
+const Archiver = require('./scripts/archieve.js')
+
+
 const windowStateKeeper = require('electron-window-state')
 
 const { app, protocol, ipcMain, shell, BrowserWindow } = require('electron');
@@ -134,6 +137,17 @@ ipcMain.on('mk-dir', (event, data) => {
 		execute(cmd, cwd)
 		event.sender.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
 	})
+});
+
+
+
+ipcMain.on('archieve', async (event, data) => {
+	
+	const { toast, detail } = data
+	
+	const msg = await Archiver.directory(detail, toast)
+
+	event.sender.send('archieve-res', msg)
 });
 
 

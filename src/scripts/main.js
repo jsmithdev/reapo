@@ -315,21 +315,28 @@ function exec(cmd, cwd, responder, exit){
  * 				Toast response
  * @param {Event} e 
  */
-async function Archive(e){
+async function Archive(event){
 
-	const Archiver = require(__dirname+'/scripts/archieve')
 	
 	//delete node_package? might not have deps listed, maybe option later in settings #todo
 	//console.dir(Archiver.directory)
 	//run thru handleRepo
 	try {
+		
+		const data = {
+			toast,
+			detail: event.detail,
+		}
 
-		const msg = await Archiver.directory(e.detail, toast)
+		ipcRenderer.send('archieve', data)
 
-		dom.details.close()
-		toast(msg)
-		// Ask to Delete repo after toasting success msg
-		setTimeout(() => dom.details.dom.remove.click(), 1500)
+		ipcRenderer.on('archieve-res', (event, msg) => {
+				
+			dom.details.close()
+			toast(msg)
+			// Ask to Delete repo after toasting success msg
+			setTimeout(() => dom.details.dom.remove.click(), 1500)
+		})
 	}
 	catch(error){
 		toast(error)
