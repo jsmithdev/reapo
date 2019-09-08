@@ -82,13 +82,22 @@ footer {
 	grid-area: header;
 	align-items: center;
     justify-items: center;
-	grid-template-rows: 2fr;
+	grid-template-rows: 1fr;
     grid-template-columns: 1fr 1fr 1fr;
 	
 	padding: .25rem;
 	background: var(--color-dark);
 	border-bottom: 1pt solid var(--color-light);
 	box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.35), 0px -4px 10px 0px rgba(0, 0, 0, 0.35);
+}
+.leftHeader {
+	width: 100%;
+
+    display: grid;
+	align-items: center;
+    justify-items: center;
+	grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr;
 }
 
 .content {
