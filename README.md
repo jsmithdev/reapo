@@ -39,6 +39,14 @@ Some functions include
 
 ---
 
+## Potential Issues
+
+#### MacOS
+The 'Open in VS Code' feature expects `code` to be a cli command but [VS Code docs state ](code.visualstudio.com/docs/editor/command-line) users on macOS must first run a command (Shell Command: Install 'code' command in PATH) to add VS Code executable to the PATH environment variable. Read the macOS setup guide for help.
+
+
+---
+
 ## Develop Reapo
 
 ### Clone it
