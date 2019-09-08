@@ -162,6 +162,14 @@ ipcMain.on('vs-code', async (event, data) => {
 });
 
 
+ipcMain.on('terminal-popout', (event, data) => {
+
+	const { cmd, cwd, resolve } = data
+	
+	execute(cmd, cwd, resolve)
+})
+
+
 
 /* Exec on behalf of user */
 function execute(cmd, cwd, responder, exit){

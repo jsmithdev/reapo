@@ -396,6 +396,16 @@ function newRepo(event) {
 	dom.details.addEventListener('open-code', (e) => openVsCode(e))
 }
 
+{ /* Open in Terminal (external) */
+
+	dom.details.addEventListener('terminal-popout', event => {
+
+		event.detail.resolve = () => toast(`Opened ${e.detail.title} in Terminal 🦄`)
+
+		ipcRenderer.send('terminal-popout', event.detail)
+	})
+}
+
 { /* Sort Projects */
 
 	dom.sortDir.addEventListener('sort-name-asc', event => {

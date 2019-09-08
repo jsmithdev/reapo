@@ -68,7 +68,7 @@ body {
     grid-row-gap: 20px;
     grid-column-gap: 20px;
     grid-template-rows: 2fr;
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(9, 1fr);
 }
 
 .actions {
