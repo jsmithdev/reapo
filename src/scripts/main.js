@@ -1,11 +1,9 @@
 
-const { ipcRenderer, shell } = require('electron')
+const { ipcRenderer, remote, shell } = require('electron')
 
-const path = localStorage.path ? localStorage.path : ''
+const Path = localStorage.path ? localStorage.path : null
 
-const repo = require('fs-jetpack').dir(path, {})
-
-
+const Repo = require('fs-jetpack').dir(Path, {})
 
 const codes = {
 	find: ['KeyF'],
@@ -25,8 +23,15 @@ const dom = {
 	settings: document.querySelector('reapo-settings'),
 	footer: document.querySelector('footer'),
 	refreshReapo: document.querySelector('.refreshReapo'),
+	sortDir: document.querySelector('sort-dir'),
 }
 
+if (!Path) {
+	toast('Use Settings to set a Main Directory')
+}
+else {
+	loadRepo({ clear: true })
+}
 
 
 {	// Handle Theming
@@ -60,15 +65,13 @@ const dom = {
 
 }
 
-/* Toaster */
-const toast = msg => {
 
-	dom.footer.textContent = msg
-	setTimeout(() => dom.footer.textContent = '', 5000)
-}
-
-/* Load Main Directory View */
-const loadRepo = (config) => { // init repo
+/**
+ * @description Load Main Directory View 
+ * 
+ *  @param {Object} config => settings to load in optional ways
+ */
+function loadRepo( config ){
 
 	if (config.clear) {
 		while (dom.container.lastChild) {
@@ -76,40 +79,48 @@ const loadRepo = (config) => { // init repo
 		}
 	}
 	
+	const projects = Repo.list().map(name => Repo.inspect(`${Path}/${name}`, { times: true }))
 
-	const projects = repo.list().map(name => repo.inspect(`${path}/${name}`, { times: true }))
+	const dirs = projects.filter(p => p.type === 'dir')
 
-	const add = dir => {
-
-		if (!dir) { toast('Use Settings to set a Main Directory'); return }
-
-		const folder = document.createElement('reapo-folder')
-
-		folder.path = repo.cwd()
-		folder.name = dir.name
-		folder.date = dir.modifyTime
-
-		dom.container.appendChild(folder)
+	if(config.order === 'date-asc'){
+		const order = dirs.sort((x,y) => y.modifyTime - x.modifyTime)
+		order.map( addToView )
 	}
-	
-	projects.filter(isDir).map(add)
-
-	// give some empty space #todo do better
-	Array.from(Array(4).keys()).map(() => dom.container.appendChild(document.createElement('div')))
+	else {
+		dirs.map( addToView )
+	}
 }
-loadRepo({ clear: true })
 
 
 /**
- * @description simple check if string is name of directory
- * @param {String} name, String destructured from object
+ * @description Add to main container view
+ * @param {Object} dir => jetpacked directory of project
  */
-function isDir( { name } ){
-	
-	return name.indexOf('.') < 0 
-		? true 
-		: name.length - name.indexOf('.') < 3
+function addToView( dir ){
+
+	const folder = document.createElement('reapo-folder')
+
+	folder.path = Repo.cwd()
+	folder.name = dir.name
+	folder.date = dir.modifyTime
+
+	dom.container.appendChild(folder)
 }
+
+
+/**
+ * @description Toast message to user
+ * @param {String} A message
+ */
+function toast( msg ){
+
+	dom.footer.textContent = msg
+	setTimeout(() => dom.footer.textContent = '', 5000)
+}
+
+
+
 
 
 { /* Global Listeners, hotkey bubble ups */
@@ -142,7 +153,6 @@ function isDir( { name } ){
 		e.ctrlKey && codes.settings.includes(e.code) ? dom.settings.open() : null // jshint ignore: line
 	}
 }
-
 
 { /* Filtering */
 	dom.filter.addEventListener('keyup', e =>
@@ -183,7 +193,7 @@ function isDir( { name } ){
 		
 		const { folder } = event.detail
 		
-		const filepath = `${path}${folder}/.`
+		const filepath = `${Path}${folder}/.`
 
 		shell.showItemInFolder( filepath )
 	})
@@ -261,12 +271,7 @@ function isDir( { name } ){
 	dom.settings.addEventListener('refresh-repo', () => loadRepo({ clear: true }))
 }
 
-function restart(){
 
-	const app = require('electron').remote.app
-	
-	app.relaunch()
-}
 
 /* Help for unix PATH vars so reapo can run installed cli's on behalf of user */
 if (process.platform !== 'windows') {
@@ -314,7 +319,7 @@ async function Archive(e){
 
 	const Archiver = require(__dirname+'/scripts/archieve')
 	
-	//delete node_package? might not have deps listed, maybe option later in settings #todo #idea
+	//delete node_package? might not have deps listed, maybe option later in settings #todo
 	//console.dir(Archiver.directory)
 	//run thru handleRepo
 	try {
@@ -332,15 +337,28 @@ async function Archive(e){
 }
 
 
-const closeRepo = require('electron').remote.getCurrentWindow().close
-
-/* IPC Commms */
+/**
+ * @description Quit Reapo
+ * 
+ */
 function quit() {
-
-	closeRepo()
+	
+	remote.getCurrentWindow().close()
 }
 
+/**
+ * @description Restart Reapo
+ * 
+ */
+function restart(){
 
+	remote.app.relaunch()
+}
+
+/**
+ * @description Create a new directory
+ * 
+ */
 function newRepo(event) {
 
 	const { responder, exit } = event.detail
@@ -369,6 +387,23 @@ function newRepo(event) {
 	dom.container.addEventListener('open-code', openVsCode)
 	dom.settings.addEventListener('open-code', openVsCode)
 	dom.details.addEventListener('open-code', (e) => openVsCode(e))
+}
+
+{ /* Sort Projects */
+
+	dom.sortDir.addEventListener('sort-name-asc', event => {
+		loadRepo({
+			clear: true
+		})
+	})
+
+	dom.sortDir.addEventListener('sort-date-asc', event => {
+		
+		loadRepo({
+			clear: true ,
+			order: 'date-asc',
+		})
+	})
 }
 
 window.scrollTo(0, 0) 
