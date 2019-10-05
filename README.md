@@ -1,7 +1,9 @@
 
 # <img src="https://i.imgur.com/mkLNLOB.png" width="45" height="auto" > Reapo 
 
-## A hackable repo manager built with web components & standards
+## A repo manager built with web components & standards
+
+*There is a complimenting vs code theme now called [Abyski](https://github.com/jsmithdev/abyski)* 
 
 <img src="https://i.imgur.com/PJT204r.png" width="75%" height="auto" >
 <img src="https://i.imgur.com/bLdQgx8.png" width="75%" height="auto" >
