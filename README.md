@@ -3,14 +3,15 @@
 
 ## A repo manager built with web components & standards
 
-*There is a complimenting vs code theme now called [Abyski](https://github.com/jsmithdev/abyski)* 
 
 <img src="https://i.imgur.com/PJT204r.png" width="75%" height="auto" >
 <img src="https://i.imgur.com/bLdQgx8.png" width="75%" height="auto" >
 
-### Early releases are under [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub
+Early releases under [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub
 
-### Todos and issues are under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub
+todo / issues under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub
+
+*There is a complimenting vs code theme now called [Abyski](https://github.com/jsmithdev/abyski)* 
 
 ---
 

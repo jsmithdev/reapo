@@ -95,7 +95,7 @@ function loadRepo( config ){
 
 /**
  * @description Add to main container view
- * @param {Object} dir => jetpacked directory of project
+ * @param {Object} dir => jetpack-ed directory of project
  */
 function addToView( dir ){
 
@@ -167,7 +167,7 @@ function toast( msg ){
 	/* Opener */
 	dom.container.addEventListener('open-details', e => dom.details.open(e.detail))
 	
-	/* Exec CMDs for User */
+	/* Exec commands for User */
 	dom.details.addEventListener('exec-cmd', e => execEvent(e))
 
 	/* Delete Repo */
@@ -267,13 +267,13 @@ function toast( msg ){
 	/* New sfdx project */
 	dom.settings.addEventListener('new-sfdx', e => execEvent(e))
 
-	/* Refresh Repos */
+	/* Refresh Directory */
 	dom.settings.addEventListener('refresh-repo', () => loadRepo({ clear: true }))
 }
 
 
 
-/* Help for unix PATH vars so reapo can run installed cli's on behalf of user */
+/* Help for unix PATH vars so reapo can run installed CLI tools on behalf of user */
 if (process.platform !== 'windows') {
 
 	const shellPath = require('shell-path')
@@ -328,9 +328,9 @@ async function Archive(event){
 			detail: event.detail,
 		}
 
-		ipcRenderer.send('archieve', data)
+		ipcRenderer.send('archive', data)
 
-		ipcRenderer.on('archieve-res', (event, msg) => {
+		ipcRenderer.on('archive-res', (event, msg) => {
 				
 			dom.details.close()
 			toast(msg)

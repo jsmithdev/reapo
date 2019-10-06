@@ -2,7 +2,7 @@
 const path = require('path')
 
 const mkdir = require('mkdirp')
-const Archiver = require('./scripts/archieve.js')
+const Archiver = require('./scripts/archive.js')
 
 
 const windowStateKeeper = require('electron-window-state')
@@ -46,7 +46,7 @@ const scheme = 'app'
 
 
 
-// todo make this the default Moin Repo/Directory
+// todo make this the default Main Repo/Directory
 const home = app.getPath('home')
 
 
@@ -141,13 +141,13 @@ ipcMain.on('mk-dir', (event, data) => {
 
 
 
-ipcMain.on('archieve', async (event, data) => {
+ipcMain.on('archive', async (event, data) => {
 	
 	const { toast, detail } = data
 	
 	const msg = await Archiver.directory(detail, toast)
 
-	event.sender.send('archieve-res', msg)
+	event.sender.send('archive-res', msg)
 });
 
 
