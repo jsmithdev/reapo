@@ -86,6 +86,16 @@ export class SortDir extends HTMLElement {
             this.dom.numeric.classList.remove('hide')
             this.sortByName()
         }
+
+        this.init_state()
+    }
+    init_state(){
+
+        const order = localStorage.getItem('order')
+        if(order === 'date-asc'){
+            this.dom.numeric.classList.add('hide')
+            this.dom.alpha.classList.remove('hide')
+        }
     }
     
     sortByName(){
@@ -95,7 +105,10 @@ export class SortDir extends HTMLElement {
 				{
 					bubbles: true,
 					composed: true,
-					detail: { clear: true }
+					detail: { 
+                        clear: true,
+                        order: 'name-asc'
+                    }
 				}
 			)
 		)
@@ -108,7 +121,10 @@ export class SortDir extends HTMLElement {
 				{
 					bubbles: true,
 					composed: true,
-					detail: { clear: true }
+					detail: { 
+                        clear: true,
+                        order: 'date-asc'
+                    }
 				}
 			)
 		)
