@@ -5,6 +5,7 @@ const Path = localStorage.path ? localStorage.path : null
 
 const Repo = require('fs-jetpack').dir(Path, {})
 
+
 const codes = {
 	find: ['KeyF'],
 	exit: ['KeyW'],
@@ -30,23 +31,17 @@ if (!Path) {
 	toast('Use Settings to set a Main Directory')
 }
 else {
-	loadRepo({ clear: true })
+	loadRepo({ 
+		clear: false,
+		order: localStorage.getItem('order'),
+	})
 }
 
+// todo module off all theming to separate 
+{// Theming 
 
-{	// Handle Theming
-	const setTheme = theme => {	
-		for (const key in theme){
-			document.documentElement.style.setProperty(key, theme[key])
-		}
-	}
-
-	// Get custom theme
-	const storage = localStorage.getItem('theme')
-	const data =  storage ? JSON.parse(storage) : null
-
-	// If theme is set use it else use default theme and set it
-	const theme = data === 'object' ? data : {
+	// Default Theme
+	const defaults = {
 		'--color-lightest': '#EEE',
 		'--color-accent': '#00e6ff',
 		'--color-light': '#ec00ff',
@@ -57,12 +52,25 @@ else {
 		'--shadow-top': '0px 2px 4px 0 rgba(0, 0, 0, 0.2), 0px -4px 10px 0px rgba(0, 0, 0, 0.2)',
 	}
 
+	// Get custom or default theme
+	const storage = localStorage.getItem('theme')
+
+	// If theme is set use it else use default theme and set it
+	const theme =  typeof storage === 'object' && Object.values(storage).length ? JSON.parse(storage) : defaults
+
 	setTheme(theme)
-
-	if(storage !== 'object'){ 
-		localStorage.setItem('theme', JSON.stringify(theme))
+}
+/**
+ * @description Set theme & store for later 
+ * 
+ *  @param {Object} theme => theme object of css vars
+ */
+function setTheme( theme ) {	
+    for (const key in theme){
+        document.documentElement.style.setProperty(key, theme[key])
 	}
-
+	
+	localStorage.setItem('theme', JSON.stringify(theme))
 }
 
 
@@ -84,8 +92,11 @@ function loadRepo( config ){
 	const dirs = projects.filter(p => p.type === 'dir')
 
 	if(config.order === 'date-asc'){
+		
 		const order = dirs.sort((x,y) => y.modifyTime - x.modifyTime)
 		order.map( addToView )
+
+		localStorage.setItem('order', config.order)
 	}
 	else {
 		dirs.map( addToView )
@@ -409,13 +420,15 @@ function newRepo(event) {
 { /* Sort Projects */
 
 	dom.sortDir.addEventListener('sort-name-asc', event => {
+		localStorage.setItem('sort', 'sort-name-asc')
 		loadRepo({
-			clear: true
+			clear: true,
+			order: 'name-asc',
 		})
 	})
 
 	dom.sortDir.addEventListener('sort-date-asc', event => {
-		
+		localStorage.setItem('sort', 'sort-date-asc')
 		loadRepo({
 			clear: true ,
 			order: 'date-asc',
