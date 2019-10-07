@@ -1,6 +1,6 @@
 
 
-function initiate(localStorage){
+function initiate(){
 	// Default Theme
 	const defaults = {
 		'--color-lightest': '#EEE',
@@ -22,7 +22,7 @@ function initiate(localStorage){
 	setTheme()
 }
 
-function setTheme( theme, localStorage ) {	
+function setTheme( theme ) {	
     for (const key in theme){
         document.documentElement.style.setProperty(key, theme[key])
 	}
@@ -31,4 +31,4 @@ function setTheme( theme, localStorage ) {
 }
 
 //export for later consumption
-export { initiate, setTheme }
+module.exports = { initiate, setTheme }
