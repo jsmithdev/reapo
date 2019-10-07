@@ -71,7 +71,7 @@ footer {
 
 	display: grid;
 	grid-template-columns: auto;
-    grid-template-rows: 1fr 100% 1fr;
+    grid-template-rows: 1fr 98fr 1fr;
 
 	grid-template-areas: "header" "content" "footer";
 }
@@ -182,8 +182,8 @@ footer {
 svg {
 	fill: var(--color-light);
 	margin: 0.4rem;
-	transform: rotate(0deg);
-    transition-duration: 1s;
+	/* transform: rotate(0deg); */
+    /* transition-duration: 1s; */
 }
 svg:hover {
 	filter: var(--shadow-drop);
