@@ -154,8 +154,6 @@ export class ReapoFolder extends HTMLElement {
 
 		this.title = `${this.name} \n Last Modified: ${this.moddate}`
 
-		this.textContent = 'asdf'
-
 		this.registerListeners()
 	}
 
