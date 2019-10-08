@@ -1,7 +1,7 @@
 
-const { ipcRenderer, remote, shell } = require('electron')
+const { ipcRenderer, remote, shell, app } = require('electron')
 
-const Path = localStorage.path ? localStorage.path : null
+const Path = localStorage.path ? localStorage.path : __dirname
 
 const Repo = require('fs-jetpack').dir(Path, {})
 
@@ -56,7 +56,7 @@ else {
 	const storage = localStorage.getItem('theme')
 
 	// If theme is set use it else use default theme and set it
-	const theme =  typeof storage === 'object' && Object.values(storage).length ? JSON.parse(storage) : defaults
+	const theme =  storage && Object.values(storage).length ? JSON.parse(storage) : defaults
 
 	setTheme(theme)
 }

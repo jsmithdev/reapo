@@ -7,11 +7,12 @@ const Archiver = require('./scripts/archive.js')
 
 const windowStateKeeper = require('electron-window-state')
 
-const { app, protocol, ipcMain, shell, BrowserWindow } = require('electron');
+const { app, protocol, ipcMain, BrowserWindow } = require('electron');
 
 
 // Base path used to resolve modules
-const base = app.getAppPath();
+const base = app.getAppPath()
+
 
 // Protocol will be "app://./…"
 const scheme = 'app'
@@ -45,9 +46,6 @@ const scheme = 'app'
 }
 
 
-
-// todo make this the default Main Repo/Directory
-const home = app.getPath('home')
 
 
 
