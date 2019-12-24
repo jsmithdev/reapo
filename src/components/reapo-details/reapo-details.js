@@ -1,4 +1,3 @@
-// jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
 
@@ -53,6 +52,12 @@ template.innerHTML = /*html*/`
 				<div id="clear" title="Clear Terminal">
 					<svg class="icon_small" viewBox="0 0 24 24">
 						<path d="M12,2A9,9 0 0,0 3,11V22L6,19L9,22L12,19L15,22L18,19L21,22V11A9,9 0 0,0 12,2M9,8A2,2 0 0,1 11,10A2,2 0 0,1 9,12A2,2 0 0,1 7,10A2,2 0 0,1 9,8M15,8A2,2 0 0,1 17,10A2,2 0 0,1 15,12A2,2 0 0,1 13,10A2,2 0 0,1 15,8Z" />
+					</svg>
+				</div>
+				
+				<div id="openOrg" title="Open Org \n(if sfdx project)">
+					<svg class="icon_small" viewBox="0 0 24 24">
+						<path d="M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" />
 					</svg>
 				</div>
 			
@@ -123,6 +128,7 @@ export class ReapoModal extends HTMLElement {
 			code: doc.getElementById('code'),
 			dir: doc.getElementById('dir'),
 			sync: doc.getElementById('sync'),
+			openOrg: doc.getElementById('openOrg'),
 			list: doc.getElementById('list'),
 			clear: doc.getElementById('clear'),
 			remove: doc.getElementById('remove'),
@@ -198,6 +204,44 @@ export class ReapoModal extends HTMLElement {
 						cwd: this.path+'/'+this.name,
 						responder: x => this.dom.term.setAttribute('log', x),
 						exit: () => this.dom.term.loggerExit(),
+					}
+				})
+			)
+		}
+
+		/* Run open org / salesforce cloud icon */
+		this.dom.openOrg.onclick = () => {
+			
+			const responder = data => {
+				
+				if(data.substring(0, 1) !== '{'){ return }
+
+				const { defaultusername } = JSON.parse( data )
+
+				this.dispatchEvent(new CustomEvent(
+					'exec-cmd',
+					{ 
+						bubbles: true, 
+						composed: true,
+						detail: {
+							cmd: 'sfdx force:org:open -u '+defaultusername,
+							cwd: this.path+'/'+this.name,
+							responder: x => this.dom.term.setAttribute('log', x),
+							exit: () => this.dom.term.loggerExit(),
+						}
+					})
+				)
+			}
+
+			this.dispatchEvent(new CustomEvent(
+				'exec-cmd', 
+				{ 
+					bubbles: true, 
+					composed: true,
+					detail: {
+						cmd: 'cat .sfdx/sfdx-config.json',
+						cwd: this.path+'/'+this.name,
+						responder,
 					}
 				})
 			)
@@ -282,7 +326,7 @@ export class ReapoModal extends HTMLElement {
 		this.dom.terminal_popout.onclick = () => {
 			
 			this.dispatchEvent(new CustomEvent(
-				'terminal-popout', 
+				'exec-cmd', 
 				{ 
 					bubbles: true, 
 					composed: true,
