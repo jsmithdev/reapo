@@ -94,7 +94,7 @@ footer {
 
 .header {
 	width: 100%;
-    position: fixed;
+    /* position: fixed; */
     display: grid;
     grid-area: header;
     align-items: center;
