@@ -2,9 +2,8 @@
 
 /**
   *  
-  *  Colors set as CSS Varibles  
+  *  Colors set as CSS Variables  
   *  
-  *  These vars are to work throughout for easy theming 
   *  Values are set in /scripts/main.js
   *  
   *  document.documentElement.style.setProperty('--color-variable', '#hexcode');
@@ -63,32 +62,49 @@ footer {
 
 /* App Frame */
 #app {
-
-	width: 100%;
-	height: -webkit-fill-available;
-
-    overflow-y: hidden;
-
-	display: grid;
-	grid-template-columns: auto;
-    grid-template-rows: 1fr 98fr 1fr;
-
-	grid-template-areas: "header" "content" "footer";
+    width: 100%;
+    height: -webkit-fill-available;
+    display: grid;
+    overflow: overlay;
+    /* overflow: hidden; */
+    grid-template-columns: auto;
+	grid-template-rows: 1fr 98fr 1fr;
+    grid-template-areas:
+        "header"
+        "content"
+        "footer";
+	grid-row-gap: 0px;
+	background-image: linear-gradient(-70deg, #ec00ff, #00a1ff);
+    background-attachment: fixed;
+}
+/* scroll */
+::-webkit-scrollbar {
+	width: .25em;
+}
+::-webkit-scrollbar-track {
+	background: #525252;
+	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+::-webkit-scrollbar-thumb {
+	background-color: var(--color-mid);
+	outline: 1px solid var(--color-mid);
 }
 
-.header {
 
+.header {
+	width: 100%;
+    /* position: fixed; */
     display: grid;
-	grid-area: header;
-	align-items: center;
+    grid-area: header;
+    align-items: center;
     justify-items: center;
-	grid-template-rows: 1fr;
+    grid-template-rows: 1fr;
     grid-template-columns: 1fr 1fr 1fr;
-	
-	padding: .25rem;
-	background: var(--color-dark);
-	border-bottom: 1pt solid var(--color-light);
-	box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.35), 0px -4px 10px 0px rgba(0, 0, 0, 0.35);
+    padding: .25rem;
+    background: var(--color-dark);
+    border-bottom: 1pt solid var(--color-light);
+    box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.35), 0px -4px 10px 0px rgba(0, 0, 0, 0.35);
 }
 .leftHeader {
 	width: 100%;
@@ -101,23 +117,20 @@ footer {
 }
 
 .content {
-    height: inherit;
-	overflow-y: auto;
-	grid-area: content;
-    margin-bottom: 3rem;
+	/* height: -webkit-fill-available; */
+    /* padding-top: 3rem; */
+    /* margin-bottom: 10rem; */
+    /* min-height: -webkit-fill-available; */
+    overflow-y: auto;
+    grid-area: content;
 }
 
 .container {
-
 	width: 100%;
-	max-height: 92.2%;
-	
-	text-align: center;
-	margin-bottom: 7rem;
-
-	display: grid;
-	grid-column-gap: 10px;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    height: 100%;
+    display: grid;
+    text-align: center;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .footer {
@@ -126,21 +139,6 @@ footer {
 
 
 
-/* scroll */
-.content::-webkit-scrollbar {
-	width: .25em;
-}
-
-.content::-webkit-scrollbar-track {
-	background: #525252;
-	box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-}
-
-.content::-webkit-scrollbar-thumb {
-	background-color: var(--color-mid);
-	outline: 1px solid var(--color-mid);
-}
 
 
 
