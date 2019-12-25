@@ -1,57 +1,97 @@
-// jshint esversion: 6, asi: true, laxcomma: true
-const fs = require('fs')
+
+
+const fs = require("fs");
+const util = require("util");
+
+const readdir = util.promisify(fs.readdir)
+const stat = util.promisify(fs.stat)
+
+const archiver = require('archiver')
+
+const FILTER = {
+    get items(){
+        return this._items
+    },
+    set items(array){
+        this._items = array
+    },
+    _items: ['node_modules', 'out', 'dist'],
+}
+
+
 const dir = c => c.cwd+'archived/' // this is the dir used to house archives which are named for the repo chosen
 
-const directory = (config, toast) => new Promise((res, rej) => 
-    fs.mkdir(dir(config), () => run(dir(config), config, res, rej, toast)))
+const directory = (config, toast) => new Promise((res, rej) => {
+    fs.mkdir(dir(config), () => run(dir(config), config, res, rej, toast))
+})
 
 module.exports = { directory }
 
 
 
 
-function run(dir, config, res, rej, toast){   console.dir(dir);  console.dir(config);
 
-    let bank = 0
+/**
+ * @description read directory, filter unwanted contents and compress the rest to a directory
+ * 
+ * @param {String} dir path to put the compressed/zip file EX: /home/user/repo/archived/ 
+ * @param {Object} config EX: {cwd: "/home/user/repo/", name: "project_name"}
+
+ * @param {Function} res function to resolve
+ * @param {Function} rej function to reject
+ * @param {Function} toast function to send human messages back
+ */
+async function run(dir, config, res, rej, toast){   console.dir(dir);  console.dir(config);
+
     const { cwd, name } = config
-
-    const archiver = require('archiver')
 
     // create a file to stream archive data to.
     const output = fs.createWriteStream(dir+name+'.zip')
     const archive = archiver('zip', {
         zlib: { level: 9 } // Sets the compression level
     })
+    
+    const repo_path = cwd+name
+    const contents = await readdir(repo_path)
+    
+    const filtered = contents.filter(entity => !FILTER.items.includes(entity))
 
-    // listen for all archive data to be written
-    // 'close' event is fired only when a file descriptor is involved
-    output.on('close', () => res(`🎉 Archived ${name} to ${dir} (${archive.pointer()}B)`))
+    for(const index in filtered){
 
-    // This event is fired when the data source is drained no matter what was the data source.
-    // It is not part of this library but rather from the NodeJS Stream API.
-    // @see: https://nodejs.org/api/stream.html#stream_event_end
-    output.on('end', () => res(`🎉 Archived ${name} to ${dir} (${archive.pointer()}B)`))
+        const item = filtered[ index ]
+        
+        const path = `${repo_path}/${item}`
+        
+        // check if item is a file
+        if(item.includes('.')){
+            
+            archive.file(path, false)
+        }
+        else {
 
-    // good practice to catch warnings (ie stat failures and other non-blocking errors)
-    archive.on('warning', err => err.code === 'ENOENT' ? console.warn(err) : console.error(err))
+            // check if really a directory or just a file without a .
+            const check = (await stat( path )).isDirectory()
 
-    // good practice to catch this error explicitly
-    archive.on('error', err => rej(err))
-
-    if(typeof toast === 'function'){
-        archive.on('data', buf => {
-            bank += buf.length
-            toast(`Archiving, wrote ${bank}`)
-        })
+            if(check){
+                
+                archive.directory(path, false)
+            }
+            else {
+                
+                archive.file(path, false)
+            }
+        }
     }
 
-    // pipe archive data to the file
+    output.on('close', () => res(`🎉 Compressed ${name} to ${dir} (${archive.pointer()} bytes)`))
+
+    //output.on('end', () => res(`🎉 Compressed ${name} to ${dir} (${archive.pointer()} bytes)`))
+
+    archive.on('warning', console.warn)
+
+    archive.on('error', err => rej(err))
+
     archive.pipe(output)
 
-    // append files from a directory, putting its contents at the root of archive
-    archive.directory(cwd+name, false)
-
-    // finalize the archive (ie we are done appending files but streams have to finish yet)
-    // 'close', 'end' or 'finish' may be fired right after calling this method so register to them beforehand
     archive.finalize()
 }
