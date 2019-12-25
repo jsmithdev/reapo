@@ -62,24 +62,15 @@ async function run(dir, config, res, rej, toast){   console.dir(dir);  console.d
         
         const path = `${repo_path}/${item}`
         
-        // check if item is a file
-        if(item.includes('.')){
-            
-            archive.file(path, false)
+        const isDirectory = (await stat( path )).isDirectory()
+        
+        if(isDirectory){
+
+            archive.directory(path, item)
         }
         else {
 
-            // check if really a directory or just a file without a .
-            const check = (await stat( path )).isDirectory()
-
-            if(check){
-                
-                archive.directory(path, false)
-            }
-            else {
-                
-                archive.file(path, false)
-            }
+            archive.file(path, { name: item })
         }
     }
 
