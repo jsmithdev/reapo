@@ -25,20 +25,26 @@ Wanted a repo manager that
   - dumb (eg: OS file manager)
   - complex (eg: Gitkraken)
 
-
 Some functions include
+
 - Filter ( Ctrl+F )
 - Open in VS Code ( </> icon )
 - New project, Salesforce project or git clone ( Ctrl+N )
-    - Auto opens in VS Code on creation
-- Run commands in terminal-like view or via shortcut icons which include:
-    - ls
-    - Archive (offers to delete after backup)
-    - git status
-    - Open in Github ( runs `git remote -v` & parses URL to open in default browser )
-    - Open in OS file manager
-    - Clear terminal
-    - Delete
+  - Auto opens in VS Code on creation
+
+Run commands in terminal-like view or via shortcut icons which include:
+
+- open in vs code
+- list contents
+- Archive / backup repo
+  - ignores node_modules, dist, out by default
+  - offers to delete repo after backup
+- git status
+- Open git repo in browser (Github tested)
+- Open SFDX project's Salesforce org
+- Open in OS file manager
+- Clear terminal
+- Delete repo
 
 ---
 
