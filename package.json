@@ -1,7 +1,7 @@
 {
   "name": "reapo",
   "productName": "reapo",
-  "version": "0.1.1",
+  "version": "0.1.5",
   "description": "A repo manager coded in easily editable, deliciously vanilla web standards 🎉",
   "main": "src/index.js",
   "keywords": [
