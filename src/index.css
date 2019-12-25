@@ -63,7 +63,7 @@ footer {
 /* App Frame */
 #app {
     width: 100%;
-    height: -webkit-fill-available;
+    height: 100%;
     display: grid;
     overflow: overlay;
     /* overflow: hidden; */
