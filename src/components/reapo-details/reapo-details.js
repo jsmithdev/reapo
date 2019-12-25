@@ -248,23 +248,32 @@ export class ReapoModal extends HTMLElement {
 		}
 
 		/* Run Archiver / box icon */
-		this.dom.archive.onclick = () => new Promise((resolve, reject) => {
-			this.dispatchEvent(new CustomEvent(
-				'archive', 
-				{ 
-					bubbles: true, 
-					composed: true,
-					detail: {
-						resolve, 
-						reject,
-						name: this.name,
-						cwd: this.path+'/'
-					}
+		this.dom.archive.onclick = async () => {
+				
+			try {
+
+				const message = await new Promise((resolve, reject) => {
+					this.dispatchEvent(new CustomEvent(
+						'archive', 
+						{ 
+							bubbles: true, 
+							composed: true,
+							detail: {
+								resolve, 
+								reject,
+								name: this.name,
+								cwd: this.path+'/'
+							}
+						})
+					)
 				})
-			)
-		})
-			.then(res => this.dom.term.setAttribute('log', res))
-			.catch(res => this.dom.term.setAttribute('log', res))
+
+				this.dom.term.setAttribute('log', message)
+			}
+			catch(error){
+				this.dom.term.setAttribute('log', error)
+			}
+		}
 
 		/* Clear terminal */
 		this.dom.clear.onclick = () => this.dom.term.setAttribute('clear', true)
