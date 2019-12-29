@@ -25,6 +25,7 @@ const dom = {
 	footer: document.querySelector('footer'),
 	refreshReapo: document.querySelector('.refreshReapo'),
 	sortDir: document.querySelector('reapo-sort'),
+	header: document.querySelector('reapo-header'),
 }
 
 if (!Path) {
@@ -166,11 +167,16 @@ function toast( msg, time ){
 }
 
 { /* Filtering */
-	dom.filter.addEventListener('keyup', e =>
+
+	dom.header.addEventListener('filter', event => {
+		const { value } = event.detail
 		dom.container.childNodes.forEach(el => {
-			if (el.title) { el.style.display = el.title.toLowerCase().includes(e.target.value.toLowerCase()) ? 'inline' : 'none' }
+			if (el.title) { 
+				const check = el.title.toLowerCase().includes(value.toLowerCase())
+				el.style.display = check ? 'inline' : 'none'
+			}
 		})
-	)
+	})
 }
 
 { /* Repo Details */

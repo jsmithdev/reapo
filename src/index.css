@@ -77,6 +77,7 @@ footer {
 	background-image: linear-gradient(-70deg, #ec00ff, #00a1ff);
     background-attachment: fixed;
 }
+
 /* scroll */
 ::-webkit-scrollbar {
 	width: .25em;
@@ -92,29 +93,6 @@ footer {
 }
 
 
-.header {
-	width: 100%;
-    /* position: fixed; */
-    display: grid;
-    grid-area: header;
-    align-items: center;
-    justify-items: center;
-    grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr 1fr;
-    padding: .25rem;
-    background: var(--color-dark);
-    border-bottom: 1pt solid var(--color-light);
-    box-shadow: 0px 2px 4px 0 rgba(0, 0, 0, 0.35), 0px -4px 10px 0px rgba(0, 0, 0, 0.35);
-}
-.leftHeader {
-	width: 100%;
-
-    display: grid;
-	align-items: center;
-    justify-items: center;
-	grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr;
-}
 
 .content {
 	/* height: -webkit-fill-available; */
@@ -142,58 +120,3 @@ footer {
 
 
 
-
-/* todo make header a web component <reapo-header/> */
-/* Header */
-#menu {
-	width: 100%;
-	margin: auto;
-	max-width: 3rem;
-	cursor: pointer;
-	border-radius: 50%;
-	text-align: right;
-}
-
-.center {
-	text-align: center;
-}
-
-.right {
-	text-align: right;
-}
-
-.left {
-	text-align: left;
-}
-
-.filter {
-	width: 20%;
-	border: none;
-	padding: .3rem;
-	max-width: 20rem;
-	min-width: 12rem;
-	text-align: center;
-	border-radius: 5px;
-	background: var(--color-lightest);
-}
- 
-svg {
-	fill: var(--color-light);
-	margin: 0.4rem;
-	/* transform: rotate(0deg); */
-    /* transition-duration: 1s; */
-}
-svg:hover {
-	filter: var(--shadow-drop);
-	transform: rotate(1800deg);
-	transition-duration: 6s;
-}
-
-.refreshReapo {
-	width: 100%;
-    margin: auto;
-    max-width: 3rem;
-    cursor: pointer;
-    border-radius: 50%;
-    text-align: right;
-}

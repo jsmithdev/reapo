@@ -65,53 +65,13 @@ body {
     background: rgba(0, 0, 0, 0.6);
 }
 
-.content {
-
-    height: 100%;
-    vertical-align: middle;
-
-    display: grid;
-    grid-row-gap: 20px;
-    align-items: center;
-    justify-items: center;
-    grid-column-gap: 20px;
-    grid-template-rows: auto;
-    grid-template-columns: repeat(auto-fit, minmax(325px, 1fr));
-}
-
-.title {
-    padding: 1rem;
-    padding: 0;
-    margin: 0 0 3px 0px;
-}
-
-.container {
-}
-
-.icon_small {
-    margin: 2px;
-    width: 2rem;
+.card {
+    margin: 1rem;
     cursor: pointer;
-    height: auto;
-    fill: #525252;
-    vertical-align: middle;
-}
-.text {
-    color: white;
-    border: none;
-    outline: none;
-    background: transparent;
-    border-bottom: 1pt solid pink;
-}
-
-.subtitle {
+    border-radius: 5px;
     background: var(--color-dark);
-    color: white;
-    text-align: center;
-    border-radius: 5px 5px 0 0;
-    margin: 0;
-    height: 4rem;
-    padding-top: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 
 .close {
@@ -140,15 +100,11 @@ body {
 
         <h1 class="close">X</h1>
 
-        <div class="content">
+        <div class="card">
 
-            <div class="container">
-                <reapo-create></reapo-create>
-            </div>
-
-            <div class="container">
-                <reapo-dir></reapo-dir>
-            </div>
+            <reapo-create></reapo-create>
+            
+            <reapo-dir></reapo-dir>
         
             <!-- 
             <div class="container">
