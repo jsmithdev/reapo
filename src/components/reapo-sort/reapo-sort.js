@@ -44,26 +44,25 @@ svg {
 
 `
 
-export class SortDir extends HTMLElement {
+export class ReapoSort extends HTMLElement {
 
     constructor() {
         super()
         
         this.attachShadow({mode: 'open'})
     }
-    static get is() {
-        return 'sort-dir'
-    }
 
-    static get observedAttributes() {
-        return ['projects']
+    static get is() {
+        return 'reapo-sort'
     }
 
     connectedCallback() {
+    
         this.shadowRoot.appendChild(template.content.cloneNode(true))
         
         this.registerElements()
     }
+
     registerElements(){
         
         this.dom = {
@@ -73,61 +72,47 @@ export class SortDir extends HTMLElement {
 	    
 		this.registerListeners()
     }
+    
 	registerListeners(){
         
-        this.dom.numeric.onclick = () => {
-            this.dom.numeric.classList.add('hide')
+        this.dom.numeric.onmousedown = () => {
             this.dom.alpha.classList.remove('hide')
-            this.sortByDate()
+            this.dom.numeric.classList.add('hide')
+            this.sort('date-asc')
         }
         
-        this.dom.alpha.onclick = () => {
+        this.dom.alpha.onmousedown = () => {
             this.dom.alpha.classList.add('hide')
             this.dom.numeric.classList.remove('hide')
-            this.sortByName()
+            this.sort('name-asc')
         }
 
-        this.init_state()
+        // init
+        this.sort( localStorage.getItem('order') )
     }
-    init_state(){
+    
+    /**
+     * @description sorts projects in main view 
+     * 
+     * @param {String} order date-asc, name-asc, etc
+     */
+    sort( order ){
 
-        const order = localStorage.getItem('order')
-        if(order === 'date-asc'){
-            this.dom.numeric.classList.add('hide')
-            this.dom.alpha.classList.remove('hide')
-        }
-    }
-    
-    sortByName(){
-		this.dispatchEvent(
-			new CustomEvent(
-				'sort-name-asc',
-				{
-					bubbles: true,
-					composed: true,
-					detail: { 
+        this.dispatchEvent(
+            new CustomEvent(
+                'sort',
+                {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        order,
                         clear: true,
-                        order: 'name-asc'
                     }
-				}
-			)
-		)
-    }
-    
-    sortByDate(){
-		this.dispatchEvent(
-			new CustomEvent(
-				'sort-date-asc',
-				{
-					bubbles: true,
-					composed: true,
-					detail: { 
-                        clear: true,
-                        order: 'date-asc'
-                    }
-				}
-			)
-		)
+                }
+            )
+        )
+        return
     }
 }
-customElements.define(SortDir.is, SortDir)
+
+customElements.define(ReapoSort.is, ReapoSort)

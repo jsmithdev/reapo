@@ -24,7 +24,7 @@ const dom = {
 	settings: document.querySelector('reapo-settings'),
 	footer: document.querySelector('footer'),
 	refreshReapo: document.querySelector('.refreshReapo'),
-	sortDir: document.querySelector('sort-dir'),
+	sortDir: document.querySelector('reapo-sort'),
 }
 
 if (!Path) {
@@ -122,12 +122,12 @@ function addToView( dir ){
 
 /**
  * @description Toast message to user
- * @param {String} A message
+ * @param {String} msg the message to display
  */
-function toast( msg ){
+function toast( msg, time ){
 
 	dom.footer.textContent = msg
-	setTimeout(() => dom.footer.textContent = '', 5000)
+	setTimeout(() => dom.footer.textContent = '', time ? time : 5000)
 }
 
 
@@ -419,19 +419,15 @@ function newRepo(event) {
 
 { /* Sort Projects */
 
-	dom.sortDir.addEventListener('sort-name-asc', event => {
-		localStorage.setItem('sort', 'sort-name-asc')
-		loadRepo({
-			clear: true,
-			order: 'name-asc',
-		})
-	})
+	dom.sortDir.addEventListener('sort', event => {
 
-	dom.sortDir.addEventListener('sort-date-asc', event => {
-		localStorage.setItem('sort', 'sort-date-asc')
+		const { order } = event.detail
+
+		localStorage.setItem('order', order)
+
 		loadRepo({
-			clear: true ,
-			order: 'date-asc',
+			order,
+			clear: true,
 		})
 	})
 }
