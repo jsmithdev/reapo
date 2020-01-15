@@ -1,4 +1,3 @@
-// jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
 const template = document.createElement('template')
