@@ -66,7 +66,9 @@ body {
 }
 
 .card {
-    margin: 1rem;
+	margin: 1rem;
+	width: 100%;
+	height: 100%;
     cursor: pointer;
     border-radius: 5px;
     background: var(--color-dark);
@@ -105,7 +107,7 @@ body {
             <reapo-create></reapo-create>
             
             <reapo-dir></reapo-dir>
-        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
             <!-- 
             <div class="container">
                 <reapo-theme></reapo-theme>

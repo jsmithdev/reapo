@@ -7,12 +7,25 @@ template.innerHTML = /*html*/`
 
     svg {
         height: fit-content;
-        /* max-width: 50%; */
         cursor: pointer;
     }
     path {
         fill: var(--color-lightest);
     }
+
+	select {
+		cursor: pointer;
+		border: none;
+		height: 1.75rem;
+	}
+	select:focus {
+		outline-color: var(--color-dark);
+	}
+
+	div {
+		text-align: left;
+    	padding-left: 1rem;
+	}
 
     .help {
         font-size: 0.7rem;
@@ -32,7 +45,6 @@ template.innerHTML = /*html*/`
     .title {
         background: var(--color-dark);
         color: white;
-        text-align: center;
         border-radius: 5px 5px 0 0;
         margin: 0;    
         height: 3rem;
@@ -41,47 +53,25 @@ template.innerHTML = /*html*/`
 
     .action {
         height: auto;
-        text-align: center;
-        <!-- background: var(--color-mid); -->
         border-radius: 0 0 5px 5px;
         cursor: pointer;
     }
     .action input {
-        color: white;
-        -webkit-appearance: none;
-        <!-- background-color: var(--color-mid); -->
-        -webkit-rtl-ordering: logical;
-        cursor: text;
-        padding: 4px 0 5px 0;
-        padding-left: 7px;
-        border-width: 0px;
-        outline-color: var(--color-highlight);
-    }
-    .action input::placeholder {
-        <!-- color: var(--color-lightest); -->
-    }
-
-
-
-
-
-    select {
-
-        color: white;
-        cursor: pointer;
-        border: none;
-    }
-    select:focus {
-        outline-color: var(--color-dark);
-    }
-
+		-webkit-appearance: none;
+		cursor: text;
+		margin-left: -1rem;
+		padding-left: .3rem;
+		border-width: 0px;
+		height: 1.75rem;
+		outline-color: var(--color-dark);
+	}
 </style>
 
 <div>
 
-    <h3 class="title">Create <span class="help" title="To make a blank new repo just type a name and hit Enter (or click addition icon) &#10;
+    <h2 class="title">Create <span class="help" title="To make a blank new repo just type a name and hit Enter (or click addition icon) &#10;
     To make make a new repo from .git repo, put the full .git url instead of a name and hit Enter (or click addition icon) &#10;
-    To create a Salesforce Project using SFDX, select option from drop down, type a new and hit Enter (or click addition icon) &#10;">?</span></h3>
+    To create a Salesforce Project using SFDX, select option from drop down, type a new and hit Enter (or click addition icon) &#10;">?</span></h2>
     
     <select>
         <option>Normal</option>

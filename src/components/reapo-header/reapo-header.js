@@ -1,5 +1,14 @@
 'use strict()'
 
+
+const codes = {
+	find: ['KeyF'],
+	exit: ['KeyW'],
+	restart: ['KeyR'],
+	close: ['Escape'],
+	settings: ['KeyS', 'KeyN'],
+}
+
 const template = document.createElement('template')
 
 template.innerHTML = /*html*/`
@@ -132,37 +141,61 @@ export class ReapoHeader extends HTMLElement {
 	connectedCallback() {
 
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
-		this.registerElements(this.shadowRoot)
+		this.registerElements()
 	}
 
 	//attributeChangedCallback(n, ov, nv) { }
 
-	registerElements(doc) {
+	registerElements() {
 
 		this.dom = {
-
-			filter: doc.querySelector('input.filter'),
+			menu: this.shadowRoot.querySelector('reapo-menu'),
+			sortDir: this.shadowRoot.querySelector('reapo-sort'),
+			filter: this.shadowRoot.querySelector('input.filter'),
+			refreshReapo: this.shadowRoot.querySelector('.refreshReapo'),
 		}
 
 		this.registerListeners()
 	}
 
 	registerListeners() {
+		
+		/* refresh-directory */
+		this.dom.refreshReapo.onclick = () => {
+			this.loadRepo({ clear: true })
+			toast(`Refreshed directory 🦄`)
+		}
+		
+		/* filter */
+		this.dom.filter.onkeyup = event => {
+			this.dispatchEvent(new CustomEvent('filter', {
+				bubbles: true,
+				composed: true,
+				detail: {
+					value: event.target.value
+				}
+			}))
+		}
+	}
+
+	settingListeners() { /* Settings Menu */
 
 		
+	}
 
-		/* On new click, create repo */
-		this.dom.new.onclick = e => {
-			// If no name, don't create
-			if (e.target == this.dom.name) { return }
+	sortDirListeners() { /* Sort Projects */
 
-			const name = this.dom.name.value
-
-			name ? this.createRepo(name, localStorage.path) : this.toast('Please enter a name or .git url') // jshint ignore: line
-		}
-
-		/* If Enter is pressed in input, trigger new click */
-		this.dom.name.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.new.click() : null
+		this.dom.sortDir.addEventListener('sort', event => {
+	
+			const { order } = event.detail
+	
+			localStorage.setItem('order', order)
+	
+			this.loadRepo({
+				order,
+				clear: true,
+			})
+		})
 	}
 
 
@@ -221,7 +254,7 @@ export class ReapoHeader extends HTMLElement {
 					cmd,
 					cwd,
 					exit,
-					responder: () => loadRepo({clear: true})
+					responder: () => this.loadRepo({clear: true})
 				}
 			}
 		)
@@ -242,12 +275,7 @@ export class ReapoHeader extends HTMLElement {
 			)
 		)
 
-		this.dispatchEvent(
-			new CustomEvent('close-settings', {
-				bubbles: true,
-				composed: true
-			})
-		)
+		this.dom.menu.close()
 
 		if (open && name && path) {
 
@@ -281,8 +309,38 @@ export class ReapoHeader extends HTMLElement {
 	}
 
 	focus(){
-		this.dom.name.focus()
+		this.dom.filter.focus()
+	}
+
+	open(options){
+		if(options.value == 'settings'){
+			this.dom.menu.open()
+		}
+	}
+
+	close(){
+		this.dom.menu.close()
+	}
+
+	loadRepo(detail){
+
+		detail.order ? detail.order : localStorage.getItem('order')
+		
+		this.dispatchEvent(
+			new CustomEvent(
+				'loadRepo',
+				{
+					bubbles: true,
+					composed: true,
+					detail,
+				}
+			)
+		)
 	}
 }
 
 customElements.define(ReapoHeader.is, ReapoHeader)
+
+
+
+

@@ -4,65 +4,66 @@ const template = document.createElement('template')
 template.innerHTML = /*html*/`
 <style>
 
-svg {
-    height: fit-content;
-    /* max-width: 50%; */
-    cursor: pointer;
-}
-path {
-    fill: var(--color-lightest);
-}
+	svg {
+        height: fit-content;
+        cursor: pointer;
+    }
+    path {
+        fill: var(--color-lightest);
+    }
 
-.help {
+	select {
+		cursor: pointer;
+		border: none;
+		height: 1.75rem;
+	}
+	select:focus {
+		outline-color: var(--color-dark);
+	}
 
-	font-size: 0.7rem;
-    width: 1em;
-    height: 1em;
-    padding-left: .25rem;
-    padding-right: .25rem;
-    vertical-align: super;
-    cursor: help;
-    border-radius: 10px;
-    padding: .1rem .25rem;
-    color: var(--color-dark);
-    background: var(--color-highlight);
-    border: 1pt solid var(--color-mid);
-}
+	div {
+		text-align: left;
+    	padding-left: 1rem;
+	}
 
-.title {
-    background: var(--color-dark);
-    color: white;
-    text-align: center;
-    border-radius: 5px 5px 0 0;
-    margin: 0;    
-    height: 3rem;
-    padding-top: 1rem;
-}
+    .help {
+        font-size: 0.7rem;
+        background: var(--color-highlight);
+        color: var(--color-dark);
+        border: 1pt solid var(--color-mid);
+        width: 1em;
+        height: 1em;
+        padding-left: .25rem;
+        padding-right: .25rem;
+        vertical-align: super;
+        cursor: help;
+        border-radius: 10px;
+        padding: .1rem .25rem;
+    }
+    
+    .title {
+        background: var(--color-dark);
+        color: white;
+        border-radius: 5px 5px 0 0;
+        margin: 0;    
+        height: 3rem;
+        padding-top: 1rem;
+    }
 
-.action {
-    height: auto;
-    text-align: center;
-    background: var(--color-mid);
-    border-radius: 0 0 5px 5px;
-    cursor: pointer;
-}
-.action input {
-    color: white;
-    -webkit-appearance: none;
-    background-color: var(--color-mid);
-    -webkit-rtl-ordering: logical;
-    cursor: text;
-    padding: 4px 0 5px 0;
-    width: 100%;
-    padding-left: 7px;
-    border-width: 0px;
-    outline-color: var(--color-highlight);
-
-    line-height: 3;
-}
-.action input::placeholder {
-    color: var(--color-lightest);
-}
+    .action {
+        height: auto;
+        border-radius: 0 0 5px 5px;
+        cursor: pointer;
+    }
+    .action input {
+		-webkit-appearance: none;
+		cursor: text;
+		margin-left: -1rem;
+		padding-left: .3rem;
+		border-width: 0px;
+		height: 1.75rem;
+		outline-color: var(--color-dark);
+	}
 
 </style>
 
@@ -73,10 +74,7 @@ path {
     <div class="action" title="Set your main directory 🦄">
         
         <input id="path" class="text" placeholder="Eg: /home/jamie/repo"/>
-        
-        <svg viewBox="0 0 24 24">
-            <path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
-        </svg>
+
     </div>
 </div>
 `
@@ -141,21 +139,21 @@ export class ReapoDir extends HTMLElement {
 				)
 			)
 		})
-			.then(msg => {
-				
-				this.clear()
+		.then(msg => {
+			
+			this.clear()
 
-				this.dispatchEvent(
-					new CustomEvent(
-						'toast',
-						{
-							bubbles: true,
-							composed: true,
-							detail: { msg }
-						}
-					)
+			this.dispatchEvent(
+				new CustomEvent(
+					'toast',
+					{
+						bubbles: true,
+						composed: true,
+						detail: { msg }
+					}
 				)
-			})
+			)
+		})
 
 		/* If Enter is pressed in input, trigger click */
 		this.dom.path.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.path.click() : null
