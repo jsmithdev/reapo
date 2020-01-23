@@ -17,14 +17,10 @@ const codes = {
 const dom = {
 	
 	body: document.querySelector('body'),
-	filter: document.querySelector('.filter'),
 	container: document.querySelector('.container'),
 	details: document.querySelector('reapo-details'),
-	menu: document.querySelector('reapo-menu'),
-	settings: document.querySelector('reapo-settings'),
 	footer: document.querySelector('footer'),
-	refreshReapo: document.querySelector('.refreshReapo'),
-	sortDir: document.querySelector('reapo-sort'),
+	header: document.querySelector('reapo-header'),
 }
 
 if (!Path) {
@@ -60,6 +56,7 @@ else {
 
 	setTheme(theme)
 }
+
 /**
  * @description Set theme & store for later 
  * 
@@ -149,28 +146,64 @@ function toast( msg, time ){
 	dom.body.onkeyup = e => { //console.log(e.code+e.ctrlKey)
 		
 		/* Close overlay on Esc press */
-		codes.close.includes(e.code) ? [dom.settings, dom.details].map(el => el.close()) : null // jshint ignore: line
+		if(codes.close.includes(e.code)){
+			dom.header.close()
+			dom.details.close()
+		} 
 
 		/* Close Reapo on Ctrl+W press */
-		e.ctrlKey && codes.exit.includes(e.code) ? quit() : null // jshint ignore: line
+		e.ctrlKey && codes.exit.includes(e.code) ? quit() : null 
 
 		/* Restart Reapo on Ctrl+R hotkey */
-		e.ctrlKey && codes.restart.includes(e.code) ? restart() : null // jshint ignore: line
+		e.ctrlKey && codes.restart.includes(e.code) ? restart() : null 
 
 		/* Focus filter of Ctrl+F overlay on Esc press hotkey */
-		e.ctrlKey && codes.find.includes(e.code) ? dom.filter.focus() : null // jshint ignore: line
+		e.ctrlKey && codes.find.includes(e.code) ? dom.header.focus() : null 
 
 		/* Open Settings hotkey */
-		e.ctrlKey && codes.settings.includes(e.code) ? dom.settings.open() : null // jshint ignore: line
+		if(e.ctrlKey && codes.settings.includes(e.code)){
+			dom.header.open({ value: 'settings' })
+		}
 	}
 }
 
-{ /* Filtering */
-	dom.filter.addEventListener('keyup', e =>
+{ /* Header */
+
+	dom.header.addEventListener('filter', event => {
+		const { value } = event.detail
 		dom.container.childNodes.forEach(el => {
-			if (el.title) { el.style.display = el.title.toLowerCase().includes(e.target.value.toLowerCase()) ? 'inline' : 'none' }
+			if (el.title) { 
+				const check = el.title.toLowerCase().includes(value.toLowerCase())
+				el.style.display = check ? 'inline' : 'none'
+			}
 		})
-	)
+	})
+
+	
+
+	dom.header.addEventListener('sort', event => {
+		
+		const { order } = event.detail
+
+		localStorage.setItem('order', order)
+
+		loadRepo({
+			order,
+			clear: true,
+		})
+	})
+
+	dom.header.addEventListener('load-repo', event => {
+		
+		const { order } = event.detail
+
+		localStorage.setItem('order', order)
+
+		loadRepo({
+			order,
+			clear: true,
+		})
+	})
 }
 
 { /* Repo Details */
@@ -209,11 +242,6 @@ function toast( msg, time ){
 		shell.showItemInFolder( filepath )
 	})
 
-	/* refresh-directory */
-	dom.refreshReapo.onclick = () => {
-		loadRepo({ clear: true })
-		toast(`Refreshed directory 🦄`)
-	}
 
 
 	/* Git Link Repo */
@@ -249,38 +277,6 @@ function toast( msg, time ){
 	})
 }
 
-
-
-{ /* Settings Menu */
-
-	/* Opener */
-	dom.menu.onclick = () => dom.settings.open()
-
-	/* Save Main Settings */
-	dom.settings.addEventListener('save-settings', (e) => {
-        
-		const path = e.detail.path
-		const msg = `Saved ${path}`
-
-		localStorage.path = path
-		toast(msg)
-		loadRepo({ clear: true })
-		e.detail.res(msg)
-	})
-
-	/* New blank Repo */
-	dom.settings.addEventListener('new-repo', newRepo)
-
-
-	/* New git clone */
-	dom.settings.addEventListener('new-git', (e) => execEvent(e))
-
-	/* New sfdx project */
-	dom.settings.addEventListener('new-sfdx', e => execEvent(e))
-
-	/* Refresh Directory */
-	dom.settings.addEventListener('refresh-repo', () => loadRepo({ clear: true }))
-}
 
 
 
@@ -403,7 +399,7 @@ function newRepo(event) {
 	}
 
 	dom.container.addEventListener('open-code', openVsCode)
-	dom.settings.addEventListener('open-code', openVsCode)
+	dom.header.addEventListener('open-code', openVsCode)
 	dom.details.addEventListener('open-code', (e) => openVsCode(e))
 }
 
@@ -417,19 +413,5 @@ function newRepo(event) {
 	})
 }
 
-{ /* Sort Projects */
-
-	dom.sortDir.addEventListener('sort', event => {
-
-		const { order } = event.detail
-
-		localStorage.setItem('order', order)
-
-		loadRepo({
-			order,
-			clear: true,
-		})
-	})
-}
 
 window.scrollTo(0, 0) 

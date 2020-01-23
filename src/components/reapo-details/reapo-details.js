@@ -55,10 +55,10 @@ template.innerHTML = /*html*/`
 					</svg>
 				</div>
 				
-				<div id="openOrg" title="Open Org \n(if sfdx project)">
-					<svg class="icon_small" viewBox="0 0 24 24">
-						<path d="M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" />
-					</svg>
+				<div id="openOrg" title="Open Salesforce org in browser \n(for sfdx projects)">
+					<h1 class="icon_small">
+						SF
+					</h1>
 				</div>
 			
 				<div id="sync" title="Git Status">
@@ -78,7 +78,11 @@ template.innerHTML = /*html*/`
 						<path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
 					</svg>
 				</div>
-				
+				<!-- general cloud icon
+				<svg class="icon_small" viewBox="0 0 24 24">
+					<path d="M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" />
+				</svg>
+				-->
 
             </div>
 
@@ -366,7 +370,19 @@ export class ReapoModal extends HTMLElement {
 			}
 			this.caller = detail.from
 			this.dom.title.textContent = detail.name
-			this.dom.moddate.textContent = detail.moddate
+
+			const title = document.createElement('span')
+			title.textContent = 'Last Modified'
+
+			const content = document.createElement('span')
+			content.textContent = detail.moddate
+			
+			while(this.dom.moddate.lastChild){
+				this.dom.removeChild(this.dom.moddate.lastChild)
+			}
+			this.dom.moddate.appendChild(title)
+			this.dom.moddate.appendChild(document.createElement('br'))
+			this.dom.moddate.appendChild(content)
 
 			this.path = detail.path
 			this.name = detail.name

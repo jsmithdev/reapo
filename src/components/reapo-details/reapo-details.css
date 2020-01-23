@@ -113,7 +113,13 @@ body {
     font-weight: 400;
 }
 
-.icon_small {
+h1.icon_small {
+    width: 1.8rem;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--color-light);
+}
+svg.icon_small {
     width: 1.8rem;
     cursor: pointer;
     fill: var(--color-light);

@@ -7,12 +7,25 @@ template.innerHTML = /*html*/`
 
     svg {
         height: fit-content;
-        /* max-width: 50%; */
         cursor: pointer;
     }
     path {
         fill: var(--color-lightest);
     }
+
+	select {
+		cursor: pointer;
+		border: none;
+		height: 1.75rem;
+	}
+	select:focus {
+		outline-color: var(--color-dark);
+	}
+
+	div {
+		text-align: left;
+    	padding-left: 1rem;
+	}
 
     .help {
         font-size: 0.7rem;
@@ -32,7 +45,6 @@ template.innerHTML = /*html*/`
     .title {
         background: var(--color-dark);
         color: white;
-        text-align: center;
         border-radius: 5px 5px 0 0;
         margin: 0;    
         height: 3rem;
@@ -41,44 +53,18 @@ template.innerHTML = /*html*/`
 
     .action {
         height: auto;
-        text-align: center;
-        background: var(--color-mid);
         border-radius: 0 0 5px 5px;
         cursor: pointer;
     }
     .action input {
-        color: white;
-        -webkit-appearance: none;
-        background-color: var(--color-mid);
-        -webkit-rtl-ordering: logical;
-        cursor: text;
-        padding: 4px 0 5px 0;
-        width: 100%;
-        padding-left: 7px;
-        border-width: 0px;
-        outline-color: var(--color-highlight);
-    }
-    .action input::placeholder {
-        color: var(--color-lightest);
-    }
-
-
-
-
-
-    select {
-        width: 100%;
-        background: var(--color-mid);
-        color: white;
-        outline-color: var(--color-dark);
-        cursor: pointer;
-        border: none;
-        height: 1.5rem;
-    }
-    select:focus {
-        outline-color: var(--color-dark);
-    }
-
+		-webkit-appearance: none;
+		cursor: text;
+		margin-left: -1rem;
+		padding-left: .3rem;
+		border-width: 0px;
+		height: 1.75rem;
+		outline-color: var(--color-dark);
+	}
 </style>
 
 <div>
@@ -95,15 +81,11 @@ template.innerHTML = /*html*/`
     <div class="action" title="Give a name for a new repo or paste a .git uri 🦄">
         
         <input id="name" placeholder="Name of folder, project or .git URL" />
-
-        <svg viewBox="0 0 24 24">
-            <path d="M10,4L12,6H20A2,2 0 0,1 22,8V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10M15,9V12H12V14H15V17H17V14H20V12H17V9H15Z" />
-        </svg>
     </div>
 </div>
 `
 
-export class Reapocreate extends HTMLElement {
+export class ReapoCreate extends HTMLElement {
 
 	constructor() {
 		super()
@@ -275,4 +257,4 @@ export class Reapocreate extends HTMLElement {
 	}
 }
 
-customElements.define(Reapocreate.is, Reapocreate)
+customElements.define(ReapoCreate.is, ReapoCreate)
