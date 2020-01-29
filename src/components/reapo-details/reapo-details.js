@@ -378,7 +378,7 @@ export class ReapoModal extends HTMLElement {
 			content.textContent = detail.moddate
 			
 			while(this.dom.moddate.lastChild){
-				this.dom.removeChild(this.dom.moddate.lastChild)
+				this.dom.moddate.removeChild(this.dom.moddate.lastChild)
 			}
 			this.dom.moddate.appendChild(title)
 			this.dom.moddate.appendChild(document.createElement('br'))
