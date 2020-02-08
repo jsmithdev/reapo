@@ -107,7 +107,23 @@ export class ReapoMenu extends HTMLElement {
 
 		/* Refresh Directory */
 		this.dom.settings.addEventListener('refresh-repo', () => this.loadRepo({ clear: true }))
-    }
+	}
+	
+	loadRepo(detail){
+
+		detail.order ? detail.order : localStorage.getItem('order')
+		
+		this.dispatchEvent(
+			new CustomEvent(
+				'loadRepo',
+				{
+					bubbles: true,
+					composed: true,
+					detail,
+				}
+			)
+		)
+	}
     
     open(){
         this.dom.settings.open()
