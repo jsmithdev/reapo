@@ -152,8 +152,12 @@ export class ReapoModal extends HTMLElement {
 		
 		/* Open directory in OS file manager */
 		this.dom.dir.onclick = () => {
-
-			const folder = this.dir+this.name
+			
+			const last_char = this.dir.substring(this.dir.length-1, this.dir.length)
+			
+			const folder =  last_char === '/' || last_char === '\\' 
+				? this.dir+this.name
+				: this.dir+'/'+this.name
 				
 			this.dispatchEvent(
 				new CustomEvent(
