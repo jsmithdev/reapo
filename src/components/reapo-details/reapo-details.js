@@ -154,7 +154,7 @@ export class ReapoModal extends HTMLElement {
 		this.dom.dir.onclick = () => {
 			
 			const last_char = this.dir.substring(this.dir.length-1, this.dir.length)
-			
+
 			const folder =  last_char === '/' || last_char === '\\' 
 				? this.dir+this.name
 				: this.dir+'/'+this.name
@@ -341,16 +341,20 @@ export class ReapoModal extends HTMLElement {
 
 		/* Open in VS Code / <> icon */
 		this.dom.terminal_popout.onclick = () => {
-			
-			this.dispatchEvent(new CustomEvent(
+
+			const cmd = navigator.appVersion.indexOf("Win")
+				? `start cmd.exe @cmd /k "cd ${this.path}/${this.name}"`
+				: `gnome-terminal --working-directory=${this.path}/${this.name}`
+
+				this.dispatchEvent(new CustomEvent(
 				'exec-cmd', 
 				{ 
 					bubbles: true, 
 					composed: true,
 					detail: {
+						cmd,
 						from: this.is,
 						title: this.name,
-						cmd: `gnome-terminal --working-directory=${this.path}/${this.name}`, 
 						cwd: `${this.path}/${this.name}`
 					}
 				})
@@ -405,4 +409,3 @@ export class ReapoModal extends HTMLElement {
 }
 
 customElements.define(ReapoModal.is, ReapoModal)
-
