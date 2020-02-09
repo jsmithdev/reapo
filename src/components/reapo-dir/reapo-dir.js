@@ -1,5 +1,7 @@
 'use strict()'
 
+const HELP_TEXT = 'Used to set the main directory of your projects that will show in the main view'
+
 const template = document.createElement('template')
 template.innerHTML = /*html*/`
 <style>
@@ -21,10 +23,6 @@ template.innerHTML = /*html*/`
 		outline-color: var(--color-dark);
 	}
 
-	div {
-		text-align: left;
-    	padding-left: 1rem;
-	}
 
     .help {
         font-size: 0.7rem;
@@ -41,6 +39,11 @@ template.innerHTML = /*html*/`
         padding: .1rem .25rem;
     }
     
+
+	div.container {
+		text-align: left;
+    	padding-left: 1rem;
+	}
     .title {
         background: var(--color-dark);
         color: white;
@@ -65,15 +68,35 @@ template.innerHTML = /*html*/`
 		outline-color: var(--color-dark);
 	}
 
+	div.pseudo {
+		color: white;
+		background: var(--color-mid);
+		width: fit-content;
+		padding: 1rem;
+		border-radius: 5px;
+	}
+	div.pseudo:hover {
+		background: #4f23d78a;
+	}
+
 </style>
 
-<div>
+<div class="container">
 
-    <h2 class="title">Directory <span class="help" title="Used to set the main directory of your projects that will show in the main view">?</span></h2>
+    <h2 class="title">Directory <span class="help" title="${HELP_TEXT}">?</span></h2>
     
-    <div class="action" title="Set your main directory 🦄">
+	<div class="action" title="Set your main directory 🦄">
+	
+		<div class="pseudo"> Select Main Directory</div>
         
-        <input id="path" class="text" placeholder="Eg: /home/jamie/repo"/>
+		<input 
+			hidden
+			type="file" 
+			webkitdirectory directory 
+			id="path" 
+			class="text"
+			placeholder="Eg: /home/user/repo ">
+		</input>
 
     </div>
 </div>
@@ -110,53 +133,46 @@ export class ReapoDir extends HTMLElement {
 
 			action: doc.querySelector('.action'),
 			path: doc.querySelector('#path'),
+			pseudo: doc.querySelector('.pseudo'),
+			help: doc.querySelector('.help'),
 		}
-
-		this.dom.path.value = localStorage.path ? localStorage.path : ''
 
 		this.registerListeners()
 	}
 
 	registerListeners() {
 
+		/* pseudo button triggers directory input */
+		this.dom.pseudo.onclick = () => {
+			this.dom.path.click()
+		}
+
 		/* Save Main Directory */
-		this.dom.action.onclick = () => new Promise(res => {
-
-			const val = this.dom.path.value
-
-			if (!val || val == localStorage.path || val + '/' == localStorage.path) { return }
-
-			const path = val.slice(val.length - 1) == '/' ? val : `${val}/`
-			console.log('sve '+path)
-			this.dispatchEvent(
-				new CustomEvent(
-					'save-settings',
-					{
-						bubbles: true,
-						composed: true,
-						detail: { res, path }
-					}
-				)
-			)
-		})
-		.then(msg => {
-			
-			this.clear()
-
-			this.dispatchEvent(
-				new CustomEvent(
-					'toast',
-					{
-						bubbles: true,
-						composed: true,
-						detail: { msg }
-					}
-				)
-			)
-		})
+		//this.dom.action.onclick = () => saveMainDirectory()
 
 		/* If Enter is pressed in input, trigger click */
-		this.dom.path.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.path.click() : null
+		this.dom.path.onchange = async event => {
+			if(event.target.files.length){
+
+				const { path } = event.target.files[0]
+
+				const message = await this.saveMainDirectory( path )
+
+				this.dom.help.title = HELP_TEXT + '\n Current: '+path
+
+				this.clear()
+
+				this.toast(message)
+			}
+		}
+
+		this.init()
+	}
+
+	init(){
+		if(localStorage.path){
+			this.dom.help.title = HELP_TEXT + '\n Current: '+localStorage.path
+		}
 	}
 
 	/* Clear inputs & Close */
@@ -168,9 +184,31 @@ export class ReapoDir extends HTMLElement {
 				composed: true
 			})
 		)
+
 		this.dom.path.value = ''
+	}
 
 		
+	/* Save Main Directory */
+	async saveMainDirectory( path ){
+		
+		console.log('Saving path: '+path)
+
+		localStorage.setItem('path', path)
+
+		return new Promise(res => {
+
+			this.dispatchEvent(
+				new CustomEvent(
+					'save-settings',
+					{
+						bubbles: true,
+						composed: true,
+						detail: { res, path }
+					}
+				)
+			)
+		})
 	}
 
 	toast(msg, res = () => {}) {

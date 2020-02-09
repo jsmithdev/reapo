@@ -219,8 +219,10 @@ function toast( msg, time ){
 		
 		const name = e.detail.name
 		const path = localStorage.path
-		//const chain = e.detail.res
-		const cmd = `rm -Rf ${path}${name}`
+		
+		const cmd = process.platform !== 'win32'
+			? `rm -Rf ${path}${name}`
+			: `rmdir /Q /S ${path}${name}`
 		
 		exec(cmd)
 
@@ -281,7 +283,7 @@ function toast( msg, time ){
 
 
 /* Help for unix PATH vars so reapo can run installed CLI tools on behalf of user */
-if (process.platform !== 'windows') {
+if (process.platform !== 'win32') {
 
 	const shellPath = require('shell-path')
 	
