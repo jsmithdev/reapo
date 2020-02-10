@@ -7,23 +7,15 @@
 <img src="https://i.imgur.com/PJT204r.png" width="75%" height="auto" >
 <img src="https://i.imgur.com/bLdQgx8.png" width="75%" height="auto" >
 
-Early releases under [Releases](https://github.com/jsmithdev/reapo/releases) on GitHub
+Releases are on Github under [Releases](https://github.com/jsmithdev/reapo/releases) (Linux & Windows)
 
-todo / issues under [Issues](https://github.com/jsmithdev/reapo/issues) on GitHub
+Wants & issues are on Github under [Issues](https://github.com/jsmithdev/reapo/issues) 
 
 *There is a complimenting vs code theme now called [Abyski](https://github.com/jsmithdev/abyski)* 
 
 ---
 
-## Purpose
-
-Wanted a repo manager that
-
-- Opens & works quickly then gets out of the way
-- Built with web components & standards to easily to extend and hack on
-- Compliments vs code; In between
-  - dumb (eg: OS file manager)
-  - complex (eg: Gitkraken)
+## Functions
 
 Some functions include
 
@@ -35,15 +27,15 @@ Some functions include
 Run commands in terminal-like view or via shortcut icons which include:
 
 - open in vs code
+- open a project's Salesforce org
 - list contents
-- Archive / backup repo
-  - ignores node_modules, dist, out by default
+- Archive and backup repos
+  - ignores /node_modules, /dist, /out by default
   - offers to delete repo after backup
 - git status
-- Open git repo in browser (Github tested)
-- Open SFDX project's Salesforce org
-- Open in OS file manager
-- Clear terminal
+- Open git repo in browser
+- Open project in your OS file manager
+- Clear the terminal
 - Delete repo
 
 ---
@@ -77,10 +69,6 @@ The 'Open in VS Code' feature expects `code` to be a cli command but [VS Code do
 ### Make it (create an installer for your current OS)
 
 ```npm run make```
-
-### Publish it
-
-```npm run publish```
 
 ---
 
