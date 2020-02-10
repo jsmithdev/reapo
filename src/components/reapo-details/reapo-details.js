@@ -184,13 +184,21 @@ export class ReapoModal extends HTMLElement {
             
 			if(!confirm(`Would you like to trash ${name}?`)){ return }
 
+			const last_char = this.dir.substring(this.dir.length-1, this.dir.length)
+
+			const folder =  last_char === '/' || last_char === '\\' 
+				? this.dir+this.name
+				: navigator.appVersion.indexOf("Win")
+					? this.dir+'\\'+this.name
+					: this.dir+'/'+this.name
+
 			this.dispatchEvent(
 				new CustomEvent(
 					'delete-repo',
 					{
 						bubbles: true,
 						composed: true,
-						detail: { name }
+						detail: { name: folder }
 					}
 				)
 			)
