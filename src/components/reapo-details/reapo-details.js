@@ -188,9 +188,9 @@ export class ReapoModal extends HTMLElement {
 
 			const folder =  last_char === '/' || last_char === '\\' 
 				? this.dir+this.name
-				: navigator.appVersion.indexOf("Win")
-					? this.dir+'\\'+this.name
-					: this.dir+'/'+this.name
+				: navigator.appVersion.indexOf("Win") !== -1
+					? this.dir+'\\'+this.name //windows command
+					: this.dir+'/'+this.name //linux command
 
 			this.dispatchEvent(
 				new CustomEvent(
@@ -224,10 +224,11 @@ export class ReapoModal extends HTMLElement {
 		/* Run open org / salesforce cloud icon */
 		this.dom.openOrg.onclick = () => {
 			
-			const cmd = navigator.appVersion.indexOf("Win")
-				? `more ".sfdx/sfdx-config.json"`
-				: `cat .sfdx/sfdx-config.json`
+			const cmd = navigator.appVersion.indexOf("Win") !== -1
+				? `more ".sfdx/sfdx-config.json"`//windows command
+				: `cat .sfdx/sfdx-config.json`//linux command
 
+			console.log(cmd)
 			const cwd = this.path+'/'+this.name
 			const responder = data => this.openOrg(data)
 
@@ -331,9 +332,9 @@ export class ReapoModal extends HTMLElement {
 		/* Open in VS Code / <> icon */
 		this.dom.terminal_popout.onclick = () => {
 
-			const cmd = navigator.appVersion.indexOf("Win")
-				? `start cmd.exe @cmd /k "cd ${this.path}/${this.name}"`
-				: `gnome-terminal --working-directory=${this.path}/${this.name}`
+			const cmd = navigator.appVersion.indexOf("Win") !== -1
+				? `start cmd.exe @cmd /k "cd ${this.path}/${this.name}"` //windows command
+				: `gnome-terminal --working-directory=${this.path}/${this.name}` //linux command
 
 				this.dispatchEvent(new CustomEvent(
 				'exec-cmd', 
@@ -355,7 +356,7 @@ export class ReapoModal extends HTMLElement {
 	}
 	
 	openOrg( data ){
-			
+		console.log(data)
 		if(data.substring(0, 1) !== '{'){ return }
 
 		const { defaultusername } = JSON.parse( data )
