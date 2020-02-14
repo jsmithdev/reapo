@@ -278,6 +278,10 @@ export class ReapoModal extends HTMLElement {
 
 		/* Run ls / list icon */
 		this.dom.list.onclick = () => {
+
+			const cmd = navigator.appVersion.indexOf("Win") !== -1
+				? `dir`//windows command
+				: `ls`//linux command
 			
 			this.dispatchEvent(new CustomEvent(
 				'exec-cmd',
@@ -285,7 +289,7 @@ export class ReapoModal extends HTMLElement {
 					bubbles: true,
 					composed: true,
 					detail: {
-						cmd: 'ls',
+						cmd,
 						cwd: this.path+'/'+this.name,
 						responder: x => this.dom.term.setAttribute('log', x)
 					}
