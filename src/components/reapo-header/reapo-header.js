@@ -207,37 +207,6 @@ export class ReapoHeader extends HTMLElement {
 		this.offsetParent.click()
 	}
 
-	/* Create a Repo */
-	createRepo(input, path) {
-		
-		if (!path) {
-
-			this.toast('Please set a Main Directory')
-		}
-
-		const isSfdx = this.dom.select.value.toLowerCase().includes('salesforce')
-
-		const isGit = input.toLowerCase().includes('.git') && input.toLowerCase().includes('http')
-
-		const name = isGit ? input.substring(input.lastIndexOf('/') + 1, input.lastIndexOf('.')) : input
-
-		// make type
-		const type = isSfdx ? 'new-sfdx'
-			: isGit ? 'new-git'
-				: 'new-repo'
-
-		// make cmd
-		const cmd = isSfdx ? `sfdx force:project:create --projectname ${name}`
-			: isGit ? `git clone ${input}`
-				: 'code '+name
-
-		const cwd = localStorage.path
-
-		const event = this.newEvent(type, cmd, cwd, name, path)
-
-		this.dispatchEvent(event)
-
-	}
 
 	newEvent(type, cmd, cwd, name, path) {
 
