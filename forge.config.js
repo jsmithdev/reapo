@@ -1,6 +1,6 @@
 
 const path = require('path')
-const icon = path.resolve(`${__dirname}/assets/icons/png/icon.icns`)
+const icon = path.resolve(`${__dirname}/assets/icons/png/icon.png`)
 
 module.exports = {
 

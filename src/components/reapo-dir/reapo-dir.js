@@ -58,15 +58,6 @@ template.innerHTML = /*html*/`
         border-radius: 0 0 5px 5px;
         cursor: pointer;
     }
-    .action input {
-		-webkit-appearance: none;
-		cursor: text;
-		margin-left: -1rem;
-		padding-left: .3rem;
-		border-width: 0px;
-		height: 1.75rem;
-		outline-color: var(--color-dark);
-	}
 
 	div.pseudo {
 		color: white;
@@ -88,15 +79,6 @@ template.innerHTML = /*html*/`
 	<div class="action" title="Set your main directory 🦄">
 	
 		<div class="pseudo"> Select Main Directory</div>
-        
-		<input 
-			hidden
-			type="file" 
-			webkitdirectory directory 
-			id="path" 
-			class="text"
-			placeholder="Eg: /home/user/repo ">
-		</input>
 
     </div>
 </div>
@@ -122,6 +104,8 @@ export class ReapoDir extends HTMLElement {
 
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 		this.registerElements(this.shadowRoot)
+		this.registerListeners()
+		this.init()
 	}
 
 	//attributeChangedCallback(n, ov, nv) { }
@@ -130,49 +114,46 @@ export class ReapoDir extends HTMLElement {
 	registerElements(doc) {
 
 		this.dom = {
-
+			
 			action: doc.querySelector('.action'),
-			path: doc.querySelector('#path'),
 			pseudo: doc.querySelector('.pseudo'),
 			help: doc.querySelector('.help'),
 		}
-
-		this.registerListeners()
 	}
 
 	registerListeners() {
 
-		/* pseudo button triggers directory input */
-		this.dom.pseudo.onclick = () => {
-			this.dom.path.click()
-		}
+		this.dom.pseudo.addEventListener('click', () => {
+			window.addEventListener('message', event => this.directoryHandler(event.data.dirs))
+			window.postMessage({
+			  type: 'select-parent-directory'
+			})
+		})
 
-		/* Save Main Directory */
-		//this.dom.action.onclick = () => saveMainDirectory()
-
-		/* If Enter is pressed in input, trigger click */
-		this.dom.path.onchange = async event => {
-			if(event.target.files.length){
-
-				const { path } = event.target.files[0]
-
-				const message = await this.saveMainDirectory( path )
-
-				this.dom.help.title = HELP_TEXT + '\n Current: '+path
-
-				this.clear()
-
-				this.toast(message)
-			}
-		}
-
-		this.init()
 	}
 
 	init(){
 		if(localStorage.path){
 			this.dom.help.title = HELP_TEXT + '\n Current: '+localStorage.path
 		}
+	}
+
+	// Handle directory change
+	directoryHandler(dirs){
+
+		if( !dirs || dirs.length === 0 ){
+			return console.warn('no event for directoryHandler')
+		}
+
+		const path = event.data.dirs[0]
+		
+		localStorage.setItem('path', path)
+
+		this.clear()
+
+		this.toast(`Set main directory to ${path}`)
+
+		this.dom.help.title = HELP_TEXT + '\n Current: '+path
 	}
 
 	/* Clear inputs & Close */
@@ -184,12 +165,10 @@ export class ReapoDir extends HTMLElement {
 				composed: true
 			})
 		)
-
-		this.dom.path.value = ''
 	}
 
 		
-	/* Save Main Directory */
+	/* Save Main Directory
 	async saveMainDirectory( path ){
 		
 		console.log('Saving path: '+path)
@@ -209,7 +188,7 @@ export class ReapoDir extends HTMLElement {
 				)
 			)
 		})
-	}
+	} */
 
 	toast(msg, res = () => {}) {
 		

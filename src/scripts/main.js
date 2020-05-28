@@ -1,9 +1,6 @@
-
-const { ipcRenderer, remote, shell, app } = require('electron')
-
-const Path = localStorage.path ? localStorage.path : __dirname
-
-const Repo = require('fs-jetpack').dir(Path, {})
+// 
+const { ipcRenderer, shell, remote, app } = require('electron')
+const Repo = require('fs-jetpack')
 
 
 const codes = {
@@ -14,7 +11,7 @@ const codes = {
 	settings: ['KeyS', 'KeyN'],
 }
 
-const dom = {
+const DOM = {
 	
 	body: document.querySelector('body'),
 	container: document.querySelector('.container'),
@@ -23,15 +20,48 @@ const dom = {
 	header: document.querySelector('reapo-header'),
 }
 
-if (!Path) {
-	toast('Use Settings to set a Main Directory')
+const CONFIG = {
+	
+	get REPO_DIR(){
+		return this._repo ? this._repo
+			: localStorage.getItem('path') ? localStorage.getItem('path')
+			: this.HOME_DIR ? this.HOME_DIR
+			: undefined
+	},
+	set REPO_DIR(path){
+		this._repo = path
+	},
+	HOME_DIR: undefined,
 }
-else {
-	loadRepo({ 
-		clear: false,
-		order: localStorage.getItem('order'),
+
+/* Kick off */
+if(!CONFIG.REPO_DIR){
+	
+	toast('Use Settings to set a Main Directory')
+
+	ipcRenderer.send('home-dir')
+	ipcRenderer.on('home-dir-res', (event, path) => {
+			
+		CONFIG.HOME_DIR = path
+
+		console.log('home-dir got path: '+path)
+		
+		loadRepo({ 
+			clear: false,
+			order: localStorage.getItem('order') ? localStorage.getItem('order') : 'date-asc',
+		})
 	})
 }
+else {
+	console.log('CONFIG.REPO_DIR was : '+CONFIG.REPO_DIR)
+
+	loadRepo({ 
+		clear: false,
+		order: localStorage.getItem('order') ? localStorage.getItem('order') : 'date-asc',
+	})
+}
+
+
 
 // todo module off all theming to separate 
 {// Theming 
@@ -78,25 +108,30 @@ function setTheme( theme ) {
  */
 function loadRepo( config ){
 
+	config.clear = config.clear ? config.clear : 'date-asc'
+
 	if (config.clear) {
-		while (dom.container.lastChild) {
-			dom.container.removeChild(dom.container.lastChild)
+		while (DOM.container.lastChild) {
+			DOM.container.removeChild(DOM.container.lastChild)
 		}
 	}
-	
-	const projects = Repo.list().map(name => Repo.inspect(`${Path}/${name}`, { times: true }))
 
-	const dirs = projects.filter(p => p.type === 'dir')
+	const projects = Repo.list(CONFIG.REPO_DIR).map(name => {
+		return Repo.inspect(`${CONFIG.REPO_DIR}/${name}`, { times: true })
+	})
 
-	if(config.order === 'date-asc'){
-		
-		const order = dirs.sort((x,y) => y.modifyTime - x.modifyTime)
-		order.map( addToView )
+	const dirs = projects.filter(p => p.type && p.type === 'dir')
 
-		localStorage.setItem('order', config.order)
+	if(config.order === 'name-asc' || localStorage.order === 'name-asc' ){
+		dirs.map( addToView )
 	}
 	else {
-		dirs.map( addToView )
+		const order = dirs.sort((x,y) => y.modifyTime - x.modifyTime)
+		order.map( addToView )
+	}
+	
+	if(config.order !== localStorage.getItem('order')){
+		localStorage.setItem('order', config.order)
 	}
 }
 
@@ -106,14 +141,14 @@ function loadRepo( config ){
  * @param {Object} dir => jetpack-ed directory of project
  */
 function addToView( dir ){
-
+	
 	const folder = document.createElement('reapo-folder')
 
-	folder.path = Repo.cwd()
+	folder.path = CONFIG.REPO_DIR
 	folder.name = dir.name
 	folder.date = dir.modifyTime
 
-	dom.container.appendChild(folder)
+	DOM.container.appendChild(folder)
 }
 
 
@@ -123,8 +158,8 @@ function addToView( dir ){
  */
 function toast( msg, time ){
 
-	dom.footer.textContent = msg
-	setTimeout(() => dom.footer.textContent = '', time ? time : 5000)
+	DOM.footer.textContent = msg
+	setTimeout(() => DOM.footer.textContent = '', time ? time : 5000)
 }
 
 
@@ -134,7 +169,7 @@ function toast( msg, time ){
 { /* Global Listeners, hotkey bubble ups */
 	
 	/* Toaster */
-	dom.body.addEventListener('toast', e => {
+	DOM.body.addEventListener('toast', e => {
 
 		toast(e.detail.msg)
 
@@ -143,12 +178,12 @@ function toast( msg, time ){
 		}
 	})
 
-	dom.body.onkeyup = e => { //console.log(e.code+e.ctrlKey)
+	DOM.body.onkeyup = e => { //console.log(e.code+e.ctrlKey)
 		
 		/* Close overlay on Esc press */
 		if(codes.close.includes(e.code)){
-			dom.header.close()
-			dom.details.close()
+			DOM.header.close()
+			DOM.details.close()
 		} 
 
 		/* Close Reapo on Ctrl+W press */
@@ -158,20 +193,20 @@ function toast( msg, time ){
 		e.ctrlKey && codes.restart.includes(e.code) ? restart() : null 
 
 		/* Focus filter of Ctrl+F overlay on Esc press hotkey */
-		e.ctrlKey && codes.find.includes(e.code) ? dom.header.focus() : null 
+		e.ctrlKey && codes.find.includes(e.code) ? DOM.header.focus() : null 
 
 		/* Open Settings hotkey */
 		if(e.ctrlKey && codes.settings.includes(e.code)){
-			dom.header.open({ value: 'settings' })
+			DOM.header.open({ value: 'settings' })
 		}
 	}
 }
 
 { /* Header */
 
-	dom.header.addEventListener('filter', event => {
+	DOM.header.addEventListener('filter', event => {
 		const { value } = event.detail
-		dom.container.childNodes.forEach(el => {
+		DOM.container.childNodes.forEach(el => {
 			if (el.title) { 
 				const check = el.title.toLowerCase().includes(value.toLowerCase())
 				el.style.display = check ? 'inline' : 'none'
@@ -181,7 +216,7 @@ function toast( msg, time ){
 
 	
 
-	dom.header.addEventListener('sort', event => {
+	DOM.header.addEventListener('sort', event => {
 		
 		const { order } = event.detail
 
@@ -193,7 +228,7 @@ function toast( msg, time ){
 		})
 	})
 
-	dom.header.addEventListener('load-repo', event => {
+	DOM.header.addEventListener('load-repo', event => {
 		
 		const { order } = event.detail
 
@@ -209,13 +244,13 @@ function toast( msg, time ){
 { /* Repo Details */
 
 	/* Opener */
-	dom.container.addEventListener('open-details', e => dom.details.open(e.detail))
+	DOM.container.addEventListener('open-details', e => DOM.details.open(e.detail))
 	
 	/* Exec commands for User */
-	dom.details.addEventListener('exec-cmd', e => execEvent(e))
+	DOM.details.addEventListener('exec-cmd', e => execEvent(e))
 
 	/* Delete Repo */
-	dom.details.addEventListener('delete-repo', e => {
+	DOM.details.addEventListener('delete-repo', e => {
 		
 		const name = e.detail.name
 		const path = localStorage.path
@@ -228,18 +263,18 @@ function toast( msg, time ){
 
 		loadRepo({ clear: true })
 		//toast(x.stderr || x.stdout)
-		dom.details.close()
+		DOM.details.close()
 	})
 
 	/* Archive Repo */
-	dom.details.addEventListener('archive', Archive)
+	DOM.details.addEventListener('archive', Archive)
 
 	/* open-directory */
-	dom.details.addEventListener('open-directory', event => {
+	DOM.details.addEventListener('open-directory', event => {
 		
 		const { folder } = event.detail
 		
-		const filepath = `${Path}${folder}/.`
+		const filepath = `${CONFIG.REPO_DIR}${folder}/.`
 
 		shell.showItemInFolder( filepath )
 	})
@@ -247,7 +282,7 @@ function toast( msg, time ){
 
 
 	/* Git Link Repo */
-	dom.details.addEventListener('gitlink', e => {
+	DOM.details.addEventListener('gitlink', e => {
 		
 		const cmd = 'git remote -v'
 
@@ -341,10 +376,10 @@ async function Archive(event){
 
 		ipcRenderer.on('archive-res', (event, msg) => {
 				
-			dom.details.close()
+			DOM.details.close()
 			toast(msg)
 			// Ask to Delete repo after toasting success msg
-			setTimeout(() => dom.details.dom.remove.click(), 1500)
+			setTimeout(() => DOM.details.dom.remove.click(), 1500)
 		})
 	}
 	catch(error){
@@ -359,7 +394,7 @@ async function Archive(event){
  */
 function quit() {
 	
-	remote.getCurrentWindow().close()
+	//remote.getCurrentWindow().close()
 }
 
 /**
@@ -377,9 +412,14 @@ function restart(){
  */
 function newRepo(event) {
 
-	const { responder, exit } = event.detail
-	
-	ipcRenderer.send('mk-dir', event.detail)
+	const { responder, exit, name, cmd, cwd } = event.detail
+
+	const data = { name, cmd, cwd }
+
+	console.log('newRepo data')
+	console.log(data)
+
+	ipcRenderer.send('mk-dir', data)
 
 	ipcRenderer.on('mk-dir-res', (event, msg) => {
 		
@@ -400,14 +440,14 @@ function newRepo(event) {
 		})
 	}
 
-	dom.container.addEventListener('open-code', openVsCode)
-	dom.header.addEventListener('open-code', openVsCode)
-	dom.details.addEventListener('open-code', (e) => openVsCode(e))
+	DOM.container.addEventListener('open-code', openVsCode)
+	DOM.header.addEventListener('open-code', openVsCode)
+	DOM.details.addEventListener('open-code', (e) => openVsCode(e))
 }
 
 { /* Open in Terminal (external) */
 
-	dom.details.addEventListener('terminal-popout', event => {
+	DOM.details.addEventListener('terminal-popout', event => {
 
 		event.detail.resolve = () => toast(`Opened ${e.detail.title} in Terminal 🦄`)
 

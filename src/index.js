@@ -7,7 +7,7 @@ const Archiver = require('./scripts/archive.js')
 
 const windowStateKeeper = require('electron-window-state')
 
-const { app, protocol, ipcMain, BrowserWindow } = require('electron');
+const { app, protocol, ipcMain, dialog, BrowserWindow } = require('electron')
 
 
 // Base path used to resolve modules
@@ -18,9 +18,9 @@ const base = app.getAppPath()
 const scheme = 'app'
 
 { 	/* Protocol */
-  	// Registering must be done before app::ready fires
+	// Registering must be done before app::ready fires
 	// (Optional) Technically not a standard scheme but works as needed
-	  
+	
 	protocol.registerSchemesAsPrivileged([{ 
 		scheme, 
 		privileges: { 
@@ -30,7 +30,7 @@ const scheme = 'app'
 		}
 	}])
 
-  	//protocol.registerStandardSchemes([scheme], { secure: true });
+	//protocol.registerStandardSchemes([scheme], { secure: true });
 
 	// Create protocol
 	require('./scripts/create-protocol')(scheme, base)
@@ -40,9 +40,9 @@ const scheme = 'app'
 { /* BrowserWindow */
 
 
-  app.isReady()
-    ? createWindow()
-    : app.on('ready', createWindow);
+	app.isReady()
+		? createWindow()
+		: app.on('ready', createWindow)
 }
 
 
@@ -74,8 +74,16 @@ function createWindow() {
 		width: mainWindowState.width,
 		height: mainWindowState.height,
 		webPreferences: {
-			nodeIntegration: true
-		}
+			nodeIntegration: true,
+			preload: path.join(__dirname, 'preload.js'),
+			enableRemoteModule: true,
+			contextIsolation: false,
+			sandbox: false
+			//nodeIntegration: false,
+			//enableRemoteModule: false,
+			//contextIsolation: true,
+			//sandbox: true
+		  }
 	})
 
 	// Let us register listeners on the window, so we can update the state
@@ -85,10 +93,10 @@ function createWindow() {
 	
 
 	// and load the index.html of the app
-	mainWindow.loadURL(`app://./index.html`)
+	mainWindow.loadURL('app://./index.html')
 
 	// Open the DevTools
-	if(process.env.debug){
+	if(true || process.env.debug){
 		mainWindow.webContents.openDevTools()
 	}
 
@@ -116,8 +124,19 @@ app.on('window-all-closed', () => {
 })
 
 
-
 /* IPC Communications: Used to run backend processes like executing commands, CRUD,  */
+
+
+ipcMain.on('select-parent-directory', async (event, arg) => {
+	const result = await dialog.showOpenDialog(mainWindow, {
+	  properties: ['openDirectory']
+	})
+	event.sender.send('select-parent-directory-res', result.filePaths)
+}) 
+
+ipcMain.on('home-dir', (event) => {
+	event.sender.send('home-dir-res', app.getPath('home'))
+})
 
 ipcMain.on('mk-dir', (event, data) => {
 	
@@ -131,11 +150,12 @@ ipcMain.on('mk-dir', (event, data) => {
 			console.error(error)
 		}
 		
+		event.sender.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
+		
 		// Auto open in vs code upon success
 		execute(cmd, cwd)
-		event.sender.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
 	})
-});
+})
 
 
 
@@ -146,7 +166,7 @@ ipcMain.on('archive', async (event, data) => {
 	const msg = await Archiver.directory(detail, toast)
 
 	event.sender.send('archive-res', msg)
-});
+})
 
 
 
@@ -157,7 +177,7 @@ ipcMain.on('vs-code', async (event, data) => {
 		
 		execute(cmd, cwd, resolve, exit)
 	})
-});
+})
 
 
 ipcMain.on('terminal-popout', (event, data) => {
