@@ -168,12 +168,12 @@ export class ReapoCreate extends HTMLElement {
 		// make cmd
 		const cmd = isSfdx ? `sfdx force:project:create --projectname ${name}`
 			: isGit ? `git clone ${input}`
-				: `code ${name}`
+				: `mkdir ${name} && code ${name}`
 
 		const cwd = localStorage.path
 
 		const event = this.newEvent(type, cmd, cwd, name, path)
-
+		
 		this.dispatchEvent(event)
 	}
 
@@ -192,7 +192,7 @@ export class ReapoCreate extends HTMLElement {
 					cmd,
 					cwd,
 					exit,
-					responder: () => loadRepo({clear: true})
+					responder: () => loadRepo({ order: 'date-asc', clear: true })
 				}
 			}
 		)

@@ -1,6 +1,6 @@
 
 const path = require('path')
-const icon = path.resolve(`${__dirname}/assets/icons/png/icon.icns`)
+const icon = path.resolve(`${__dirname}/assets/icons/png/icon.png`)
 
 module.exports = {
 
@@ -26,11 +26,11 @@ module.exports = {
 	{
 		name: '@electron-forge/maker-deb',
 		config: {
-			productName: "Reapo",
-			license: "MIT",
-			maintainer: "Jamie Smith",
-			homepage: "https://github.com/jsmithdev/reapo",
-			icon: "resources/icon.png",
+			icon,
+			productName: 'Reapo',
+			license: 'MIT',
+			maintainer: 'Jamie Smith',
+			homepage: 'https://github.com/jsmithdev/reapo',
 			categories: ['Development']
 		}
 	}],
@@ -38,12 +38,12 @@ module.exports = {
 		name: '@electron-forge/publisher-github',
 		platforms: ['deb'],
 		config: {
-		  repository: {
-			owner: 'jsmithdev',
-			name: 'reapo'
-		  },
-		  authToken: '',
-		  prerelease: true
+			repository: {
+				owner: 'jsmithdev',
+				name: 'reapo'
+			},
+			authToken: '',
+			prerelease: true
 		}
 	}
 }
