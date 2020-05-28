@@ -83,7 +83,7 @@ function createWindow() {
 			//enableRemoteModule: false,
 			//contextIsolation: true,
 			//sandbox: true
-		  }
+		}
 	})
 
 	// Let us register listeners on the window, so we can update the state
@@ -96,7 +96,7 @@ function createWindow() {
 	mainWindow.loadURL('app://./index.html')
 
 	// Open the DevTools
-	if(true || process.env.debug){
+	if(process.env.debug){
 		mainWindow.webContents.openDevTools()
 	}
 
@@ -127,9 +127,9 @@ app.on('window-all-closed', () => {
 /* IPC Communications: Used to run backend processes like executing commands, CRUD,  */
 
 
-ipcMain.on('select-parent-directory', async (event, arg) => {
+ipcMain.on('select-parent-directory', async (event) => {
 	const result = await dialog.showOpenDialog(mainWindow, {
-	  properties: ['openDirectory']
+		properties: ['openDirectory']
 	})
 	event.sender.send('select-parent-directory-res', result.filePaths)
 }) 
@@ -171,7 +171,7 @@ ipcMain.on('archive', async (event, data) => {
 
 
 ipcMain.on('vs-code', async (event, data) => {
-	return new Promise((resolve, reject) => {
+	return new Promise(resolve => {
 
 		const { cmd, cwd, exit } = data
 		
