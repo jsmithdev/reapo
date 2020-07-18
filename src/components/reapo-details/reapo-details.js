@@ -59,6 +59,12 @@ template.innerHTML = /*html*/`
 				</h1>
 			</div>
 		
+			<div id="readme" title="Read Me" tabindex="1">
+				<svg class="icon_small" viewBox="0 0 24 24">
+					<path d="M18 2H12V9L9.5 7.5L7 9V2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V4C20 2.89 19.1 2 18 2M17.68 18.41C17.57 18.5 16.47 19.25 16.05 19.5C15.63 19.79 14 20.72 14.26 18.92C14.89 15.28 16.11 13.12 14.65 14.06C14.27 14.29 14.05 14.43 13.91 14.5C13.78 14.61 13.79 14.6 13.68 14.41S13.53 14.23 13.67 14.13C13.67 14.13 15.9 12.34 16.72 12.28C17.5 12.21 17.31 13.17 17.24 13.61C16.78 15.46 15.94 18.15 16.07 18.54C16.18 18.93 17 18.31 17.44 18C17.44 18 17.5 17.93 17.61 18.05C17.72 18.22 17.83 18.3 17.68 18.41M16.97 11.06C16.4 11.06 15.94 10.6 15.94 10.03C15.94 9.46 16.4 9 16.97 9C17.54 9 18 9.46 18 10.03C18 10.6 17.54 11.06 16.97 11.06Z" />
+				</svg>
+			</div>
+		
 			<div id="sync" title="Git Status" tabindex="1">
 				<svg class="icon_small" viewBox="0 0 24 24">
 					<path d="M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z" />
@@ -66,13 +72,13 @@ template.innerHTML = /*html*/`
 			</div>
 
 			<div id="archive" title="Archive" tabindex="1">
-				<svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
+				<svg class="icon_small" viewBox="0 0 24 24">
 					<path d="M3,3H21V7H3V3M4,8H20V21H4V8M9.5,11A0.5,0.5 0 0,0 9,11.5V13H15V11.5A0.5,0.5 0 0,0 14.5,11H9.5Z" />
 				</svg>
 			</div>
 
 			<div id="remove" title="Delete" tabindex="1">
-				<svg class="icon_small" viewBox="0 0 24 24"><!-- style="width:24px;height:24px" viewBox="0 0 24 24" -->
+				<svg class="icon_small" viewBox="0 0 24 24">
 					<path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
 				</svg>
 			</div>
@@ -83,6 +89,8 @@ template.innerHTML = /*html*/`
 			-->
 
 		</div>
+
+		<read-readme class="hide"></read-readme>
 
 		<reapo-terminal></reapo-terminal>
 
@@ -129,6 +137,8 @@ export class ReapoModal extends HTMLElement {
 			code: doc.getElementById('code'),
 			dir: doc.getElementById('dir'),
 			sync: doc.getElementById('sync'),
+			readmeIcon: doc.getElementById('readme'),
+			readme: doc.querySelector('read-readme'),
 			openOrg: doc.getElementById('openOrg'),
 			list: doc.getElementById('list'),
 			clear: doc.getElementById('clear'),
@@ -201,6 +211,38 @@ export class ReapoModal extends HTMLElement {
 					}
 				)
 			)
+		}
+
+		/* Show readme / info book icon */
+		this.dom.readmeIcon.onclick = () => {
+
+			if( this.dom.readmeIcon.classList.contains('active') ){
+				this.dom.readmeIcon.classList.remove('active')
+				this.dom.readme.classList.add('hide')
+			}
+			else {
+				this.dom.readme.clear()
+				this.dom.readmeIcon.classList.add('active')
+				this.dispatchEvent(new CustomEvent(
+					'exec-cmd', 
+					{
+						bubbles: true, 
+						composed: true,
+						detail: {
+							cmd: 'cat README.md',
+							cwd: `${this.path}/${this.name}`,
+							responder: response => {
+								console.log('response '+response.length)
+								//console.log(response)
+								this.dom.readme.setAttribute('string', response)
+								this.dom.readme.classList.remove('hide')
+							},
+							exit: e => console.log(e),
+						}
+					})
+				)
+			}
+			
 		}
 
 		/* Run git status / sync icon */
