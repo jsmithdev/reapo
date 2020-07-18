@@ -9,7 +9,7 @@ body {
   padding: 0 10px
 }
 
-.is-hidden {
+.is-hidden, .hide {
   display: none;
 }
 
@@ -68,7 +68,7 @@ body {
     grid-row-gap: 20px;
     grid-column-gap: 20px;
     grid-template-rows: 2fr;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(11, 1fr);
 }
 
 .actions {
@@ -123,6 +123,9 @@ svg.icon_small {
     width: 1.8rem;
     cursor: pointer;
     fill: var(--color-light);
+}
+div.active > svg {
+    fill: var(--color-accent) !important;
 }
 .moddate {
 	color: white;
