@@ -1,14 +1,15 @@
 // 
 const { ipcRenderer, shell, remote, app } = require('electron')
 const Repo = require('fs-jetpack')
-
+const PROCESSES = []
 
 const codes = {
 	find: ['KeyF'],
 	exit: ['KeyW'],
 	restart: ['KeyR'],
 	close: ['Escape'],
-	settings: ['KeyS', 'KeyN'],
+	settings: ['KeyM', 'KeyN'],
+	search: ['KeyS'],
 }
 
 const DOM = {
@@ -18,6 +19,7 @@ const DOM = {
 	details: document.querySelector('reapo-details'),
 	footer: document.querySelector('footer'),
 	header: document.querySelector('reapo-header'),
+	search: document.querySelector('search-repos'),
 }
 
 const CONFIG = {
@@ -184,6 +186,7 @@ function toast( msg, time ){
 		if(codes.close.includes(e.code)){
 			DOM.header.close()
 			DOM.details.close()
+			DOM.search.close()
 		} 
 
 		/* Close Reapo on Ctrl+W press */
@@ -192,13 +195,14 @@ function toast( msg, time ){
 		/* Restart Reapo on Ctrl+R hotkey */
 		e.ctrlKey && codes.restart.includes(e.code) ? restart() : null 
 
-		/* Focus filter of Ctrl+F overlay on Esc press hotkey */
+		/* Focus filter on Ctrl+F hotkey */
 		e.ctrlKey && codes.find.includes(e.code) ? DOM.header.focus() : null 
 
 		/* Open Settings hotkey */
-		if(e.ctrlKey && codes.settings.includes(e.code)){
-			DOM.header.open({ value: 'settings' })
-		}
+		e.ctrlKey && codes.settings.includes(e.code) ? DOM.header.open({ value: 'settings' }) : null
+
+		/* Open Search hotkey */
+		e.ctrlKey && codes.search.includes(e.code) ? toggleSearch() : null
 	}
 }
 
@@ -228,6 +232,8 @@ function toast( msg, time ){
 		})
 	})
 
+	DOM.header.addEventListener('open-search', toggleSearch)
+
 	DOM.header.addEventListener('load-repo', event => {
 		
 		const { order } = event.detail
@@ -241,6 +247,19 @@ function toast( msg, time ){
 	})
 }
 
+
+/* Search */		
+function toggleSearch(){
+	if(!DOM.search.active){
+		DOM.search.open({
+			directory: CONFIG.REPO_DIR,
+		})
+	}
+	else {
+		DOM.search.close()
+	}
+}
+
 { /* Repo Details */
 
 	/* Opener */
@@ -248,6 +267,8 @@ function toast( msg, time ){
 	
 	/* Exec commands for User */
 	DOM.details.addEventListener('exec-cmd', e => execEvent(e))
+	DOM.search.addEventListener('exec-cmd', e => execEvent(e))
+	DOM.search.addEventListener('exec-cmd-cancel', e => cancelProcesses(e))
 
 	/* Delete Repo */
 	DOM.details.addEventListener('delete-repo', e => {
@@ -337,6 +358,15 @@ function execEvent(event){
 	exec(cmd, cwd, responder, exit)
 }
 
+function cancelProcesses(){
+	/* PROCESSES.forEach(proc => {
+		console.log(proc)
+		proc.stdout.pause()
+		proc.stderr.pause()
+		proc.kill()
+	}) */
+}
+
 /* Exec on behalf of user */
 function exec(cmd, cwd, responder, exit){
 
@@ -344,13 +374,25 @@ function exec(cmd, cwd, responder, exit){
 
 	const exec = require('child_process').exec
 	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
+	//PROCESSES.push(command)
 
 	if(typeof responder === 'function'){
 		command.stdout.on('data', data => responder(data.toString()))
 		command.stderr.on('data', data => responder(data.toString()))
 	}
 	
-	command.on('exit', code => exit ? exit(`Process finished with exit code ${code.toString()}`) : responder ? responder('exit') : null) // code.toString()
+	command.on('exit', code => {
+		
+		//PROCESSES.splice(PROCESSES.indexOf(command), 1)
+
+		exit 
+			? code
+				? exit(`Process finished with exit code ${code.toString()}`) 
+				: exit(`Process finished without an exit code`) 
+			: responder 
+				? responder('exit') 
+				: null
+	})
 }
 
 
@@ -443,6 +485,8 @@ function newRepo(event) {
 	DOM.container.addEventListener('open-code', openVsCode)
 	DOM.header.addEventListener('open-code', openVsCode)
 	DOM.details.addEventListener('open-code', (e) => openVsCode(e))
+	
+	DOM.search.addEventListener('open-code', (e) => openVsCode(e))
 }
 
 { /* Open in Terminal (external) */
