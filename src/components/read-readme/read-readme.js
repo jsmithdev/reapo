@@ -234,7 +234,7 @@ export class ReadReadme extends HTMLElement {
     }
 
     clear(){
-        this.template.querySelector('pre').innerHTML = ''
+        this.shadowRoot.querySelector('pre').innerHTML = ''
     }
 }
 
