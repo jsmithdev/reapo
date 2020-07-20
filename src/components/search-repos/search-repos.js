@@ -41,7 +41,7 @@ template.innerHTML = /*html*/`
 	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 0 10px 0 rgba(0, 0, 0, 0.22);
 }
 button {
-    margin-top: 1rem;
+    margin: 1rem 0;
     border: none;
     color: var(--color-lightest);
     padding: 1rem;
@@ -57,6 +57,16 @@ button:hover {
 div.results {
     height: 65%;
     overflow: auto;
+}
+
+div.results > div {
+    cursor: pointer;
+    width: fit-content;
+    border-radius: 5px;
+    padding: 5px 5px 5px 1px;
+}
+div.results > div:hover {
+    background: gray;
 }
 </style>
 
@@ -131,9 +141,8 @@ export class SearchRepos extends HTMLElement {
         }
 	
         this.dom.search.onclick = () => {
-            console.log('CLICK ', this.dom.string.value)
 
-            this.results = []
+            this.clear()
 
             const string = this.dom.string.value
 
@@ -145,14 +154,15 @@ export class SearchRepos extends HTMLElement {
                     detail: {
                         cmd: `grep ${string}  -Fr -r -l --exclude-dir={node_modules,.history}`,
                         cwd: `${this.directory}`,
-                        responder: response => this.handleResults(response, this.results.length === 0 ? true : false),
+                        responder: response => this.handleResults(
+                            response, 
+                            this.dom.results.childNodes.length === 0 ? true : false
+                        ),
                         exit: e => this.searchFinished(e),
                     }
                 })
             )
         }
-        // `grep ${string} ${directory} -Fr -r -l --exclude-dir={node_modules,.*} --exclude={.*}`
-        // `grep ${string} -F -r -l --exclude-dir={node_modules,.*} --exclude={.*} ${directory}`
     }
 
     handleResults(string, isNew){
@@ -160,7 +170,6 @@ export class SearchRepos extends HTMLElement {
         console.log('NEW: '+isNew)
 
         const results = string.split('\n')
-
 
         console.log('results: '+results.length)
 
@@ -171,36 +180,10 @@ export class SearchRepos extends HTMLElement {
             if(temp_last.indexOf(0) !== '/' && temp_last.indexOf(temp_last.length - 4)){
                 this.temp_last = temp_last
             }
-            else {
-                this.temp_last = undefined
-            }
 
             console.log('this.temp_last: '+this.temp_last)
         }
-        else {
-            this.temp_last = undefined
-        }
-
-       /*  this.results = results.reduce((acc, value, index) => {
-
-            // grep shouldn't return anyway!
-            if(value.includes('.history') || value.includes('node_modules')){
-                return acc
-            }
-
-
-            if(!isNew && this.temp_last){
-                const merged = this.temp_last+value
-                console.log('merged: '+merged)
-                acc.pop()
-                this.addValue(merged)
-                return [...acc, merged]
-            }
-
-                this.addValue(merged)
-            return [...acc, value]
-
-        }, this.results); */
+        
         results.map((value, index) => {
 
             // grep shouldn't return anyway!
@@ -213,7 +196,7 @@ export class SearchRepos extends HTMLElement {
                 return
             }
 
-            if(!isNew && this.temp_last){
+            if(index === 0 && this.temp_last){
                 const merged = this.temp_last+value
                 this.temp_last = undefined
                 console.log('merged: '+merged)
@@ -264,6 +247,12 @@ export class SearchRepos extends HTMLElement {
 
 	close(){
 		this.dom.overlay.classList.add('is-hidden')
+	}
+
+	clear(){
+        while (this.dom.results.firstChild) {
+            this.dom.results.removeChild(this.dom.results.lastChild)
+        }
 	}
 }
 customElements.define(SearchRepos.is, SearchRepos);
