@@ -73,10 +73,11 @@ div.results > div:hover {
 <div class="is-hidden modal-overlay">
     <div class="card">
         <h3>Search repos for snippet</h3>
-        <input class="value" placeholder="String to search..." value="@RestResource" />
+        <input class="value" placeholder="String to search..." />
         <br />
         <button class="search">Search</button>
         <button class="cancel">Cancel</button>
+        <button class="clear">Clear</button>
         <br />
         <div class="results"></div>
     </div>
@@ -112,6 +113,7 @@ export class SearchRepos extends HTMLElement {
             results: doc.querySelector('div.results'),
             search: doc.querySelector('button.search'),
             cancel: doc.querySelector('button.cancel'),
+            clear: doc.querySelector('button.clear'),
         }
 	    
 		this.registerListeners()
@@ -127,8 +129,14 @@ export class SearchRepos extends HTMLElement {
 		}
         this.addEventListener(`close-${this.is}`, this.close)
         
+        /* Clear */
+        this.dom.clear.onclick = () => this.clear()
+        
         /* Cancel */
         this.dom.cancel.onclick = () => {
+
+            this.searchEngaged = false
+            
             this.dispatchEvent(new CustomEvent(
                 'exec-cmd-cancel', 
                 {
@@ -142,6 +150,7 @@ export class SearchRepos extends HTMLElement {
 	
         this.dom.search.onclick = () => {
 
+            this.searchEngaged = true
             this.clear()
 
             const string = this.dom.string.value
@@ -154,10 +163,14 @@ export class SearchRepos extends HTMLElement {
                     detail: {
                         cmd: `grep ${string}  -Fr -r -l --exclude-dir={node_modules,.history}`,
                         cwd: `${this.directory}`,
-                        responder: response => this.handleResults(
-                            response, 
-                            this.dom.results.childNodes.length === 0 ? true : false
-                        ),
+                        responder: response => {
+                            if(this.searchEngaged){
+                                this.handleResults(
+                                    response, 
+                                    this.dom.results.childNodes.length === 0 ? true : false
+                                )
+                            }
+                        },
                         exit: e => this.searchFinished(e),
                     }
                 })
