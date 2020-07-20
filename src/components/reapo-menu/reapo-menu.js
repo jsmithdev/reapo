@@ -21,13 +21,16 @@ template.innerHTML = /*html*/`
 
     
     svg {
-        fill: var(--color-light);
-        margin: 0.4rem;
-        transform: rotate(0deg);
-        transition-duration: 3s;
+		width: 100%;
+		height: 42px;
+		margin: 0.15rem;
+		cursor: pointer;
+		transform: rotate(0deg);
+		transition-duration: 3s;
+		fill: var(--color-light);
     }
     svg:hover {
-        filter: var(--shadow-drop);
+        /**filter: var(--shadow-drop); */
         transform: rotate(1800deg);
         transition-duration: 6s;
     }
