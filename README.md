@@ -19,7 +19,9 @@ Releases are on Github under [Releases](https://github.com/jsmithdev/reapo/relea
 
 #### Header
 
-The 5 main functions in the header represented by icons left to right (some have a hotkey) include:
+<img src="https://i.imgur.com/CUjdsQR.png" width="500" height="auto" >
+
+The 5 main functions in the header, some have a hotkey, going left to right are:
 
 1. Refresh repos ( Ctrl+R )
 
