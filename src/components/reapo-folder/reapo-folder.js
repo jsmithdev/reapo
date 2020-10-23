@@ -110,13 +110,18 @@ export class ReapoFolder extends HTMLElement {
 	}
 
 	static get observedAttributes() {
-		return ['title', 'path', 'name', 'date']
+		return ['title', 'path', 'name', 'date', 'git']
 	}
 
 	connectedCallback() {
         
 		if(this.path && this.name && this.date){ 
 			this.registerElements() 
+		}
+		
+		if(this.git){
+			this.shadowRoot.querySelector('github-issues-count')
+				.setAttribute('git', 'true')
 		}
 	}
 	
