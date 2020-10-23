@@ -78,7 +78,7 @@ template.innerHTML = /*html*/`
         </div>
 
         <div id="other" class="action" title="">
-            
+            <github-issues-count></github-issues-count>
         </div>
 
         <div id="code" class="action" title="Open in VS Code" tabindex="0">
@@ -159,6 +159,16 @@ export class ReapoFolder extends HTMLElement {
 
 	registerListeners(){
         
+
+		/* Listen if user wants to key the action */
+		this.setKeyupAction(this.dom.code)
+		
+		/* Listen if user wants to key the action */
+		this.setKeyupAction(this.dom.details)
+
+		/* Listen top/title click open details */
+		this.dom.title.onclick = this.dom.details.onclick
+
 		/* Open in VS Code */
 		this.dom.code.onclick = () => {
 
@@ -176,9 +186,6 @@ export class ReapoFolder extends HTMLElement {
 				})
 			)
 		}
-		/* Listen if user wants to key the action */
-		this.setKeyupAction(this.dom.code)
-
 
 		/* Show details about repo */
 		this.dom.details.onclick = () => {
@@ -198,12 +205,6 @@ export class ReapoFolder extends HTMLElement {
 				})
 			)
 		}
-		/* Listen if user wants to key the action */
-		this.setKeyupAction(this.dom.details)
-
-
-		/* Folder top / title click open details */
-		this.dom.title.onclick = this.dom.details.onclick
 	}
 
 	/**
