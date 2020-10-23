@@ -1,4 +1,3 @@
-// jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
 const template = document.createElement('template')
@@ -65,6 +64,18 @@ template.innerHTML = /*html*/`
 		height: 1.75rem;
 		outline-color: var(--color-dark);
 	}
+
+	div#submit {
+		color: white;
+		background: var(--color-mid);
+		width: fit-content;
+		padding: 1rem;
+		border-radius: 5px;
+        margin-left: -16px;
+	}
+	div#submit:hover {
+		background: #4f23d78a;
+	}
 </style>
 
 <div>
@@ -80,7 +91,11 @@ template.innerHTML = /*html*/`
     
     <div class="action" title="Give a name for a new repo or paste a .git uri 🦄">
         
-        <input id="name" placeholder="Name of folder, project or .git URL" />
+		<input id="name" placeholder="Name of folder, project or .git URL" />
+		
+        <br />
+        <br />
+		<div id="submit">Create Repo</div>
     </div>
 </div>
 `
@@ -114,8 +129,8 @@ export class ReapoCreate extends HTMLElement {
 		this.dom = {
 
 			select: doc.querySelector('select'),
-			new: doc.querySelector('.action'),
 			name: doc.querySelector('#name'),
+			submit: doc.getElementById('submit'),
 		}
 
 		this.registerListeners()
@@ -123,18 +138,21 @@ export class ReapoCreate extends HTMLElement {
 
 	registerListeners() {
 
-		/* On new click, create repo */
-		this.dom.new.onclick = e => {
-			// If no name, don't create
-			if (e.target == this.dom.name) { return }
+		/* On submit click, create repo */
+		this.dom.submit.onclick = _ => {
 
 			const name = this.dom.name.value
 
-			name ? this.createRepo(name, localStorage.path) : this.toast('Please enter a name or .git url') // jshint ignore: line
+			if ( !name ) { return this.toast('Please enter a name or .git url') }
+
+			this.createRepo(name, localStorage.path)
 		}
 
-		/* If Enter is pressed in input, trigger new click */
-		this.dom.name.onkeyup = e => this.codes.action.includes(e.code) ? this.dom.new.click() : null
+		/* If Enter is pressed in input, trigger submit click */
+		this.dom.name.onkeyup = event => 
+			this.codes.action.includes(event.code) 
+				? this.dom.submit.click() 
+				: null
 	}
 
 
