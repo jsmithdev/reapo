@@ -31,6 +31,13 @@ body {
     padding: 0 10px;
 }
 
+hr {
+	margin-top: 1.5rem;
+    border: none;
+    height: 1px;
+    background: var(--color-accent);
+}
+
 :host ::-webkit-scrollbar {
 	width: .25em;
 }
@@ -68,7 +75,6 @@ body {
 	margin: 1rem;
 	width: 100%;
 	height: 100%;
-    cursor: pointer;
     border-radius: 5px;
     background: var(--color-dark);
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
@@ -99,14 +105,14 @@ body {
 
     <div class="is-hidden modal-overlay">
 
-        <h1 class="close">X</h1>
+        <h1 class="close" title="Close the Menu">X</h1>
 
         <div class="card">
 
             <reapo-create></reapo-create>
-            
+            <hr />
             <reapo-dir></reapo-dir>
-                   
+            <hr />
             <github-info></github-info>
         </div>
     </div>
