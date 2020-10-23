@@ -25,14 +25,14 @@
     "forge": "./forge.config.js"
   },
   "dependencies": {
-    "archiver": "^4.0.1",
+    "archiver": "^4.0.2",
     "electron-squirrel-startup": "^1.0.0",
     "electron-window-state": "^5.0.3",
     "fs-jetpack": "^2.4.0",
     "shell-path": "^2.1.0"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.52",
+    "@electron-forge/cli": "^6.0.0-beta.54",
     "@electron-forge/maker-deb": "6.0.0-beta.51",
     "@electron-forge/maker-rpm": "6.0.0-beta.51",
     "@electron-forge/maker-squirrel": "6.0.0-beta.51",
