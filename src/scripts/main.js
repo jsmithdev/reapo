@@ -105,7 +105,7 @@ function setTheme( theme ) {
 /**
  * @description Load Main Directory View 
  * 
- *  @param {Object} config => settings to load in optional ways
+ *  @param {Object} config => settings to load in options
  */
 function loadRepo( config ){
 
@@ -148,6 +148,8 @@ function addToView( dir ){
 	folder.path = CONFIG.REPO_DIR
 	folder.name = dir.name
 	folder.date = dir.modifyTime
+	folder.git = Repo.list(`${CONFIG.REPO_DIR}/${dir.name}`)
+		.some(name => name === '.git')
 
 	DOM.container.appendChild(folder)
 }
@@ -158,6 +160,8 @@ function addToView( dir ){
  * @param {String} msg the message to display
  */
 function toast( msg, time ){
+
+	if(!msg){ return console.log('toast sent w/ out message :/') }
 
 	DOM.footer.classList.add('notice')
 	setTimeout(() => {
@@ -465,9 +469,6 @@ function newRepo(event) {
 	const { responder, exit, name, cmd, cwd } = event.detail
 
 	const data = { name, cmd, cwd }
-
-	console.log('newRepo data')
-	console.log(data)
 
 	ipcRenderer.send('mk-dir', data)
 
