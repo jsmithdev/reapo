@@ -77,8 +77,10 @@ function createWindow() {
 			nodeIntegration: true,
 			preload: path.join(__dirname, 'preload.js'),
 			enableRemoteModule: true,
+			sandbox: false,
+			worldSafeExecuteJavaScript: true,
+			// todo set to true #45
 			contextIsolation: false,
-			sandbox: false
 			//nodeIntegration: false,
 			//enableRemoteModule: false,
 			//contextIsolation: true,
