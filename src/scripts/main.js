@@ -1,7 +1,6 @@
 // 
 const { ipcRenderer, shell, remote, app } = require('electron')
 const Repo = require('fs-jetpack')
-const PROCESSES = []
 
 const codes = {
 	find: ['KeyF'],
@@ -160,7 +159,16 @@ function addToView( dir ){
  */
 function toast( msg, time ){
 
+	DOM.footer.classList.add('notice')
+	setTimeout(() => {
+		DOM.footer.classList.remove('notice')
+	}, 750)
+	
 	DOM.footer.textContent = msg
+		.replace(':unicorn:', '🦄')
+		.replace(':note:', '📌')
+		.replace(':bad:', '👎')
+	
 	setTimeout(() => DOM.footer.textContent = '', time ? time : 5000)
 }
 
