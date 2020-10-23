@@ -1,4 +1,3 @@
-// jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
 const template = document.createElement('template')
@@ -107,12 +106,8 @@ body {
             <reapo-create></reapo-create>
             
             <reapo-dir></reapo-dir>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-            <!-- 
-            <div class="container">
-                <reapo-theme></reapo-theme>
-            </div>
-            -->
+                   
+            <github-info></github-info>
         </div>
     </div>
 </body>`
