@@ -1,4 +1,3 @@
-// jshint asi: true, esversion: 6, laxcomma: true 
 'use strict()'
 
 const template = document.createElement('template')
@@ -93,7 +92,7 @@ export class ReapoMenu extends HTMLElement {
 			const msg = `Saved ${path}`
 
 			localStorage.path = path
-			toast(msg)
+			this.toast(msg)
 			this.loadRepo({ clear: true })
 			e.detail.res(msg)
 		})
@@ -134,7 +133,20 @@ export class ReapoMenu extends HTMLElement {
     
     close(){
         this.dom.settings.close()
-    }
+	}
+	
+	toast(msg, res){
+		this.dispatchEvent(
+			new CustomEvent(
+				'toast',
+				{
+					bubbles: true,
+					composed: true,
+					detail: { msg, res }
+				}
+			)
+		)
+	}
 }
 
 customElements.define(ReapoMenu.is, ReapoMenu)
