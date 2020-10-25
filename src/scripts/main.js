@@ -150,8 +150,44 @@ function addToView( dir ){
 	folder.date = dir.modifyTime
 	folder.git = Repo.list(`${CONFIG.REPO_DIR}/${dir.name}`)
 		.some(name => name === '.git')
+	folder.addEventListener('get-issues-count', async event => {
+		console.log('GET ISSUE MAIN00')
+		const issues = await getIssueCount( event.detail.repo )
+		folder.issues = JSON.stringify(issues)
+	})
 
 	DOM.container.appendChild(folder)
+}
+
+
+/**
+ * @description return the count of issues from repo on github
+ * @param {String} repo the local path to the repo
+ */
+function getIssueCount( repo ){
+
+	console.log('GET ISSUE MAIN0 '+ repo)
+
+	if(!repo){ return toast('Unable to get issues: no repo path') }
+
+	return new Promise((resolve, rej) => {
+
+		const user = localStorage.getItem('user')
+		const token = localStorage.getItem('token')
+
+		console.log('SENDING')
+		console.log({ repo, user, token })
+
+		ipcRenderer.send('get-issues-count', { repo, user, token })
+		ipcRenderer.on('get-issues-count-res', (event, data) => {
+					
+	
+			console.log('GET ISSUE MAIN')
+			console.log(data)
+			
+			resolve(data)
+		})
+	})
 }
 
 
@@ -169,9 +205,11 @@ function toast( msg, time ){
 	}, 750)
 	
 	DOM.footer.textContent = msg
-		.replace(':unicorn:', '🦄')
-		.replace(':note:', '📌')
+		.replace(':good:', '🎉')
 		.replace(':bad:', '👎')
+		.replace(':umm:', '😕')
+		.replace(':note:', '📌')
+		.replace(':unicorn:', '🦄')
 	
 	setTimeout(() => DOM.footer.textContent = '', time ? time : 5000)
 }
@@ -257,8 +295,23 @@ function toast( msg, time ){
 			clear: true,
 		})
 	})
+
+	/* dom container */
+	DOM.container.addEventListener('show-issues', showIssues)
 }
 
+
+/* Show issues from git */		
+function showIssues(event){
+
+	const {
+		repo,
+		issues,
+	} = event.detail
+
+	console.log(repo)
+	console.log(issues)
+}
 
 /* Search */		
 function toggleSearch(){
@@ -339,7 +392,7 @@ function toggleSearch(){
 
 			}
 			else {
-				toast(`😕 ${data.substring(0, 250)}...`)
+				toast(`:umm: ${data.substring(0, 250)}...`)
 			}
 		}
 		
