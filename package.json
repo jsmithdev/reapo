@@ -1,7 +1,7 @@
 {
   "name": "Reapo",
   "productName": "Reapo",
-  "version": "0.2.6",
+  "version": "0.2.8",
   "description": "A desktop repository manager using web standards 🎉",
   "main": "src/index.js",
   "keywords": [
@@ -29,6 +29,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-window-state": "^5.0.3",
     "fs-jetpack": "^2.4.0",
+    "ghissues": "^1.1.4",
     "shell-path": "^2.1.0"
   },
   "devDependencies": {
