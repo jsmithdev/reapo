@@ -150,7 +150,7 @@ function addToView( dir ){
 	folder.date = dir.modifyTime
 	folder.git = Repo.list(`${CONFIG.REPO_DIR}/${dir.name}`)
 		.some(name => name === '.git')
-	folder.addEventListener('get-issues-count', async event => {
+	folder.addEventListener('get-issues', async event => {
 		console.log('GET ISSUE MAIN00')
 		const issues = await getIssueCount( event.detail.repo )
 		folder.issues = JSON.stringify(issues)
@@ -178,8 +178,8 @@ function getIssueCount( repo ){
 		console.log('SENDING')
 		console.log({ repo, user, token })
 
-		ipcRenderer.send('get-issues-count', { repo, user, token })
-		ipcRenderer.on('get-issues-count-res', (event, data) => {
+		ipcRenderer.send('get-issues', { repo, user, token })
+		ipcRenderer.on('get-issues-res', (event, data) => {
 					
 	
 			console.log('GET ISSUE MAIN')

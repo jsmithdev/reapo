@@ -90,7 +90,7 @@ export class GithubIssuesCount extends HTMLElement {
 	
         this.dom.no_data.onclick = () => {
 
-            this.dispatchEvent(new CustomEvent('get-issues-count', {
+            this.dispatchEvent(new CustomEvent('get-issues', {
                 detail: {
 					bubbles: true,
 					composed: true,

@@ -210,7 +210,7 @@ function execute(cmd, cwd, responder, exit){
 
 
 /* Github */
-ipcMain.on('get-issues-count', async (event, args) => {
+ipcMain.on('get-issues', async (event, args) => {
 
 	const { repo, user, token } = args
 
@@ -242,7 +242,7 @@ ipcMain.on('get-issues-count', async (event, args) => {
 		}
 	})
 
-	event.sender.send('get-issues-count-res', issues)
+	event.sender.send('get-issues-res', issues)
 })
 
 

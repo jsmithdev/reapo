@@ -214,11 +214,11 @@ export class ReapoFolder extends HTMLElement {
 		if(this.git){
 			this.dom.count.setAttribute('git', 'true')
 			this.dom.count.setAttribute('repo', `${this.path}/${this.name}`)
-			this.dom.count.addEventListener('get-issues-count', event => {
+			this.dom.count.addEventListener('get-issues', event => {
 				
 				const { repo } = event.detail
 
-				this.dispatchEvent(new CustomEvent('get-issues-count', {
+				this.dispatchEvent(new CustomEvent('get-issues', {
 					detail: {
 						bubbles: true,
 						composed: true,
