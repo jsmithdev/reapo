@@ -1,14 +1,15 @@
+// process.env.debug = true
 
 const path = require('path')
 
 const mkdir = require('mkdirp')
 const Archiver = require('./scripts/archive.js')
 
-
 const windowStateKeeper = require('electron-window-state')
 
 const { app, protocol, ipcMain, dialog, BrowserWindow } = require('electron')
 
+const ghissues = require('ghissues')
 
 // Base path used to resolve modules
 const base = app.getAppPath()
@@ -206,3 +207,83 @@ function execute(cmd, cwd, responder, exit){
 	
 	command.on('exit', code => exit ? exit(`Process finished with exit code ${code.toString()}`) : responder ? responder('exit') : null) // code.toString()
 }
+
+
+/* Github */
+ipcMain.on('get-issues-count', async (event, args) => {
+
+	const { repo, user, token } = args
+
+	const git = await getGitInfoFromLocalRepo(repo)
+
+	console.log('git info =>')
+	console.log(git)
+
+	const list = await listIssues( { user, token }, git.user, git.name )
+		//? await listIssues( { user, token }, git.user, git.name )
+		//: await listOrgIssues( { user, token }, git.user, git.name )
+	
+    const issues = list.map(issue => {
+
+        const {
+            url,
+            title,
+            body,
+            created_at,
+        } = issue;
+    
+		console.log('issue - index')
+		
+        return {
+			url,
+			title,
+			body,
+			date: new Date(created_at).toLocaleString(),
+		}
+	})
+
+	event.sender.send('get-issues-count-res', issues)
+})
+
+
+function listIssues(auth, user, repo){
+    return new Promise((res, rej) => ghissues.list(auth, user, repo,  (error, issues) => 
+        error ? rej(error) : res(issues)))
+}
+function listOrgIssues(auth, user, repo){
+    return new Promise((res, rej) => ghissues.listOrg(auth, user, repo,  (error, issues) => 
+        error ? rej(error) : res(issues)))
+}
+
+function getGitInfoFromLocalRepo(repo){
+
+	return new Promise(resolve => {
+
+		const cmd = 'git remote -v'
+		const cwd = repo
+
+		const responder = data => {
+
+			const check = data.indexOf('http') > -1
+			
+			if(check){
+	
+				const part = data.substring(data.lastIndexOf('/')+1, data.length) 
+
+				const name = part.substring(0, part.lastIndexOf(' '))
+					.replace('.git', '')
+
+				const user = data.substring(data.indexOf('.com/')+5, data.indexOf(name)-1)
+
+				resolve( {name, user} )
+			}
+			else {
+				console.log(`:umm: ${data.substring(0, 250)}...`)
+			}
+		}
+		
+		execute(cmd, cwd, responder)
+	})
+}
+
+
