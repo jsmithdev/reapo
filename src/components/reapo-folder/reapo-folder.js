@@ -110,18 +110,17 @@ export class ReapoFolder extends HTMLElement {
 	}
 
 	static get observedAttributes() {
-		return ['title', 'path', 'name', 'date', 'git']
+		return ['title', 'path', 'name', 'date', 'git', 'issues']
 	}
 
+    set issues(value){
+		this.dom.count.setAttribute('issues', value)
+	}
+	
 	connectedCallback() {
         
 		if(this.path && this.name && this.date){ 
 			this.registerElements() 
-		}
-		
-		if(this.git){
-			this.shadowRoot.querySelector('github-issues-count')
-				.setAttribute('git', 'true')
 		}
 	}
 	
@@ -140,6 +139,7 @@ export class ReapoFolder extends HTMLElement {
 			card: this.shadowRoot.querySelector('.card'),
 			title: this.shadowRoot.querySelector('.title'),
 			moddate: this.shadowRoot.querySelector('.moddate'),
+			count: this.shadowRoot.querySelector('github-issues-count'),
 		}
 
 		/* Folder Name */
@@ -163,7 +163,6 @@ export class ReapoFolder extends HTMLElement {
 	}
 
 	registerListeners(){
-        
 
 		/* Listen if user wants to key the action */
 		this.setKeyupAction(this.dom.code)
@@ -209,6 +208,24 @@ export class ReapoFolder extends HTMLElement {
 					}
 				})
 			)
+		}
+
+
+		if(this.git){
+			this.dom.count.setAttribute('git', 'true')
+			this.dom.count.setAttribute('repo', `${this.path}/${this.name}`)
+			this.dom.count.addEventListener('get-issues-count', event => {
+				
+				const { repo } = event.detail
+
+				this.dispatchEvent(new CustomEvent('get-issues-count', {
+					detail: {
+						bubbles: true,
+						composed: true,
+						repo: repo,
+					}
+				}))
+			})
 		}
 	}
 
