@@ -216,9 +216,6 @@ ipcMain.on('get-issues', async (event, args) => {
 
 	const git = await getGitInfoFromLocalRepo(repo)
 
-	console.log('git info =>')
-	console.log(git)
-
 	const list = await listIssues( { user, token }, git.user, git.name )
 		//? await listIssues( { user, token }, git.user, git.name )
 		//: await listOrgIssues( { user, token }, git.user, git.name )
@@ -231,8 +228,7 @@ ipcMain.on('get-issues', async (event, args) => {
             body,
             created_at,
         } = issue;
-    
-		console.log('issue - index')
+
 		
         return {
 			url,
