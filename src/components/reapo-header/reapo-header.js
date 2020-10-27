@@ -1,14 +1,5 @@
 'use strict()'
 
-
-const codes = {
-	find: ['KeyF'],
-	exit: ['KeyW'],
-	restart: ['KeyR'],
-	close: ['Escape'],
-	settings: ['KeyS', 'KeyN'],
-}
-
 const template = document.createElement('template')
 
 template.innerHTML = /*html*/`
@@ -123,7 +114,6 @@ export class ReapoHeader extends HTMLElement {
 
 	constructor() {
 		super()
-		this.codes = { action: ['Enter'], cancel: ['Esc'] }
 		this.attachShadow({ mode: 'open' })
 	}
 
@@ -139,6 +129,10 @@ export class ReapoHeader extends HTMLElement {
 
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 		this.registerElements()
+	}
+
+	codes = {
+		clear: ['Escape'],
 	}
 
 	//attributeChangedCallback(n, ov, nv) { }
@@ -167,11 +161,17 @@ export class ReapoHeader extends HTMLElement {
 		/* refresh-directory */
 		this.dom.refreshReapo.onclick = () => {
 			this.loadRepo({ clear: true })
-			toast(`Refreshed directory 🦄`)
+			toast(`Refreshed directory :unicorn:`)
 		}
 		
 		/* filter */
 		this.dom.filter.onkeyup = event => {
+			
+
+			if(this.codes.clear.includes(event.code)){
+				this.clear()
+			}
+
 			this.dispatchEvent(new CustomEvent('filter', {
 				bubbles: true,
 				composed: true,
@@ -203,12 +203,9 @@ export class ReapoHeader extends HTMLElement {
 	}
 
 
-	/* Clear inputs & Close */
+	/* Clear inputs */
 	clear() {
-
-		this.dom.name.value = ''
-		this.dom.select.value = ''
-		this.offsetParent.click()
+		this.dom.filter.value = ''
 	}
 
 	toast(msg, res) {
