@@ -25,34 +25,20 @@ const CONFIG = {
 	
 	get REPO_DIR(){
 		return this._repo 
-		? this._repo
+re			? this._repo
 			: localStorage.getItem('path') && localStorage.getItem('path') !== 'undefined'
 				? localStorage.getItem('path')
-				: this.HOME_DIR 
-					? this.HOME_DIR
-					: undefined
+				: undefined
 	},
 	set REPO_DIR(path){
 		this._repo = path
 	},
-	HOME_DIR: undefined,
 }
 
 /* Kick off */
 if(!CONFIG.REPO_DIR?.length || CONFIG.REPO_DIR === 'undefined'){
 	
 	toast('Use the Menu (⚙) to set a Main Directory :umm:', 30*1000)
-
-	ipcRenderer.send('home-dir')
-	ipcRenderer.on('home-dir-res', (event, path) => {
-			
-		CONFIG.HOME_DIR = path
-		
-		loadRepo({ 
-			clear: false,
-			order: localStorage.getItem('order') ? localStorage.getItem('order') : 'date-asc',
-		})
-	})
 }
 else {
 	
@@ -219,6 +205,15 @@ function toast( msg, time ){
 	setTimeout(() => DOM.footer.textContent = '', time ? time : 5000)
 }
 
+/**
+ * @description open url in browser
+ * @param {String} msg the address
+ */
+function openBrowser( url ){
+	
+	shell.openExternal(url)
+}
+
 
 
 
@@ -233,6 +228,9 @@ function toast( msg, time ){
 		if(typeof e.detail.res == 'function'){
 			//res('toasted')
 		}
+	})
+	DOM.body.addEventListener('open-url', e => {
+		openBrowser(e.detail.url)
 	})
 
 	DOM.body.onkeyup = e => { //console.log(e.code+e.ctrlKey)
@@ -290,7 +288,7 @@ function toast( msg, time ){
 	DOM.header.addEventListener('open-search', toggleSearch)
 
 	DOM.header.addEventListener('load-repo', event => {
-		
+
 		const { order } = event.detail
 
 		localStorage.setItem('order', order)
