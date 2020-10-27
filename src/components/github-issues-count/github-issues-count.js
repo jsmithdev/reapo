@@ -118,7 +118,6 @@ export class GithubIssuesCount extends HTMLElement {
         }
         
         this.dom.container.onkeyup = event => {
-            console.log('hiya')
             if(this.codes.close.includes(event.code)){
                 this.shadowRoot.querySelector('modal-component').close()
             }
@@ -199,6 +198,22 @@ export class GithubIssuesCount extends HTMLElement {
 
         this.shadowRoot.querySelector('modal-component')
             .addEventListener('close', _ => this.shadowRoot.querySelector('modal-component').close())
+
+        this.shadowRoot.querySelector('modal-component').querySelectorAll('a')
+            .forEach(el => {
+                
+                el.onclick = event => {
+                    event.preventDefault()
+                    const url = `https://github.com/${el.href.substring(el.href.indexOf('/repos/')+7, el.href.length)}`
+                    this.dispatchEvent(new CustomEvent('open-url', {
+                        composed: true,
+                        bubbles: true,
+                        detail: {
+                            url
+                        }
+                    }))
+                }
+            })
     }
 
     setupHasIssues(){
