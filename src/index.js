@@ -129,7 +129,6 @@ app.on('window-all-closed', () => {
 
 /* IPC Communications: Used to run backend processes like executing commands, CRUD,  */
 
-
 ipcMain.on('select-parent-directory', async (event) => {
 	const result = await dialog.showOpenDialog(mainWindow, {
 		properties: ['openDirectory']
@@ -281,5 +280,3 @@ function getGitInfoFromLocalRepo(repo){
 		execute(cmd, cwd, responder)
 	})
 }
-
-
