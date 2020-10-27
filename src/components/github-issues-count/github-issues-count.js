@@ -20,29 +20,42 @@ export class GithubIssuesCount extends HTMLElement {
     }
 
     get count(){
-        return this._issues.length
+        return this.issues.length ? this.issues.length : 0
     }
 
     get template(){
         return this.getTemplate()
     }
 
-    get issues(){ return this._issues }
+    get issues(){ 
+        return typeof this._issues === 'string' 
+            ? JSON.parse(this._issues)
+            : this._issues
+    }
     set issues(value){
+
+        const data = JSON.parse(value)
+
+        if(!data?.length){
+            this._issues = []
+            return this.setupHasNoIssues() 
+        }
         
         if(!this._issues){ 
 
-            this._issues = JSON.parse( value )
+            this._issues = data
             
             return this.setupHasIssues() 
         }
 
-        this._issues = JSON.parse( value )
+        this._issues = data
     }
     get issueRows(){
 
-        const rows = this.issues?.map(issue => {
-            console.log(issue)
+        if(!this.issues.length){return ''}
+
+        const rows = this.issues.map(issue => {
+
             return `
                 <h2><a href="${issue.url}">${issue.title}</a></h2>
                 <pre title="${issue.date}">${issue.body}</pre>
@@ -163,8 +176,6 @@ export class GithubIssuesCount extends HTMLElement {
         `
 
         this.shadowRoot.appendChild( div )
-
-        
     }
 
     setupHasIssues(){
@@ -175,7 +186,7 @@ export class GithubIssuesCount extends HTMLElement {
 
             this.dom.has_data = this.shadowRoot.querySelector('.has_data')
 
-            const names = this._issues.map(x => x.title).join('\n')
+            const names = this.issues.map(x => x.title).join('\n')
 
             this.dom.has_data.textContent = this.count
             this.dom.has_data.title = `Repo has ${this.count} open issues:\n${names}`
@@ -184,6 +195,28 @@ export class GithubIssuesCount extends HTMLElement {
             this.dom.has_data.classList.remove('hidden')
             this.shadowRoot.querySelector('modal-component').querySelector('reapo-button')
                 .onclick = _ => this.shadowRoot.querySelector('modal-component').close()
+
+            localStorage.setItem(`${this.repo}__issues`, JSON.stringify(this.issues))
+        }, 0)
+    }
+    
+    setupHasNoIssues(){
+        
+        this.addModal()
+
+        setTimeout(() => {
+
+            this.dom.has_data = this.shadowRoot.querySelector('.has_data')
+            this.dom.has_data.onclick = this.toast('No issues :good:')
+            this.dom.has_data.textContent = this.count
+            this.dom.has_data.title = `Repo has ${this.count} open issues`
+
+            this.dom.no_data.classList.add('hidden')
+            this.dom.has_data.classList.remove('hidden')
+            this.shadowRoot.querySelector('modal-component').querySelector('reapo-button')
+                .onclick = _ => this.shadowRoot.querySelector('modal-component').close()
+
+            localStorage.setItem(`${this.repo}__issues`, JSON.stringify(this.issues))
         }, 0)
     }
 
