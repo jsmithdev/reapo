@@ -145,7 +145,7 @@ export class ReapoDir extends HTMLElement {
 			return console.warn('no event for directoryHandler')
 		}
 
-		const path = event.data.dirs[0]
+		const path = dirs[0]
 		
 		localStorage.setItem('path', path)
 
@@ -154,6 +154,28 @@ export class ReapoDir extends HTMLElement {
 		this.toast(`Set main directory to ${path}`)
 
 		this.dom.help.title = HELP_TEXT + '\n Current: '+path
+
+		this.loadRepo()
+	}
+
+	
+	loadRepo(){
+
+		const detail = {
+			clear: true,
+			order: localStorage.getItem('order') ? localStorage.getItem('order') : 'date-desc',
+		}
+		
+		this.dispatchEvent(
+			new CustomEvent(
+				'load-repo',
+				{
+					bubbles: true,
+					composed: true,
+					detail,
+				}
+			)
+		)
 	}
 
 	/* Clear inputs & Close */
@@ -166,29 +188,6 @@ export class ReapoDir extends HTMLElement {
 			})
 		)
 	}
-
-		
-	/* Save Main Directory
-	async saveMainDirectory( path ){
-		
-		console.log('Saving path: '+path)
-
-		localStorage.setItem('path', path)
-
-		return new Promise(res => {
-
-			this.dispatchEvent(
-				new CustomEvent(
-					'save-settings',
-					{
-						bubbles: true,
-						composed: true,
-						detail: { res, path }
-					}
-				)
-			)
-		})
-	} */
 
 	toast(msg, res = () => {}) {
 		
