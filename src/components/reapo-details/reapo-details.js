@@ -395,9 +395,6 @@ export class ReapoModal extends HTMLElement {
 				})
 			)
 		}
-
-		/* Listen if user wants to key the action */
-		//this.setKeyupAction(this.dom.code)
 	}
 	
 	openOrg( data ){
