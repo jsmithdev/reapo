@@ -24,10 +24,13 @@ const DOM = {
 const CONFIG = {
 	
 	get REPO_DIR(){
-		return this._repo ? this._repo
-			: localStorage.getItem('path') ? localStorage.getItem('path')
-			: this.HOME_DIR ? this.HOME_DIR
-			: undefined
+		return this._repo 
+		? this._repo
+			: localStorage.getItem('path') && localStorage.getItem('path') !== 'undefined'
+				? localStorage.getItem('path')
+				: this.HOME_DIR 
+					? this.HOME_DIR
+					: undefined
 	},
 	set REPO_DIR(path){
 		this._repo = path
@@ -36,16 +39,14 @@ const CONFIG = {
 }
 
 /* Kick off */
-if(!CONFIG.REPO_DIR){
+if(!CONFIG.REPO_DIR?.length || CONFIG.REPO_DIR === 'undefined'){
 	
-	toast('Use Settings to set a Main Directory')
+	toast('Use the Menu (⚙) to set a Main Directory :umm:', 30*1000)
 
 	ipcRenderer.send('home-dir')
 	ipcRenderer.on('home-dir-res', (event, path) => {
 			
 		CONFIG.HOME_DIR = path
-
-		console.log('home-dir got path: '+path)
 		
 		loadRepo({ 
 			clear: false,
@@ -54,8 +55,7 @@ if(!CONFIG.REPO_DIR){
 	})
 }
 else {
-	console.log('CONFIG.REPO_DIR was : '+CONFIG.REPO_DIR)
-
+	
 	loadRepo({ 
 		clear: false,
 		order: localStorage.getItem('order') ? localStorage.getItem('order') : 'date-asc',
@@ -150,11 +150,16 @@ function addToView( dir ){
 	folder.date = dir.modifyTime
 	folder.git = Repo.list(`${CONFIG.REPO_DIR}/${dir.name}`)
 		.some(name => name === '.git')
+		
 	folder.addEventListener('get-issues', async event => {
-		console.log('GET ISSUE MAIN00')
-		const issues = await getIssueCount( event.detail.repo )
+		const issues = await getIssues( event.detail.repo )
 		folder.issues = JSON.stringify(issues)
 	})
+
+	const cache = localStorage.getItem(`${CONFIG.REPO_DIR}/${dir.name}__issues`)
+	if(cache){
+		folder.issues = cache
+	}
 
 	DOM.container.appendChild(folder)
 }
@@ -164,7 +169,7 @@ function addToView( dir ){
  * @description return the count of issues from repo on github
  * @param {String} repo the local path to the repo
  */
-function getIssueCount( repo ){
+function getIssues( repo ){
 
 	console.log('GET ISSUE MAIN0 '+ repo)
 
