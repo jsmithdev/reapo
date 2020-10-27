@@ -37,8 +37,8 @@ template.innerHTML = /*html*/`
 }
 .actions {
 	bottom: 0;
-	height: 4.25vh;
-    width: -webkit-fill-available;
+	height: 50px;
+	width: -webkit-fill-available;
     background: var(--color-mid);
     border-radius: 0px 0px 5px 5px;
     vertical-align: middle;
@@ -114,7 +114,12 @@ export class ReapoFolder extends HTMLElement {
 	}
 
     set issues(value){
-		this.dom.count.setAttribute('issues', value)
+		if(!this.dom?.count){
+			this.dom = {
+				count: this.shadowRoot.querySelector('github-issues-count')
+			}
+		}
+		this.dom.count.setAttribute('issues', JSON.stringify(value))
 	}
 	
 	connectedCallback() {
@@ -171,7 +176,7 @@ export class ReapoFolder extends HTMLElement {
 		this.setKeyupAction(this.dom.details)
 
 		/* Listen top/title click open details */
-		this.dom.title.onclick = this.dom.details.onclick
+		this.dom.title.onclick = () => this.dom.details.click()
 
 		/* Open in VS Code */
 		this.dom.code.onclick = () => {
