@@ -72,8 +72,9 @@ template.innerHTML = /*html*/`
     }
 
     .card {
-
         position: relative;
+        width: -webkit-fill-available;
+        display: inline-block;
         padding: 1;
         background: #fff;
         border: 1px solid #dddbda;
@@ -81,18 +82,34 @@ template.innerHTML = /*html*/`
         background-clip: padding-box;
         -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,.1);
         box-shadow: 0 2px 2px 0 rgba(0,0,0,.1);
-
         min-height: 10em;
-        display: table-cell;
+        /* display: table-cell; */
         vertical-align: middle;
+        overflow: auto;
+        display: inline-block;
+        word-break: break-word;
+        max-height: 75vh;
     }
+    .card::-webkit-scrollbar {
+        width: .25em;
+    }
+    .card::-webkit-scrollbar-track {
+        background: #525252;
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+    .card::-webkit-scrollbar-thumb {
+        background-color: var(--color-mid);
+        outline: 1px solid var(--color-mid);
+    }
+
+
     .modal-inner {
         
         overflow: hidden;
+        width: 100%;
         max-width: 90%;
         max-height: 90%;
-        overflow-x: hidden;
-        overflow-y: auto;
         margin: 0;
         transform: translate(0, -50%)
         transition: opacity 0.2s, transform 0.2s, z-index 0s 0.2s;
@@ -194,6 +211,9 @@ export class Modal extends HTMLElement {
             'footer-separator',
             'close-icon-color',
         ]
+    }
+    codes = {
+        close: ['Escape']
     }
 
     set active(boolean){
@@ -298,6 +318,12 @@ export class Modal extends HTMLElement {
                 ? this.close()
                 : null
         })
+        
+        this.dom.section.onkeyup = event => {
+            if(this.codes.close.includes(event.code)){
+                this.dispatchEvent(new CustomEvent('close'))
+            }
+        }
 	}
 	
     attributeChangedCallback(prop, oldValue, value) {
