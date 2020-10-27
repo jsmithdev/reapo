@@ -25,7 +25,7 @@ const CONFIG = {
 	
 	get REPO_DIR(){
 		return this._repo 
-re			? this._repo
+			? this._repo
 			: localStorage.getItem('path') && localStorage.getItem('path') !== 'undefined'
 				? localStorage.getItem('path')
 				: undefined
