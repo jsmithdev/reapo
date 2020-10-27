@@ -1,7 +1,7 @@
 {
   "name": "Reapo",
   "productName": "Reapo",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "A desktop repository manager using web standards 🎉",
   "main": "src/index.js",
   "keywords": [
