@@ -69,7 +69,7 @@ template.innerHTML = /*html*/`
         
         <input id="user" placeholder="GitHub Username..." />
         <br />
-        <input id="token" placeholder="GitHub Token..." />
+        <input id="token" type="password" placeholder="GitHub Token..." />
         <br />
         <br />
 		<div id="submit">Set GitHub Info</div>
@@ -113,10 +113,6 @@ export class GithubInfo extends HTMLElement {
     set token(value){
         localStorage.setItem('token', value)
         this._token = value
-
-        console.log('toek')
-        console.log(this._token)
-        console.log(this.token)
     }
 
 	connectedCallback() {
@@ -166,9 +162,6 @@ export class GithubInfo extends HTMLElement {
 
             this.user = user
             this.token = token
-
-            console.log(user)
-            console.log(token)
 
             this.dispatchEvent(
                 new CustomEvent(
