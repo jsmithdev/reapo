@@ -37,6 +37,12 @@ export class ReapoTerminal extends HTMLElement {
 		this.registerElements(this.shadowRoot)
 	}
 
+	codes = {
+		exit: ['KeyW'],
+		exec: ['Enter'],
+		memory: ['ArrowUp']
+	}
+
 	registerElements(doc){
         
 		this.dom = {
@@ -50,13 +56,8 @@ export class ReapoTerminal extends HTMLElement {
 
 	registerListeners(){
 
-		this.codes = {
-			exec: ['Enter'],
-			memory: ['ArrowUp']
-		}
-        
 		this.dom.input.onkeyup = e => { // console.log(e.code)
-			e.cancelBubble = true
+			//e.cancelBubble = true
             
 			/* Exec on Enter codes */
 			this.codes.exec.includes(e.code) ? this.exec(this.dom.input.value) : null
@@ -108,12 +109,12 @@ export class ReapoTerminal extends HTMLElement {
 
 	/**
 	 * @description 
-	 * Log out to the log which is a (pre)formated Element
+	 * Log out to the log which is a (pre)formatted Element
 	 * 
 	 * @param {String} s 
 	 */
 	logger(s){
-
+		
 		if(s == 'exit'){ this.loggerExit(); return }
         
         
@@ -145,7 +146,6 @@ ${s}
     
 	remember(config){
         
-
 		if(config){
 			config.clear ? this.memory.count = 0 : null
 		}
@@ -157,8 +157,8 @@ ${s}
 	}
 
 	randEmo(){
-		const em = ['🦄','🚀','🎉','🧘','🔭','🎼','🍻','🏝','🐺','🐧']
-		return em[Math.floor(Math.random() * em.length)]
+		const emo = ['🦄','🚀','🎉','🧘','🔭','🎼','🍻','🏝','🐺','🐧','🐶','🐁']
+		return emo[Math.floor( Math.random() * em.length )]
 	}
 
 	clear(){
@@ -168,9 +168,6 @@ ${s}
 		this.dom.log.textContent = text
 
 		this.dom.input.value = ''
-
-		// eslint-disable-next-line no-console
-		console.log(text)
 	}
 }
 
@@ -183,4 +180,4 @@ function clean(str){
     return str
     .replace(/\n/gi, `<br/>`)
 }
-    */
+*/
