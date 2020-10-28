@@ -41,11 +41,12 @@ template.innerHTML = /*html*/`
         min-width: 20rem;
     }
     footer {
-        padding: .5rem;
-        margin-top: .75rem;
-        text-align: right;
-        font-size: .8125rem;
-        border-top: 1px solid #dddbda;
+    padding: 0.5rem;
+    position: sticky;
+    background: inherit;
+    bottom: -1px;
+    text-align: right;
+    font-size: .8125rem;
     }
 
     .active {
@@ -83,12 +84,11 @@ template.innerHTML = /*html*/`
         -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,.1);
         box-shadow: 0 2px 2px 0 rgba(0,0,0,.1);
         min-height: 10em;
-        /* display: table-cell; */
         vertical-align: middle;
         overflow: auto;
-        display: inline-block;
         word-break: break-word;
         max-height: 75vh;
+        position: relative;
     }
     .card::-webkit-scrollbar {
         width: .25em;
