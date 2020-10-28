@@ -166,9 +166,6 @@ function getIssues( repo ){
 		const user = localStorage.getItem('user')
 		const token = localStorage.getItem('token')
 
-		console.log('SENDING')
-		console.log({ repo, user, token })
-
 		ipcRenderer.send('get-issues', { repo, user, token })
 		ipcRenderer.on('get-issues-res', (event, data) => {
 					
