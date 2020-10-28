@@ -26,6 +26,9 @@
     max-width: 97%;
     white-space: pre-wrap;
 }
+#log a {
+    color: var(--color-accent)
+}
 
 
 input {

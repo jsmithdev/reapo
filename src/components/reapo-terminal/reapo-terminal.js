@@ -116,9 +116,10 @@ export class ReapoTerminal extends HTMLElement {
 	logger(s){
 		
 		if(s == 'exit'){ this.loggerExit(); return }
+		
+		const div = document.createElement('div')
         
-        
-		this.dom.log.textContent += `
+		div.innerHTML += `
 ${this.name}: ${new Intl.DateTimeFormat('en-US', {
 	hour: 'numeric',
 	minute: 'numeric',
@@ -126,9 +127,16 @@ ${this.name}: ${new Intl.DateTimeFormat('en-US', {
 })
 	.format(new Date())}
 
-${s}
+${this.anchorLinksInText(s)}
 
 `
+
+		div.querySelectorAll('a').forEach(el => el.onclick = event => {
+			event.preventDefault()
+			this.openLink(el.href)
+		})
+
+		this.dom.log.appendChild(div)
         
 
 
@@ -143,6 +151,20 @@ ${s}
 	}
 
 
+	anchorLinksInText(text) {
+
+		const regex = /(https?:\/\/[^\s]+)/g
+	
+		return text.replace(regex, url => `<a href="${url}">${url}</a>`)
+	}
+
+    openLink(url){
+        this.dispatchEvent(new CustomEvent('open-url', {
+            bubbles: true,
+            composed: true,
+            detail: { url }
+        }))
+    }
     
 	remember(config){
         
@@ -158,7 +180,7 @@ ${s}
 
 	randEmo(){
 		const emo = ['🦄','🚀','🎉','🧘','🔭','🎼','🍻','🏝','🐺','🐧','🐶','🐁']
-		return emo[Math.floor( Math.random() * em.length )]
+		return emo[Math.floor( Math.random() * emo.length )]
 	}
 
 	clear(){
