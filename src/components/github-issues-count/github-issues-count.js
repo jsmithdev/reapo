@@ -56,9 +56,11 @@ export class GithubIssuesCount extends HTMLElement {
 
         const rows = this.issues.map(issue => {
 
+            const body = anchorLinksInText(issue.body)
+
             return `
-                <h2><a href="${issue.url}">${issue.title}</a></h2>
-                <pre title="${issue.date}">${issue.body}</pre>
+                <h2><a name="title" href="${issue.url}">${issue.title}</a></h2>
+                <pre title="${issue.date}">${body}</pre>
                 <br/>
             `
         }).join('')
@@ -106,22 +108,23 @@ export class GithubIssuesCount extends HTMLElement {
 
         this.dom.no_git.onclick = () => this.toast('Project is not a git repo...')
 	
-        this.dom.no_data.onclick = () => {
-
-            this.dispatchEvent(new CustomEvent('get-issues', {
-                detail: {
-					bubbles: true,
-					composed: true,
-                    repo: this.repo,
-                }
-            }))
-        }
+        this.dom.no_data.onclick = () => this.getIssues()
         
         this.dom.container.onkeyup = event => {
             if(this.codes.close.includes(event.code)){
                 this.shadowRoot.querySelector('modal-component').close()
             }
         }
+    }
+    
+	getIssues(){
+		this.dispatchEvent(new CustomEvent('get-issues', {
+            detail: {
+                bubbles: true,
+                composed: true,
+                repo: this.repo,
+            }
+        }))
     }
     
     //  this.toast('todo :unicorn:')
@@ -180,6 +183,14 @@ export class GithubIssuesCount extends HTMLElement {
             </span>
         
             <span slot="footer">
+                
+                <reapo-button
+                    name="refresh"
+                    label="Refresh"
+                    color="${document.documentElement.style.getPropertyValue('--color-lightest')}"
+                    background="${document.documentElement.style.getPropertyValue('--color-dark')}"
+                ></reapo-button>
+
                 <reapo-button
                     name="close"
                     label="Close"
@@ -193,8 +204,11 @@ export class GithubIssuesCount extends HTMLElement {
 
         this.shadowRoot.appendChild( div )
 
-        div.querySelector('reapo-button')
+        div.querySelector('reapo-button[name="close"]')
             .onclick = _ => this.shadowRoot.querySelector('modal-component').close()
+
+        div.querySelector('reapo-button[name="refresh"]')
+            .onclick = _ => this.getIssues()
 
         this.shadowRoot.querySelector('modal-component')
             .addEventListener('close', _ => this.shadowRoot.querySelector('modal-component').close())
@@ -204,14 +218,11 @@ export class GithubIssuesCount extends HTMLElement {
                 
                 el.onclick = event => {
                     event.preventDefault()
-                    const url = `https://github.com/${el.href.substring(el.href.indexOf('/repos/')+7, el.href.length)}`
-                    this.dispatchEvent(new CustomEvent('open-url', {
-                        composed: true,
-                        bubbles: true,
-                        detail: {
-                            url
-                        }
-                    }))
+                    const url = el.name !== 'title'
+                        ? el.href
+                        : `https://github.com/${el.href.substring(el.href.indexOf('/repos/')+7, el.href.length)}`
+
+                    this.openLink(url)
                 }
             })
     }
@@ -286,6 +297,9 @@ export class GithubIssuesCount extends HTMLElement {
                 color: var(--color-light);
                 background: var(--color-dark);
             }
+            pre a {
+                color: var(--color-accent);
+            }
         </style>
         
         <div class="container">
@@ -305,6 +319,21 @@ export class GithubIssuesCount extends HTMLElement {
 
         return template
     }
+
+    getButtonAnimation(){
+       return `
+       background: linear-gradient(to right, var(--color-light) 50%, var(--color-mid) 50%);
+       background-size: 200% 100%;
+       background-position:right bottom;
+       transition:all .25s ease;`.trim().replace(/\n/g,'')
+    }
 }
 
 customElements.define(GithubIssuesCount.is, GithubIssuesCount)
+
+function anchorLinksInText(text) {
+
+	const regex = /(https?:\/\/[^\s]+)/g
+
+	return text.replace(regex, url => `<a href="${url}">${url}</a>`)
+}
