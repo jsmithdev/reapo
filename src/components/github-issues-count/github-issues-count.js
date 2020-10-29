@@ -1,8 +1,5 @@
-/*
-* Use tag to import via es6 module (html import deprecated in v1 spec :/ )
-* <script type="module" src="../components/github-issues-count/github-issues-count.js"></script>
-*/
 'use strict()'
+
 
 export class GithubIssuesCount extends HTMLElement {
 
@@ -56,18 +53,15 @@ export class GithubIssuesCount extends HTMLElement {
 
         if(!this.issues.length){return ''}
 
-        const rows = this.issues.map(issue => {
-
-            const body = anchorLinksInText(issue.body)
-
-            return `
-                <h2><a name="title" href="${issue.url}">${issue.title}</a></h2>
-                <pre title="${issue.date}">${body}</pre>
-                <br/>
-            `
-        }).join('')
+        const div = document.createElement('div')
         
-        return rows ? rows : ''
+        this.issues.map(issue => {
+            const wc = document.createElement('github-issue')
+            wc.issue = issue
+            div.appendChild(wc)
+        })
+
+        return div
     }
 
     codes = {
@@ -148,8 +142,6 @@ export class GithubIssuesCount extends HTMLElement {
         this[n] = nv
     }
 
-
-
     openLink(url){
         this.dispatchEvent(new CustomEvent('open-url', {
             bubbles: true,
@@ -180,9 +172,7 @@ export class GithubIssuesCount extends HTMLElement {
                     : 'Project'} Issues
             </span>
         
-            <span slot="content">
-                ${this.issueRows}
-            </span>
+            <span slot="content"></span>
         
             <span slot="footer">
                 
@@ -215,6 +205,9 @@ export class GithubIssuesCount extends HTMLElement {
         this.shadowRoot.querySelector('modal-component')
             .addEventListener('close', _ => this.shadowRoot.querySelector('modal-component').close())
 
+            
+        this.shadowRoot.querySelector('[slot="content"]').appendChild(this.issueRows)
+
         this.listenToAnchors()
     }
 
@@ -241,6 +234,7 @@ export class GithubIssuesCount extends HTMLElement {
     setupHasNoIssues(){
         
         this.addModal()
+        
         setTimeout(() => {
 
             this.dom.has_data = this.shadowRoot.querySelector('.has_data')
@@ -259,7 +253,7 @@ export class GithubIssuesCount extends HTMLElement {
 
     refreshIssues(){
 
-        this.shadowRoot.querySelector('[slot="content"]').innerHTML = this.issueRows
+        this.shadowRoot.querySelector('[slot="content"]').appendChild(this.issueRows)
         
         this.listenToAnchors()
         
@@ -303,6 +297,9 @@ export class GithubIssuesCount extends HTMLElement {
             pre {
                 white-space: break-spaces;
             }
+            pre a {
+                color: var(--color-accent);
+            }
             .icon_small {
                 margin: 2px;
                 vertical-align: middle;
@@ -318,9 +315,6 @@ export class GithubIssuesCount extends HTMLElement {
                 line-height: 2rem;
                 color: var(--color-light);
                 background: var(--color-dark);
-            }
-            pre a {
-                color: var(--color-accent);
             }
         </style>
         
@@ -352,10 +346,3 @@ export class GithubIssuesCount extends HTMLElement {
 }
 
 customElements.define(GithubIssuesCount.is, GithubIssuesCount)
-
-function anchorLinksInText(text) {
-
-	const regex = /(https?:\/\/[^\s]+)/g
-
-	return text.replace(regex, url => `<a href="${url}">${url}</a>`)
-}
