@@ -25,7 +25,9 @@ export class GithubIssue extends HTMLElement {
     }
     set issue(value){
         console.log(value)
-        const issue = JSON.parse(value)
+        const issue = typeof value === 'string' 
+            ? JSON.parse(value)
+            : value
         this._issue = {
             ...issue
         }
@@ -50,6 +52,8 @@ export class GithubIssue extends HTMLElement {
 			edit_button: this.shadowRoot.querySelector('.edit_button'),
 			view_button: this.shadowRoot.querySelector('.view_button'),
 			save: this.shadowRoot.querySelector('reapo-button'),
+			title: this.shadowRoot.querySelector('input'),
+			body: this.shadowRoot.querySelector('textarea'),
 		}
 
 		this.setupElements()
@@ -67,7 +71,18 @@ export class GithubIssue extends HTMLElement {
         this.dom.view_button.onclick = event => this.show(event.target.classList.contains('edit_button'))
 
         this.dom.save.onclick = event => {
-            console.log('SAVE')
+
+            window.addEventListener('update-issue-res', console.log)
+            window.addEventListener('message', console.log)
+			window.postMessage({
+                type: 'update-issue',
+                body: this.dom.body.value.trim(),
+                title: this.dom.title.value.trim(),
+                user: localStorage.getItem('user'),
+                token: localStorage.getItem('token'),
+                num: this.issue.number,
+                repo: this.issue.url,
+            })
         }
     }
     
@@ -163,7 +178,7 @@ export class GithubIssue extends HTMLElement {
         <div class="view">
             <h2>
                 <a name="title" title="Open in browser" href="${this.issue.url}">
-                    ${this.issue.title}
+                    ${this.issue.title} (#${this.issue.number})
                 </a>
                 <span>
                     <svg class="edit_button" viewBox="0 0 24 24">
@@ -179,7 +194,6 @@ export class GithubIssue extends HTMLElement {
             </pre>
             <br/>
         </div>
-
 
         <div class="edit hidden">
             <h2>

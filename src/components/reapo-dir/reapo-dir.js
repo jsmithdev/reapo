@@ -124,7 +124,7 @@ export class ReapoDir extends HTMLElement {
 	registerListeners() {
 
 		this.dom.pseudo.addEventListener('click', () => {
-			window.addEventListener('message', event => this.directoryHandler(event.data.dirs))
+			window.addEventListener('message', event => this.directoryHandler(event))
 			window.postMessage({
 			  type: 'select-parent-directory'
 			})
@@ -139,10 +139,13 @@ export class ReapoDir extends HTMLElement {
 	}
 
 	// Handle directory change
-	directoryHandler(dirs){
+	directoryHandler( event ){
 
+		const { dirs } = event.data
+		
 		if( !dirs || dirs.length === 0 ){
-			return console.warn('no event for directoryHandler')
+			this.toast(`Did not set main directory`)
+			return console.warn('No directories for reapo-dir.directoryHandler')
 		}
 
 		const path = dirs[0]

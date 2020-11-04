@@ -221,13 +221,14 @@ export class ReapoFolder extends HTMLElement {
 			this.dom.count.setAttribute('repo', `${this.path}/${this.name}`)
 			this.dom.count.addEventListener('get-issues', event => {
 				
-				const { repo } = event.detail
+				const { repo, toast } = event.detail
 
 				this.dispatchEvent(new CustomEvent('get-issues', {
 					detail: {
 						bubbles: true,
 						composed: true,
-						repo: repo,
+						repo,
+						toast,
 					}
 				}))
 			})

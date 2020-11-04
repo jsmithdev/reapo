@@ -36,7 +36,7 @@ const CONFIG = {
 }
 
 /* Kick off */
-if(!CONFIG.REPO_DIR?.length || CONFIG.REPO_DIR === 'undefined'){
+if(!CONFIG.REPO_DIR){
 	
 	toast('Use the Menu (⚙) to set a Main Directory :umm:', 30*1000)
 }
@@ -107,7 +107,7 @@ function loadRepo( config ){
 		return Repo.inspect(`${CONFIG.REPO_DIR}/${name}`, { times: true })
 	})
 
-	const dirs = projects.filter(p => p.type && p.type === 'dir')
+	const dirs = projects.filter(p => p?.type === 'dir')
 
 	if(config.order === 'name-asc' || localStorage.order === 'name-asc' ){
 		dirs.map( addToView )
@@ -138,11 +138,18 @@ function addToView( dir ){
 		.some(name => name === '.git')
 		
 	folder.addEventListener('get-issues', async event => {
-		const issues = await getIssues( event.detail.repo )
+		
+		const { repo } = event.detail
+
+		if(!repo){ return toast('Unable to get issues: no repo path') }
+
+		const issues = await getIssues( repo )
+		
 		folder.issues = JSON.stringify(issues)
 	})
 
 	const cache = localStorage.getItem(`${CONFIG.REPO_DIR}/${dir.name}__issues`)
+	
 	if(cache){
 		folder.issues = cache
 	}
@@ -157,14 +164,12 @@ function addToView( dir ){
  */
 function getIssues( repo ){
 
-	console.log('GET ISSUE MAIN0 '+ repo)
-
-	if(!repo){ return toast('Unable to get issues: no repo path') }
-
 	return new Promise((resolve, rej) => {
 
 		const user = localStorage.getItem('user')
 		const token = localStorage.getItem('token')
+
+		if(!user || !token){ return toast('No GitHub user or token :bad:', 5000) }
 
 		ipcRenderer.send('get-issues', { repo, user, token })
 		ipcRenderer.on('get-issues-res', (event, data) => {
@@ -188,6 +193,7 @@ function toast( msg, time ){
 	if(!msg){ return console.log('toast sent w/ out message :/') }
 
 	DOM.footer.classList.add('notice')
+	
 	setTimeout(() => {
 		DOM.footer.classList.remove('notice')
 	}, 750)

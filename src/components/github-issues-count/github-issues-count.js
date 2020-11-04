@@ -58,6 +58,7 @@ export class GithubIssuesCount extends HTMLElement {
         this.issues.map(issue => {
             const wc = document.createElement('github-issue')
             wc.issue = issue
+            console.log(issue)
             div.appendChild(wc)
         })
 
@@ -119,6 +120,7 @@ export class GithubIssuesCount extends HTMLElement {
                 bubbles: true,
                 composed: true,
                 repo: this.repo,
+                toast: this.toast,
             }
         }))
     }
@@ -253,7 +255,13 @@ export class GithubIssuesCount extends HTMLElement {
 
     refreshIssues(){
 
-        this.shadowRoot.querySelector('[slot="content"]').appendChild(this.issueRows)
+        const content = this.shadowRoot.querySelector('[slot="content"]')
+
+        while (content.firstChild) {
+            content.removeChild(content.lastChild)
+        }
+        
+        content.appendChild(this.issueRows)
         
         this.listenToAnchors()
         

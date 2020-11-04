@@ -1,4 +1,4 @@
-// process.env.debug = true
+ process.env.debug = true
 
 const path = require('path')
 
@@ -211,21 +211,26 @@ function execute(cmd, cwd, responder, exit){
 /* Github */
 ipcMain.on('get-issues', async (event, args) => {
 
-	const { repo, user, token } = args
+	const { repo, user, token, toast } = args
+
+	if(!user || !token){
+		return toast('No GitHub user or token')
+	}
 
 	const git = await getGitInfoFromLocalRepo(repo)
 
 	const list = await listIssues( { user, token }, git.user, git.name )
-		//? await listIssues( { user, token }, git.user, git.name )
-		//: await listOrgIssues( { user, token }, git.user, git.name )
 	
     const issues = list.map(issue => {
+
+		console.log(issue)
 
         const {
             url,
             title,
             body,
             created_at,
+            number,
         } = issue;
 
 		
@@ -233,14 +238,59 @@ ipcMain.on('get-issues', async (event, args) => {
 			url,
 			title,
 			body,
+			number,
 			date: new Date(created_at).toLocaleString(),
 		}
 	})
 
 	event.sender.send('get-issues-res', issues)
 })
+ipcMain.on('update-issue', async (event, args) => {
 
+	const { repo, num, body, title, user, token, toast } = args
+	console.log(repo, num, body, title, user, token)
+	
+	if(!user || !token){
+		return toast('No GitHub user or token')
+	}
+	if(!num || !title){
+		return toast('No issue number or title to update')
+	}
 
+	const git = getGitInfoFromIssueUrl(repo)
+
+	const issue = await updateIssues(
+		{ user, token }, 
+		git.user, 
+		git.name,
+		{
+			num,
+			title,
+			body,
+		}
+	)
+	event.sender.send('update-issue-res', issue)
+})
+
+/* 
+authOptions,
+    user,
+    repo,
+    {
+        num: 45,
+        title: 'Context Isolation',
+        body: `test in /index.js\r\n\r\n- [ ] make contextIsolation: true\r\n- [ ] move any req's from main.js to index.js as needed\r\n- [ ] test`
+    },
+    function (err, issue) {
+        // data for new issue
+        console.log(issue)
+	}
+	 */
+function updateIssues(auth, user, repo, data){
+	return new Promise((res, rej) => 
+		ghissues.update(auth, user, repo, data, (error, issues) => 
+        error ? rej(error) : res(issues)))
+}
 function listIssues(auth, user, repo){
     return new Promise((res, rej) => ghissues.list(auth, user, repo,  (error, issues) => 
         error ? rej(error) : res(issues)))
@@ -257,26 +307,46 @@ function getGitInfoFromLocalRepo(repo){
 		const cmd = 'git remote -v'
 		const cwd = repo
 
-		const responder = data => {
+		const responder = url => {
 
-			const check = data.indexOf('http') > -1
+			const check = url.indexOf('http') > -1
 			
 			if(check){
 	
-				const part = data.substring(data.lastIndexOf('/')+1, data.length) 
+				const info = getGitInfoFromUrl(url)
 
-				const name = part.substring(0, part.lastIndexOf(' '))
-					.replace('.git', '')
-
-				const user = data.substring(data.indexOf('.com/')+5, data.indexOf(name)-1)
-
-				resolve( {name, user} )
+				resolve( info )
 			}
 			else {
-				console.log(`:umm: ${data.substring(0, 250)}...`)
+				console.log(`:umm: ${url.substring(0, 250)}...`)
 			}
 		}
 		
 		execute(cmd, cwd, responder)
 	})
+}
+
+function getGitInfoFromUrl(url){
+	const part = url.substring(url.lastIndexOf('/')+1, url.length) 
+
+	const name = part.substring(0, part.lastIndexOf(' '))
+		.replace('.git', '')
+
+	const user = url.substring(url.indexOf('.com/')+5, url.indexOf(name)-1)
+
+	return {user, name}
+
+}
+function getGitInfoFromIssueUrl(url){
+
+	const num = url.substring(url.lastIndexOf('/')+1, url.length) //?
+
+	const parts = url.substring(url.indexOf('.com/repos/')+11, url.lastIndexOf('/issues/'))
+	.split('/')
+
+	const user = parts[0] //?
+	const name = parts[1] //?
+
+	return {user, name}
+
 }
