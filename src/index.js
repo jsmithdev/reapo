@@ -1,4 +1,4 @@
- process.env.debug = true
+// process.env.debug = true
 
 const path = require('path')
 
