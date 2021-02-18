@@ -124,12 +124,13 @@ export class ReapoDir extends HTMLElement {
 	registerListeners() {
 
 		this.dom.pseudo.addEventListener('click', () => {
-			window.addEventListener('message', event => this.directoryHandler(event.data.dirs))
-			window.postMessage({
-			  type: 'select-parent-directory'
+			
+			window.api.send("select-parent-directory", CONFIG.REPO_DIR);
+
+			window.api.receive("select-parent-directory-res", directories => {
+				this.directoryHandler(directories)
 			})
 		})
-
 	}
 
 	init(){
