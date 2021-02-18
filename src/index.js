@@ -141,6 +141,9 @@ if (process.platform !== 'win32') {
 
 ipcMain.on('get-directories', async (event, directory) => {
 
+	console.log('get-directories')
+	console.log(directory)
+	if(!directory){ return }
 	
 	const dirs = Repo.list(directory)
 		.map(name => {
@@ -216,6 +219,10 @@ ipcMain.on('vs-code', async (event, data) => {
 	execute(cmd, cwd, resolve)
 })
 
+ipcMain.on('open-browser', (event, url) => {
+	shell.openExternal(url)
+})
+
 
 ipcMain.on('terminal-popout', (event, data) => {
 
@@ -231,25 +238,6 @@ ipcMain.on('restart', (event, data) => {
 ipcMain.on('quit', (event, data) => {
 	app.exit(0)
 })
-
-
-
-/* Exec on behalf of user */
-function execute(cmd, cwd, responder, exit){
-
-	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
-
-	const exec = require('child_process').exec
-	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
-
-	if(typeof responder === 'function'){
-		command.stdout.on('data', data => responder(data.toString()))
-		command.stderr.on('data', data => responder(data.toString()))
-	}
-	
-	command.on('exit', code => exit ? exit(`Process finished with exit code ${code.toString()}`) : responder ? responder('exit') : null) // code.toString()
-}
-
 
 /* Github */
 ipcMain.on('get-issues', async (event, args) => {
@@ -278,6 +266,14 @@ ipcMain.on('get-issues', async (event, args) => {
 	})
 
 	window.webContents.send('get-issues-res', issues)
+})
+
+/* Generic Commands */
+ipcMain.on('execute', async (event, detail) => {
+	
+	const { cmd, cwd, responder, exit } = detail;
+	
+	execute(cmd, cwd, responder, exit)
 })
 
 
@@ -319,4 +315,33 @@ function getGitInfoFromLocalRepo(repo){
 		
 		execute(cmd, cwd, responder)
 	})
+}
+
+
+
+/* Exec on behalf of user */
+function execute(cmd, cwd, responder, exit){
+
+	console.log(`${cmd} ${cwd} ${responder} ${exit}`)
+
+	const exec = require('child_process').exec
+	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
+	if(typeof responder === 'string'){
+		
+		command.stdout.on('data', data => window.webContents.send(responder, data.toString()))
+	}
+	else if(typeof responder === 'function'){
+		command.stdout.on('data', data => responder(data.toString()))
+		command.stderr.on('data', data => responder(data.toString()))
+	}
+	
+	// todo not this
+	command.on('exit', 
+		code => 
+			typeof exit === 'function'
+				? exit(`Process finished with exit code ${code.toString()}`)
+				: typeof responder === 'function'
+					? responder('exit')
+					: null
+	);
 }

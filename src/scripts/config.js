@@ -12,6 +12,8 @@ const validChannels = {
         "restart",
         "quit",
         "get-issues",
+        "execute",
+        'open-browser',
     ],
     "receive": [
         "directories",
@@ -22,6 +24,8 @@ const validChannels = {
         "mk-dir-res",
         "vs-code-res",
         "get-issues-res",
+        "git-url",
+        "list-files",
     ]
 }
 

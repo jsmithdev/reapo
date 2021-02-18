@@ -323,6 +323,12 @@ export class ReapoModal extends HTMLElement {
 			const cmd = navigator.appVersion.indexOf("Win") !== -1
 				? `dir`//windows command
 				: `ls`//linux command
+
+			const cwd = this.path+'/'+this.name
+			
+			const responder = 'list-files'
+
+			window.api.receive(responder, x => this.dom.term.setAttribute('log', x))
 			
 			this.dispatchEvent(new CustomEvent(
 				'exec-cmd',
@@ -331,8 +337,8 @@ export class ReapoModal extends HTMLElement {
 					composed: true,
 					detail: {
 						cmd,
-						cwd: this.path+'/'+this.name,
-						responder: x => this.dom.term.setAttribute('log', x)
+						cwd,
+						responder,
 					}
 				})
 			)

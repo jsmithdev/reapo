@@ -1,4 +1,4 @@
-
+localStorage.setItem('path', '/home/jamie/repo')
 const codes = {
 	find: ['KeyF'],
 	exit: ['KeyW'],
@@ -40,7 +40,7 @@ if(!CONFIG.REPO_DIR?.length || CONFIG.REPO_DIR === 'undefined'){
 
 
 
-// todo module off all theming to separate 
+// todo module off all theming 
 {// Theming 
 
 	// Default Theme
@@ -158,13 +158,7 @@ function getIssues( repo ){
 
 		window.api.send("get-issues", { repo, user, token });
 
-		window.api.receive("get-issues-res", data => {
-	
-			console.log('GET ISSUE MAIN')
-			console.log(data)
-			
-			resolve(data)
-		})
+		window.api.receive("get-issues-res", resolve)
 	})
 }
 
@@ -198,7 +192,7 @@ function toast( msg, time ){
  */
 function openBrowser( url ){
 	
-	shell.openExternal(url)
+	window.api.send('open-browser', url)
 }
 
 
@@ -321,9 +315,9 @@ function toggleSearch(){
 	DOM.container.addEventListener('open-details', e => DOM.details.open(e.detail))
 	
 	/* Exec commands for User */
-	DOM.details.addEventListener('exec-cmd', e => execEvent(e))
-	DOM.search.addEventListener('exec-cmd', e => execEvent(e))
-	DOM.search.addEventListener('exec-cmd-cancel', e => cancelProcesses(e))
+	DOM.details.addEventListener('exec-cmd', e => execEvent(e.detail))
+	DOM.search.addEventListener('exec-cmd', e => execEvent(e.detail))
+	DOM.search.addEventListener('exec-cmd-cancel', e => cancelProcesses(e.detail))
 
 	/* Delete Repo */
 	DOM.details.addEventListener('delete-repo', e => {
@@ -335,7 +329,7 @@ function toggleSearch(){
 			? `rm -Rf ${path}${name}`
 			: `rmdir /Q /S ${path}${name}`
 		
-		exec(cmd)
+		execEvent({ cmd })
 
 		loadRepo({ clear: true })
 		//toast(x.stderr || x.stdout)
@@ -358,11 +352,25 @@ function toggleSearch(){
 
 
 	/* Git Link Repo */
-	DOM.details.addEventListener('gitlink', e => {
+	DOM.details.addEventListener('gitlink', event => {
 		
 		const cmd = 'git remote -v'
 
-		const responder = data => {
+		const { cwd } = event.detail
+
+		const responder = 'git-url'
+
+		const detail = {
+			cmd, 
+			cwd,
+			responder,
+		}
+		
+		window.api.receive("git-url", openGitUrl)
+
+		window.api.send("execute", detail)
+
+		function openGitUrl(data) {
 
 			const check = data.indexOf('.git') > 0
 			const check2 = data.indexOf('http') > 0
@@ -371,36 +379,33 @@ function toggleSearch(){
 
 				const url = data.substring(data.indexOf('https'), data.indexOf('.git')+4)
 				
-				shell.openExternal(url)
+				openBrowser(url)
 			}
 			else if(check2) {
 				
 				const raw = data.substring(data.indexOf('http') , data.length)
 				const url = raw.substring(0, raw.indexOf(' '))
 				
-				shell.openExternal(url)
-
+				openBrowser(url)
 			}
 			else {
-				toast(`:umm: ${data.substring(0, 250)}...`)
+				toast(`:umm: .git url did not pass checks: ${data.substring(0, 250)}...`)
 			}
 		}
-		
-		exec(cmd, e.detail.cwd, responder)
 	})
 }
 
 
-
-
-
-
-function execEvent(event){
-
-	const { cmd, cwd, responder, exit } = event.detail
-
-	exec(cmd, cwd, responder, exit)
+/**
+ * @description execute a command
+ * @param {String} repo the local path to the repo
+ */
+function execEvent( detail ){
+	console.log('execEvent')
+	console.log(detail)
+	window.api.send("execute", detail)
 }
+
 
 function cancelProcesses(){
 	/* PROCESSES.forEach(proc => {
@@ -411,39 +416,11 @@ function cancelProcesses(){
 	}) */
 }
 
-/* Exec on behalf of user */
-function exec(cmd, cwd, responder, exit){
-
-	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
-
-	const exec = require('child_process').exec
-	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
-	//PROCESSES.push(command)
-
-	if(typeof responder === 'function'){
-		command.stdout.on('data', data => responder(data.toString()))
-		command.stderr.on('data', data => responder(data.toString()))
-	}
-	
-	command.on('exit', code => {
-		
-		//PROCESSES.splice(PROCESSES.indexOf(command), 1)
-
-		exit 
-			? code
-				? exit(`Process finished with exit code ${code.toString()}`) 
-				: exit(`Process finished without an exit code`) 
-			: responder 
-				? responder('exit') 
-				: null
-	})
-}
-
 
 /**
  * @description ZIP directory then offer to delete original | 
  * 				Toast response
- * @param {Event} e 
+ * @param {Event} event
  */
 async function Archive(event){
 
