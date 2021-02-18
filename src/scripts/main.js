@@ -149,8 +149,6 @@ function addToView( dir ){
  */
 function getIssues( repo ){
 
-	console.log('GET ISSUE MAIN0 '+ repo)
-
 	if(!repo){ return toast('Unable to get issues: no repo path') }
 
 	return new Promise((resolve, rej) => {
@@ -158,9 +156,9 @@ function getIssues( repo ){
 		const user = localStorage.getItem('user')
 		const token = localStorage.getItem('token')
 
-		ipcRenderer.send('get-issues', { repo, user, token })
-		ipcRenderer.on('get-issues-res', (event, data) => {
-					
+		window.api.send("get-issues", { repo, user, token });
+
+		window.api.receive("get-issues-res", data => {
 	
 			console.log('GET ISSUE MAIN')
 			console.log(data)

@@ -8,20 +8,20 @@ const validChannels = {
         "mk-dir",
         "mkdir",
         "get-projects",
-        "get-issues",
         "get-directories",
         "restart",
         "quit",
+        "get-issues",
     ],
     "receive": [
         "directories",
         "get-projects-res",
-        "get-issues-res",
         "select-parent-directory-res",
         "home-dir-res",
         "archive-res",
         "mk-dir-res",
         "vs-code-res",
+        "get-issues-res",
     ]
 }
 

@@ -43,9 +43,10 @@ const scheme = 'app'
 { /* BrowserWindow */
 
 
-	app.isReady()
-		? createWindow()
-		: app.on('ready', createWindow)
+	;(async () => {
+		await app.whenReady()
+		createWindow()
+	})();
 }
 
 
@@ -113,11 +114,6 @@ function createWindow() {
 		window = null
 	})
 }
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-//app.on('ready', createWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -263,9 +259,7 @@ ipcMain.on('get-issues', async (event, args) => {
 	const git = await getGitInfoFromLocalRepo(repo)
 
 	const list = await listIssues( { user, token }, git.user, git.name )
-		//? await listIssues( { user, token }, git.user, git.name )
-		//: await listOrgIssues( { user, token }, git.user, git.name )
-	
+
     const issues = list.map(issue => {
 
         const {
@@ -275,7 +269,6 @@ ipcMain.on('get-issues', async (event, args) => {
             created_at,
         } = issue;
 
-		
         return {
 			url,
 			title,
@@ -285,7 +278,6 @@ ipcMain.on('get-issues', async (event, args) => {
 	})
 
 	window.webContents.send('get-issues-res', issues)
-	//event.sender.send('get-issues-res', issues)
 })
 
 
