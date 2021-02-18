@@ -159,7 +159,6 @@ ipcMain.on('get-directories', async (event, directory) => {
 			.some(name => name === '.git')
 		return dir
 	})
-	console.log(projects)
 	
 	window.webContents.send("directories", projects)
 	//event.sender.send('select-parent-directory-res', result.filePaths)
@@ -214,12 +213,12 @@ ipcMain.on('archive', async (event, data) => {
 
 
 ipcMain.on('vs-code', async (event, data) => {
-	return new Promise(resolve => {
+	
+	const resolve = arg =>	window.webContents.send("vs-code-res", arg)
 
-		const { cmd, cwd, exit } = data
-		
-		execute(cmd, cwd, resolve, exit)
-	})
+	const { cmd, cwd } = data
+	
+	execute(cmd, cwd, resolve)
 })
 
 

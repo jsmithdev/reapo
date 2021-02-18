@@ -521,10 +521,10 @@ function newRepo(event) {
 
 	const openVsCode = event => {
 
-		ipcRenderer.send('vs-code', event.detail)
-		ipcRenderer.on('vs-code', (event, result) => {
-			
-			toast(`Opened ${e.detail.title} in VS Code 🦄`)
+		window.api.send("vs-code", event.detail);
+
+		window.api.receive("vs-code-res", _ => {
+			toast(`Opened ${event.detail.title} in VS Code :unicorn:`)
 		})
 	}
 

@@ -19,6 +19,7 @@ const validChannels = {
         "home-dir-res",
         "archive-res",
         "mk-dir-res",
+        "vs-code-res",
     ]
 }
 
