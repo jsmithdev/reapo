@@ -1,4 +1,4 @@
-// process.env.debug = true
+process.env.debug = true
 
 const path = require('path')
 
@@ -7,7 +7,9 @@ const Archiver = require('./scripts/archive.js')
 
 const windowStateKeeper = require('electron-window-state')
 
-const { app, protocol, ipcMain, dialog, BrowserWindow } = require('electron')
+const { app, protocol, ipcMain, dialog, BrowserWindow, shell, remote } = require('electron')
+
+const Repo = require('fs-jetpack')
 
 const ghissues = require('ghissues')
 
@@ -57,7 +59,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let window
 
 function createWindow() {
 	
@@ -69,7 +71,7 @@ function createWindow() {
 	})
 
 	// Create the window using the state information
-	mainWindow = new BrowserWindow({
+	window = new BrowserWindow({
 		x: mainWindowState.x,
 		y: mainWindowState.y,
 		width: mainWindowState.width,
@@ -81,7 +83,7 @@ function createWindow() {
 			sandbox: false,
 			worldSafeExecuteJavaScript: true,
 			// todo set to true #45
-			contextIsolation: false,
+			contextIsolation: true,
 			//nodeIntegration: false,
 			//enableRemoteModule: false,
 			//contextIsolation: true,
@@ -92,23 +94,23 @@ function createWindow() {
 	// Let us register listeners on the window, so we can update the state
 	// automatically (the listeners will be removed when the window is closed)
 	// and restore the maximized or full screen state
-	mainWindowState.manage(mainWindow)
+	mainWindowState.manage(window)
 	
 
 	// and load the index.html of the app
-	mainWindow.loadURL('app://./index.html')
+	window.loadURL('app://./index.html')
 
 	// Open the DevTools
 	if(process.env.debug){
-		mainWindow.webContents.openDevTools()
+		window.webContents.openDevTools()
 	}
 
 	// Emitted when the window is closed.
-	mainWindow.on('closed', () => {
+	window.on('closed', () => {
 		// Dereference the window object, usually you would store windows
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
-		mainWindow = null
+		window = null
 	})
 }
 
@@ -126,18 +128,55 @@ app.on('window-all-closed', () => {
 	}
 })
 
+/* Help for unix PATH vars so reapo can run installed CLI tools on behalf of user */
+if (process.platform !== 'win32') {
+
+	const shellPath = require('shell-path')
+	
+	process.env.PATH = shellPath.sync() || [
+		'./node_modules/.bin',
+		'/.nodebrew/current/bin',
+		'/usr/local/bin',
+		process.env.PATH
+	].join(':')
+}
 
 /* IPC Communications: Used to run backend processes like executing commands, CRUD,  */
 
+ipcMain.on('get-directories', async (event, directory) => {
+
+	
+	const dirs = Repo.list(directory)
+		.map(name => {
+			return Repo.inspect(`${directory}/${name}`, { times: true })
+		})
+		.filter(dir => {
+			return dir.type === 'dir'
+		})
+	
+	const projects = dirs.map(dir => {
+		dir.git = Repo.list(`${directory}/${dir.name}`)
+			.some(name => name === '.git')
+		return dir
+	})
+	console.log(projects)
+	
+	window.webContents.send("directories", projects)
+	//event.sender.send('select-parent-directory-res', result.filePaths)
+}) 
+
 ipcMain.on('select-parent-directory', async (event) => {
-	const result = await dialog.showOpenDialog(mainWindow, {
+	const result = await dialog.showOpenDialog(window, {
 		properties: ['openDirectory']
 	})
-	event.sender.send('select-parent-directory-res', result.filePaths)
+	
+	window.webContents.send("select-parent-directory-res", result.filePaths)
+	//event.sender.send('select-parent-directory-res', result.filePaths)
 }) 
 
 ipcMain.on('home-dir', (event) => {
-	event.sender.send('home-dir-res', app.getPath('home'))
+	window.webContents.send("home-dir-res", result.filePaths)
+	//event.sender.send('home-dir-res', app.getPath('home'))
 })
 
 ipcMain.on('mk-dir', (event, data) => {
@@ -152,7 +191,8 @@ ipcMain.on('mk-dir', (event, data) => {
 			console.error(error)
 		}
 		
-		event.sender.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
+		window.webContents.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
+		//event.sender.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
 		
 		// Auto open in vs code upon success
 		execute(cmd, cwd)
@@ -167,7 +207,8 @@ ipcMain.on('archive', async (event, data) => {
 	
 	const msg = await Archiver.directory(detail, toast)
 
-	event.sender.send('archive-res', msg)
+	window.webContents.send('archive-res', msg)
+	//event.sender.send('archive-res', msg)
 })
 
 
@@ -237,7 +278,8 @@ ipcMain.on('get-issues', async (event, args) => {
 		}
 	})
 
-	event.sender.send('get-issues-res', issues)
+	window.webContents.send('get-issues-res', issues)
+	//event.sender.send('get-issues-res', issues)
 })
 
 

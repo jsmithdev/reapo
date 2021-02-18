@@ -1,6 +1,3 @@
-// 
-const { ipcRenderer, shell, remote, app } = require('electron')
-const Repo = require('fs-jetpack')
 
 const codes = {
 	find: ['KeyF'],
@@ -35,17 +32,10 @@ const CONFIG = {
 	},
 }
 
-/* Kick off */
+/* Warn first time users to set their main repo dir */
 if(!CONFIG.REPO_DIR?.length || CONFIG.REPO_DIR === 'undefined'){
 	
 	toast('Use the Menu (⚙) to set a Main Directory :umm:', 30*1000)
-}
-else {
-	
-	loadRepo({ 
-		clear: false,
-		order: localStorage.getItem('order') ? localStorage.getItem('order') : 'date-asc',
-	})
 }
 
 
@@ -95,6 +85,8 @@ function setTheme( theme ) {
  */
 function loadRepo( config ){
 
+	//console.log('loadRepo caller: ', loadRepo.caller)
+
 	config.clear = config.clear ? config.clear : 'date-asc'
 
 	if (config.clear) {
@@ -103,23 +95,27 @@ function loadRepo( config ){
 		}
 	}
 
-	const projects = Repo.list(CONFIG.REPO_DIR).map(name => {
-		return Repo.inspect(`${CONFIG.REPO_DIR}/${name}`, { times: true })
+	window.api.send("get-directories", CONFIG.REPO_DIR);
+
+	window.api.receive("directories", projects => {
+
+		console.log(`Received from main process`);
+		console.log(projects);
+
+		const dirs = projects.filter(p => p.type && p.type === 'dir')
+
+		if(config.order === 'name-asc' || localStorage.order === 'name-asc' ){
+			dirs.map( addToView )
+		}
+		else {
+			const order = dirs.sort((x,y) => y.modifyTime - x.modifyTime)
+			order.map( addToView )
+		}
+		
+		if(config.order !== localStorage.getItem('order')){
+			localStorage.setItem('order', config.order)
+		}
 	})
-
-	const dirs = projects.filter(p => p.type && p.type === 'dir')
-
-	if(config.order === 'name-asc' || localStorage.order === 'name-asc' ){
-		dirs.map( addToView )
-	}
-	else {
-		const order = dirs.sort((x,y) => y.modifyTime - x.modifyTime)
-		order.map( addToView )
-	}
-	
-	if(config.order !== localStorage.getItem('order')){
-		localStorage.setItem('order', config.order)
-	}
 }
 
 
@@ -134,8 +130,7 @@ function addToView( dir ){
 	folder.path = CONFIG.REPO_DIR
 	folder.name = dir.name
 	folder.date = dir.modifyTime
-	folder.git = Repo.list(`${CONFIG.REPO_DIR}/${dir.name}`)
-		.some(name => name === '.git')
+	folder.git = dir.git
 		
 	folder.addEventListener('get-issues', async event => {
 		const issues = await getIssues( event.detail.repo )
@@ -403,18 +398,7 @@ function toggleSearch(){
 
 
 
-/* Help for unix PATH vars so reapo can run installed CLI tools on behalf of user */
-if (process.platform !== 'win32') {
 
-	const shellPath = require('shell-path')
-	
-	process.env.PATH = shellPath.sync() || [
-		'./node_modules/.bin',
-		'/.nodebrew/current/bin',
-		'/usr/local/bin',
-		process.env.PATH
-	].join(':')
-}
 
 function execEvent(event){
 
