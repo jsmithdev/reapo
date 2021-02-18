@@ -161,7 +161,6 @@ ipcMain.on('get-directories', async (event, directory) => {
 	})
 	
 	window.webContents.send("directories", projects)
-	//event.sender.send('select-parent-directory-res', result.filePaths)
 }) 
 
 ipcMain.on('select-parent-directory', async (event) => {
@@ -227,6 +226,14 @@ ipcMain.on('terminal-popout', (event, data) => {
 	const { cmd, cwd, resolve } = data
 	
 	execute(cmd, cwd, resolve)
+})
+
+ipcMain.on('restart', (event, data) => {
+	app.relaunch()
+	app.exit(0)})
+
+ipcMain.on('quit', (event, data) => {
+	app.exit(0)
 })
 
 

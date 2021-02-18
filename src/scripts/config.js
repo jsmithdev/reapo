@@ -10,6 +10,8 @@ const validChannels = {
         "get-projects",
         "get-issues",
         "get-directories",
+        "restart",
+        "quit",
     ],
     "receive": [
         "directories",

@@ -99,9 +99,6 @@ function loadRepo( config ){
 
 	window.api.receive("directories", projects => {
 
-		console.log(`Received from main process`);
-		console.log(projects);
-
 		const dirs = projects.filter(p => p.type && p.type === 'dir')
 
 		if(config.order === 'name-asc' || localStorage.order === 'name-asc' ){
@@ -486,6 +483,7 @@ async function Archive(event){
 function quit() {
 	
 	//remote.getCurrentWindow().close()
+	window.api.send("quit");
 }
 
 /**
@@ -494,7 +492,7 @@ function quit() {
  */
 function restart(){
 
-	remote.app.relaunch()
+	window.api.send("restart");
 }
 
 /**
