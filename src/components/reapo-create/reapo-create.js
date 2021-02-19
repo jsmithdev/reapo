@@ -197,7 +197,11 @@ export class ReapoCreate extends HTMLElement {
 
 	newEvent(type, cmd, cwd, name, path) {
 
+		const responder = 'mk-dir-res'
+
 		const exit = x => this.cleanup(x, name, path, cmd.includes('git'))
+
+		window.api.receive(responder, exit)
 
 		return new CustomEvent(
 			type,
@@ -209,8 +213,7 @@ export class ReapoCreate extends HTMLElement {
 					path,
 					cmd,
 					cwd,
-					exit,
-					responder: () => loadRepo({ order: 'date-asc', clear: true })
+					responder,
 				}
 			}
 		)

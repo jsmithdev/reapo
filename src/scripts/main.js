@@ -407,8 +407,6 @@ function toggleSearch(){
  * @param {String} repo the local path to the repo
  */
 function execEvent( detail ){
-	console.log('execEvent')
-	console.log(detail)
 	window.api.send("execute", detail)
 }
 
@@ -483,18 +481,8 @@ function restart(){
  * 
  */
 function newRepo(event) {
-
-	const { responder, exit, name, cmd, cwd } = event.detail
-
-	const data = { name, cmd, cwd }
-
-	ipcRenderer.send('mk-dir', data)
-
-	ipcRenderer.on('mk-dir-res', (event, msg) => {
-		
-		responder()
-		exit(msg)
-	})
+	
+	window.api.send('mk-dir', event.detail)
 }
 
 
