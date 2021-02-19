@@ -143,7 +143,7 @@ export class SearchRepos extends HTMLElement {
                     bubbles: true, 
                     composed: true,
                     responder: console.log,
-                    exit: e => console.log,
+                    exit: console.log,
                 })
             )
         }
@@ -161,7 +161,7 @@ export class SearchRepos extends HTMLElement {
                     bubbles: true, 
                     composed: true,
                     detail: {
-                        cmd: `grep ${string}  -Fr -r -l --exclude-dir={node_modules,.history}`,
+                        cmd: `grep ${string}  -Fr -r -l --exclude-dir={node_modules,.history,dist,deploy}`,
                         cwd: `${this.directory}`,
                         responder: response => {
                             if(this.searchEngaged){
@@ -171,10 +171,10 @@ export class SearchRepos extends HTMLElement {
                                 )
                             }
                         },
-                        exit: e => this.searchFinished(e),
+                        exit: this.searchFinished,
                     }
-                })
-            )
+                }
+            ))
         }
     }
 

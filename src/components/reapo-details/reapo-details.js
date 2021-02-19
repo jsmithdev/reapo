@@ -223,21 +223,29 @@ export class ReapoModal extends HTMLElement {
 			else {
 				this.dom.readme.clear()
 				this.dom.readmeIcon.classList.add('active')
+
+				const cmd = 'cat README.md'
+				const cwd = `${this.path}/${this.name}`
+				const responder = 'readme'
+				
+				const showMarkdown = (markdown) => {
+					console.log('showMarkdown: ', markdown.substring(0, 20))
+					this.dom.readme.setAttribute('string', markdown)
+					this.dom.readme.classList.remove('hide')
+				}
+				
+				window.api.receive(responder, showMarkdown)
+				
+
 				this.dispatchEvent(new CustomEvent(
 					'exec-cmd', 
 					{
 						bubbles: true, 
 						composed: true,
 						detail: {
-							cmd: 'cat README.md',
-							cwd: `${this.path}/${this.name}`,
-							responder: response => {
-								console.log('response '+response.length)
-								//console.log(response)
-								this.dom.readme.setAttribute('string', response)
-								this.dom.readme.classList.remove('hide')
-							},
-							exit: e => console.log(e),
+							cmd,
+							cwd,
+							responder,
 						}
 					})
 				)
@@ -247,16 +255,24 @@ export class ReapoModal extends HTMLElement {
 
 		/* Run git status / sync icon */
 		this.dom.sync.onclick = () => {
+
+			
+			const cmd = 'git status'
+			const cwd = this.path+'/'+this.name
+			const responder = 'git-status'
+			const callback = log => this.dom.term.setAttribute('log', log)
+			
+			window.api.receive(responder, callback)
+			
 			this.dispatchEvent(new CustomEvent(
 				'exec-cmd', 
 				{ 
 					bubbles: true, 
 					composed: true,
 					detail: {
-						cmd: 'git status',
-						cwd: this.path+'/'+this.name,
-						responder: x => this.dom.term.setAttribute('log', x),
-						exit: () => this.dom.term.loggerExit(),
+						cmd, 
+						cwd, 
+						responder,
 					}
 				})
 			)
@@ -269,9 +285,11 @@ export class ReapoModal extends HTMLElement {
 				? `more ".sfdx/sfdx-config.json"`//windows command
 				: `cat .sfdx/sfdx-config.json`//linux command
 
-			console.log(cmd)
 			const cwd = this.path+'/'+this.name
-			const responder = data => this.openOrg(data)
+
+			const responder = 'open-salesforce'
+			
+			window.api.receive(responder, data => this.openOrg(data))
 
 			const opts = { 
 				bubbles: true, 
@@ -288,30 +306,17 @@ export class ReapoModal extends HTMLElement {
 
 		/* Run Archiver / box icon */
 		this.dom.archive.onclick = async () => {
-			
-			try {
-
-				const message = await new Promise((resolve, reject) => {
-					this.dispatchEvent(new CustomEvent(
-						'archive', 
-						{ 
-							bubbles: true, 
-							composed: true,
-							detail: {
-								resolve, 
-								reject,
-								name: this.name,
-								cwd: this.path+'/'
-							}
-						})
-					)
+			this.dispatchEvent(new CustomEvent(
+				'archive', 
+				{
+					bubbles: true, 
+					composed: true,
+					detail: {
+						name: this.name,
+						cwd: this.path+'/'
+					}
 				})
-
-				this.dom.term.setAttribute('log', message)
-			}
-			catch(error){
-				this.dom.term.setAttribute('log', error)
-			}
+			)
 		}
 
 		/* Clear terminal */
@@ -323,19 +328,19 @@ export class ReapoModal extends HTMLElement {
 			const cmd = navigator.appVersion.indexOf("Win") !== -1
 				? `dir`//windows command
 				: `ls`//linux command
+
+			const cwd = this.path+'/'+this.name
+
+			const responder = 'list-files'
+
+			window.api.receive(responder, x => this.dom.term.setAttribute('log', x))
 			
-			this.dispatchEvent(new CustomEvent(
-				'exec-cmd',
-				{
-					bubbles: true,
-					composed: true,
-					detail: {
-						cmd,
-						cwd: this.path+'/'+this.name,
-						responder: x => this.dom.term.setAttribute('log', x)
-					}
-				})
-			)
+			const detail = {
+				cmd,
+				cwd,
+				responder,
+			}
+			window.api.send("execute", detail)
 		}
 
 		/* gitlink - go to github link in package.xml if exists / github icon */
@@ -396,18 +401,22 @@ export class ReapoModal extends HTMLElement {
 			)
 		}
 	}
+
 	
 	openOrg( data ){
-		console.log(data)
+		
 		if(data.substring(0, 1) !== '{'){ return }
 
 		const { defaultusername } = JSON.parse( data )
 		
 		const cwd = this.path+'/'+this.name
 		const cmd = 'sfdx force:org:open -u '+defaultusername
-		const responder = msg => this.dom.term.setAttribute('log', msg)
-		const exit = () => this.dom.term.loggerExit()
-				
+		const responder = 'sfdx-org-open'
+
+		window.api.receive(responder, msg => this.dom.term.setAttribute('log', msg))
+		
+		//const exit = () => this.dom.term.loggerExit()
+		
 		const opts = { 
 			bubbles: true, 
 			composed: true,
@@ -415,7 +424,6 @@ export class ReapoModal extends HTMLElement {
 				cwd,
 				cmd,
 				responder,
-				exit,
 			}
 		}
 

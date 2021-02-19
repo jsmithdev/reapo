@@ -1,4 +1,4 @@
-// process.env.debug = true
+process.env.debug = true
 
 const path = require('path')
 
@@ -7,7 +7,9 @@ const Archiver = require('./scripts/archive.js')
 
 const windowStateKeeper = require('electron-window-state')
 
-const { app, protocol, ipcMain, dialog, BrowserWindow } = require('electron')
+const { app, protocol, ipcMain, dialog, BrowserWindow, shell, remote } = require('electron')
+
+const Repo = require('fs-jetpack')
 
 const ghissues = require('ghissues')
 
@@ -41,9 +43,10 @@ const scheme = 'app'
 { /* BrowserWindow */
 
 
-	app.isReady()
-		? createWindow()
-		: app.on('ready', createWindow)
+	;(async () => {
+		await app.whenReady()
+		createWindow()
+	})();
 }
 
 
@@ -57,7 +60,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let window
 
 function createWindow() {
 	
@@ -69,7 +72,7 @@ function createWindow() {
 	})
 
 	// Create the window using the state information
-	mainWindow = new BrowserWindow({
+	window = new BrowserWindow({
 		x: mainWindowState.x,
 		y: mainWindowState.y,
 		width: mainWindowState.width,
@@ -81,7 +84,7 @@ function createWindow() {
 			sandbox: false,
 			worldSafeExecuteJavaScript: true,
 			// todo set to true #45
-			contextIsolation: false,
+			contextIsolation: true,
 			//nodeIntegration: false,
 			//enableRemoteModule: false,
 			//contextIsolation: true,
@@ -92,30 +95,25 @@ function createWindow() {
 	// Let us register listeners on the window, so we can update the state
 	// automatically (the listeners will be removed when the window is closed)
 	// and restore the maximized or full screen state
-	mainWindowState.manage(mainWindow)
+	mainWindowState.manage(window)
 	
 
 	// and load the index.html of the app
-	mainWindow.loadURL('app://./index.html')
+	window.loadURL('app://./index.html')
 
 	// Open the DevTools
 	if(process.env.debug){
-		mainWindow.webContents.openDevTools()
+		window.webContents.openDevTools()
 	}
 
 	// Emitted when the window is closed.
-	mainWindow.on('closed', () => {
+	window.on('closed', () => {
 		// Dereference the window object, usually you would store windows
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
-		mainWindow = null
+		window = null
 	})
 }
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-//app.on('ready', createWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -126,18 +124,54 @@ app.on('window-all-closed', () => {
 	}
 })
 
+/* Help for unix PATH vars so reapo can run installed CLI tools on behalf of user */
+if (process.platform !== 'win32') {
+
+	const shellPath = require('shell-path')
+	
+	process.env.PATH = shellPath.sync() || [
+		'./node_modules/.bin',
+		'/.nodebrew/current/bin',
+		'/usr/local/bin',
+		process.env.PATH
+	].join(':')
+}
 
 /* IPC Communications: Used to run backend processes like executing commands, CRUD,  */
 
+ipcMain.on('get-directories', async (event, directory) => {
+	
+	if(!directory){ return }
+	
+	const dirs = Repo.list(directory)
+		.map(name => {
+			return Repo.inspect(`${directory}/${name}`, { times: true })
+		})
+		.filter(dir => {
+			return dir.type === 'dir'
+		})
+	
+	const projects = dirs.map(dir => {
+		dir.git = Repo.list(`${directory}/${dir.name}`)
+			.some(name => name === '.git')
+		return dir
+	})
+	
+	window.webContents.send("directories", projects)
+}) 
+
 ipcMain.on('select-parent-directory', async (event) => {
-	const result = await dialog.showOpenDialog(mainWindow, {
+	const result = await dialog.showOpenDialog(window, {
 		properties: ['openDirectory']
 	})
-	event.sender.send('select-parent-directory-res', result.filePaths)
+	
+	window.webContents.send("select-parent-directory-res", result.filePaths)
+	//event.sender.send('select-parent-directory-res', result.filePaths)
 }) 
 
 ipcMain.on('home-dir', (event) => {
-	event.sender.send('home-dir-res', app.getPath('home'))
+	window.webContents.send("home-dir-res", result.filePaths)
+	//event.sender.send('home-dir-res', app.getPath('home'))
 })
 
 ipcMain.on('mk-dir', (event, data) => {
@@ -152,7 +186,7 @@ ipcMain.on('mk-dir', (event, data) => {
 			console.error(error)
 		}
 		
-		event.sender.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
+		window.webContents.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
 		
 		// Auto open in vs code upon success
 		execute(cmd, cwd)
@@ -161,24 +195,26 @@ ipcMain.on('mk-dir', (event, data) => {
 
 
 
-ipcMain.on('archive', async (event, data) => {
-	
-	const { toast, detail } = data
-	
-	const msg = await Archiver.directory(detail, toast)
+ipcMain.on('archive', async (event, detail) => {
 
-	event.sender.send('archive-res', msg)
+	const msg = await Archiver.directory(detail, window)
+
+	window.webContents.send('archive-res', msg)
 })
 
 
 
 ipcMain.on('vs-code', async (event, data) => {
-	return new Promise(resolve => {
+	
+	const resolve = arg =>	window.webContents.send("vs-code-res", arg)
 
-		const { cmd, cwd, exit } = data
-		
-		execute(cmd, cwd, resolve, exit)
-	})
+	const { cmd, cwd } = data
+	
+	execute(cmd, cwd, resolve)
+})
+
+ipcMain.on('open-browser', (event, url) => {
+	shell.openExternal(url)
 })
 
 
@@ -189,24 +225,13 @@ ipcMain.on('terminal-popout', (event, data) => {
 	execute(cmd, cwd, resolve)
 })
 
+ipcMain.on('restart', (event, data) => {
+	app.relaunch()
+	app.exit(0)})
 
-
-/* Exec on behalf of user */
-function execute(cmd, cwd, responder, exit){
-
-	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
-
-	const exec = require('child_process').exec
-	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
-
-	if(typeof responder === 'function'){
-		command.stdout.on('data', data => responder(data.toString()))
-		command.stderr.on('data', data => responder(data.toString()))
-	}
-	
-	command.on('exit', code => exit ? exit(`Process finished with exit code ${code.toString()}`) : responder ? responder('exit') : null) // code.toString()
-}
-
+ipcMain.on('quit', (event, data) => {
+	app.exit(0)
+})
 
 /* Github */
 ipcMain.on('get-issues', async (event, args) => {
@@ -216,9 +241,7 @@ ipcMain.on('get-issues', async (event, args) => {
 	const git = await getGitInfoFromLocalRepo(repo)
 
 	const list = await listIssues( { user, token }, git.user, git.name )
-		//? await listIssues( { user, token }, git.user, git.name )
-		//: await listOrgIssues( { user, token }, git.user, git.name )
-	
+
     const issues = list.map(issue => {
 
         const {
@@ -228,7 +251,6 @@ ipcMain.on('get-issues', async (event, args) => {
             created_at,
         } = issue;
 
-		
         return {
 			url,
 			title,
@@ -237,7 +259,20 @@ ipcMain.on('get-issues', async (event, args) => {
 		}
 	})
 
-	event.sender.send('get-issues-res', issues)
+	window.webContents.send('get-issues-res', issues)
+})
+
+/* Generic Commands */
+ipcMain.on('execute', async (event, detail) => {
+	
+	const { cmd, cwd, responder, exit } = detail;
+	
+	execute(cmd, cwd, responder, exit)
+})
+
+/* Open in OS file manager */
+ipcMain.on('open-file-man', async (event, path) => {
+	shell.showItemInFolder( path )
 })
 
 
@@ -279,4 +314,33 @@ function getGitInfoFromLocalRepo(repo){
 		
 		execute(cmd, cwd, responder)
 	})
+}
+
+
+
+/* Exec on behalf of user */
+function execute(cmd, cwd, responder, exit){
+
+	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
+
+	const exec = require('child_process').exec
+	
+	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
+
+	if(typeof responder === 'string'){
+
+		command.stdout.on('data', data => {
+			//console.log('Has data ', data)
+			window.webContents.send(responder, data.toString())
+		})
+		command.stderr.on('data', data => {
+			console.log('Has ERROR: ', data.toString())
+			window.webContents.send( 'error', data.toString() )
+		});
+
+	}
+	else if(typeof responder === 'function'){
+		command.stdout.on('data', data => responder(data.toString()))
+		command.stderr.on('data', data => responder(data.toString()))
+	}
 }

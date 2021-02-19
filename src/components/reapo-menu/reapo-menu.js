@@ -21,7 +21,7 @@ template.innerHTML = /*html*/`
     
     svg {
 		width: 100%;
-		height: 42px;
+		height: min(5vh, 46px);
 		margin: 0.15rem;
 		cursor: pointer;
 		transform: rotate(0deg);

@@ -7,7 +7,7 @@ template.innerHTML = /*html*/`
 
 svg {
 	width: 100%;
-	height: 42px;
+	height: min(5vh, 46px);
 	margin: 0.15rem;
 	cursor: pointer;
 	fill: var(--color-light);
@@ -15,6 +15,7 @@ svg {
 
 .header {
 	width: 100%;
+	height: max(5vh, 46px);
     /* position: fixed; */
     display: grid;
     grid-area: header;

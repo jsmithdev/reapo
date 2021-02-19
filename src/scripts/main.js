@@ -1,6 +1,4 @@
-// 
-const { ipcRenderer, shell, remote, app } = require('electron')
-const Repo = require('fs-jetpack')
+const isUnix = navigator.appVersion.indexOf("Win") === -1
 
 const codes = {
 	find: ['KeyF'],
@@ -35,22 +33,18 @@ const CONFIG = {
 	},
 }
 
-/* Kick off */
+
+window.api.receive('error', message => toast(message, 5000))
+
+/* Warn first time users to set their main repo dir */
 if(!CONFIG.REPO_DIR?.length || CONFIG.REPO_DIR === 'undefined'){
 	
 	toast('Use the Menu (⚙) to set a Main Directory :umm:', 30*1000)
 }
-else {
-	
-	loadRepo({ 
-		clear: false,
-		order: localStorage.getItem('order') ? localStorage.getItem('order') : 'date-asc',
-	})
-}
 
 
 
-// todo module off all theming to separate 
+// todo module off all theming 
 {// Theming 
 
 	// Default Theme
@@ -95,6 +89,8 @@ function setTheme( theme ) {
  */
 function loadRepo( config ){
 
+	//console.log('loadRepo caller: ', loadRepo.caller)
+
 	config.clear = config.clear ? config.clear : 'date-asc'
 
 	if (config.clear) {
@@ -103,23 +99,24 @@ function loadRepo( config ){
 		}
 	}
 
-	const projects = Repo.list(CONFIG.REPO_DIR).map(name => {
-		return Repo.inspect(`${CONFIG.REPO_DIR}/${name}`, { times: true })
+	window.api.send("get-directories", CONFIG.REPO_DIR);
+
+	window.api.receive("directories", projects => {
+
+		const dirs = projects.filter(p => p.type && p.type === 'dir')
+
+		if(config.order === 'name-asc' || localStorage.order === 'name-asc' ){
+			dirs.map( addToView )
+		}
+		else {
+			const order = dirs.sort((x,y) => y.modifyTime - x.modifyTime)
+			order.map( addToView )
+		}
+		
+		if(config.order !== localStorage.getItem('order')){
+			localStorage.setItem('order', config.order)
+		}
 	})
-
-	const dirs = projects.filter(p => p.type && p.type === 'dir')
-
-	if(config.order === 'name-asc' || localStorage.order === 'name-asc' ){
-		dirs.map( addToView )
-	}
-	else {
-		const order = dirs.sort((x,y) => y.modifyTime - x.modifyTime)
-		order.map( addToView )
-	}
-	
-	if(config.order !== localStorage.getItem('order')){
-		localStorage.setItem('order', config.order)
-	}
 }
 
 
@@ -134,8 +131,7 @@ function addToView( dir ){
 	folder.path = CONFIG.REPO_DIR
 	folder.name = dir.name
 	folder.date = dir.modifyTime
-	folder.git = Repo.list(`${CONFIG.REPO_DIR}/${dir.name}`)
-		.some(name => name === '.git')
+	folder.git = dir.git
 		
 	folder.addEventListener('get-issues', async event => {
 		const issues = await getIssues( event.detail.repo )
@@ -157,8 +153,6 @@ function addToView( dir ){
  */
 function getIssues( repo ){
 
-	console.log('GET ISSUE MAIN0 '+ repo)
-
 	if(!repo){ return toast('Unable to get issues: no repo path') }
 
 	return new Promise((resolve, rej) => {
@@ -166,15 +160,9 @@ function getIssues( repo ){
 		const user = localStorage.getItem('user')
 		const token = localStorage.getItem('token')
 
-		ipcRenderer.send('get-issues', { repo, user, token })
-		ipcRenderer.on('get-issues-res', (event, data) => {
-					
-	
-			console.log('GET ISSUE MAIN')
-			console.log(data)
-			
-			resolve(data)
-		})
+		window.api.send("get-issues", { repo, user, token });
+
+		window.api.receive("get-issues-res", resolve)
 	})
 }
 
@@ -184,6 +172,8 @@ function getIssues( repo ){
  * @param {String} msg the message to display
  */
 function toast( msg, time ){
+	
+	if(msg?.message){ msg = msg.message }
 
 	if(!msg){ return console.log('toast sent w/ out message :/') }
 
@@ -208,7 +198,7 @@ function toast( msg, time ){
  */
 function openBrowser( url ){
 	
-	shell.openExternal(url)
+	window.api.send('open-browser', url)
 }
 
 
@@ -331,9 +321,9 @@ function toggleSearch(){
 	DOM.container.addEventListener('open-details', e => DOM.details.open(e.detail))
 	
 	/* Exec commands for User */
-	DOM.details.addEventListener('exec-cmd', e => execEvent(e))
-	DOM.search.addEventListener('exec-cmd', e => execEvent(e))
-	DOM.search.addEventListener('exec-cmd-cancel', e => cancelProcesses(e))
+	DOM.details.addEventListener('exec-cmd', e => execEvent(e.detail))
+	DOM.search.addEventListener('exec-cmd', e => execEvent(e.detail))
+	DOM.search.addEventListener('exec-cmd-cancel', e => cancelProcesses(e.detail))
 
 	/* Delete Repo */
 	DOM.details.addEventListener('delete-repo', e => {
@@ -341,11 +331,11 @@ function toggleSearch(){
 		const name = e.detail.name
 		const path = localStorage.path
 		
-		const cmd = process.platform !== 'win32'
+		const cmd = isUnix
 			? `rm -Rf ${path}${name}`
 			: `rmdir /Q /S ${path}${name}`
 		
-		exec(cmd)
+		execEvent({ cmd })
 
 		loadRepo({ clear: true })
 		//toast(x.stderr || x.stdout)
@@ -362,17 +352,31 @@ function toggleSearch(){
 		
 		const filepath = `${CONFIG.REPO_DIR}${folder}/.`
 
-		shell.showItemInFolder( filepath )
+		window.api.send('open-file-man', filepath )
 	})
 
 
 
 	/* Git Link Repo */
-	DOM.details.addEventListener('gitlink', e => {
+	DOM.details.addEventListener('gitlink', event => {
 		
 		const cmd = 'git remote -v'
 
-		const responder = data => {
+		const { cwd } = event.detail
+
+		const responder = 'git-url'
+
+		const detail = {
+			cmd, 
+			cwd,
+			responder,
+		}
+		
+		window.api.receive(responder, openGitUrl)
+
+		window.api.send("execute", detail)
+
+		function openGitUrl(data) {
 
 			const check = data.indexOf('.git') > 0
 			const check2 = data.indexOf('http') > 0
@@ -381,47 +385,31 @@ function toggleSearch(){
 
 				const url = data.substring(data.indexOf('https'), data.indexOf('.git')+4)
 				
-				shell.openExternal(url)
+				openBrowser(url)
 			}
 			else if(check2) {
 				
 				const raw = data.substring(data.indexOf('http') , data.length)
 				const url = raw.substring(0, raw.indexOf(' '))
 				
-				shell.openExternal(url)
-
+				openBrowser(url)
 			}
 			else {
-				toast(`:umm: ${data.substring(0, 250)}...`)
+				toast(`:umm: .git url did not pass checks: ${data.substring(0, 250)}...`)
 			}
 		}
-		
-		exec(cmd, e.detail.cwd, responder)
 	})
 }
 
 
-
-
-/* Help for unix PATH vars so reapo can run installed CLI tools on behalf of user */
-if (process.platform !== 'win32') {
-
-	const shellPath = require('shell-path')
-	
-	process.env.PATH = shellPath.sync() || [
-		'./node_modules/.bin',
-		'/.nodebrew/current/bin',
-		'/usr/local/bin',
-		process.env.PATH
-	].join(':')
+/**
+ * @description execute a command
+ * @param {String} repo the local path to the repo
+ */
+function execEvent( detail ){
+	window.api.send("execute", detail)
 }
 
-function execEvent(event){
-
-	const { cmd, cwd, responder, exit } = event.detail
-
-	exec(cmd, cwd, responder, exit)
-}
 
 function cancelProcesses(){
 	/* PROCESSES.forEach(proc => {
@@ -432,62 +420,36 @@ function cancelProcesses(){
 	}) */
 }
 
-/* Exec on behalf of user */
-function exec(cmd, cwd, responder, exit){
-
-	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
-
-	const exec = require('child_process').exec
-	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
-	//PROCESSES.push(command)
-
-	if(typeof responder === 'function'){
-		command.stdout.on('data', data => responder(data.toString()))
-		command.stderr.on('data', data => responder(data.toString()))
-	}
-	
-	command.on('exit', code => {
-		
-		//PROCESSES.splice(PROCESSES.indexOf(command), 1)
-
-		exit 
-			? code
-				? exit(`Process finished with exit code ${code.toString()}`) 
-				: exit(`Process finished without an exit code`) 
-			: responder 
-				? responder('exit') 
-				: null
-	})
-}
-
 
 /**
  * @description ZIP directory then offer to delete original | 
  * 				Toast response
- * @param {Event} e 
+ * @param {Event} event
  */
 async function Archive(event){
 
 	
-	//delete node_package? might not have deps listed, maybe option later in settings #todo
-	//console.dir(Archiver.directory)
-	//run thru handleRepo
+	//todo delete/skip node_package, others (dist)? might not have deps listed, maybe option later in settings
 	try {
 		
-		const data = {
-			toast,
-			detail: event.detail,
-		}
+		const { detail } = event;
 
-		ipcRenderer.send('archive', data)
+		const responder = 'archive-res'
 
-		ipcRenderer.on('archive-res', (event, msg) => {
-				
+		detail.responder = responder
+
+		console.log(detail)
+
+		window.api.send('archive', detail)
+		window.api.receive(responder, callback)
+
+		function callback (msg) {
+
 			DOM.details.close()
-			toast(msg)
+			toast(msg, 5000)
 			// Ask to Delete repo after toasting success msg
 			setTimeout(() => DOM.details.dom.remove.click(), 1500)
-		})
+		}
 	}
 	catch(error){
 		toast(error)
@@ -502,6 +464,7 @@ async function Archive(event){
 function quit() {
 	
 	//remote.getCurrentWindow().close()
+	window.api.send("quit");
 }
 
 /**
@@ -510,7 +473,7 @@ function quit() {
  */
 function restart(){
 
-	remote.app.relaunch()
+	window.api.send("restart");
 }
 
 /**
@@ -518,18 +481,8 @@ function restart(){
  * 
  */
 function newRepo(event) {
-
-	const { responder, exit, name, cmd, cwd } = event.detail
-
-	const data = { name, cmd, cwd }
-
-	ipcRenderer.send('mk-dir', data)
-
-	ipcRenderer.on('mk-dir-res', (event, msg) => {
-		
-		responder()
-		exit(msg)
-	})
+	
+	window.api.send('mk-dir', event.detail)
 }
 
 
@@ -537,10 +490,10 @@ function newRepo(event) {
 
 	const openVsCode = event => {
 
-		ipcRenderer.send('vs-code', event.detail)
-		ipcRenderer.on('vs-code', (event, result) => {
-			
-			toast(`Opened ${e.detail.title} in VS Code 🦄`)
+		window.api.send("vs-code", event.detail);
+
+		window.api.receive("vs-code-res", _ => {
+			toast(`Opened ${event.detail.title} in VS Code :unicorn:`)
 		})
 	}
 
@@ -549,16 +502,6 @@ function newRepo(event) {
 	DOM.details.addEventListener('open-code', (e) => openVsCode(e))
 	
 	DOM.search.addEventListener('open-code', (e) => openVsCode(e))
-}
-
-{ /* Open in Terminal (external) */
-
-	DOM.details.addEventListener('terminal-popout', event => {
-
-		event.detail.resolve = () => toast(`Opened ${e.detail.title} in Terminal 🦄`)
-
-		ipcRenderer.send('terminal-popout', event.detail)
-	})
 }
 
 

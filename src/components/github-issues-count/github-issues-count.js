@@ -40,15 +40,17 @@ export class GithubIssuesCount extends HTMLElement {
             this._issues = []
             return this.setupHasNoIssues() 
         }
-        
-        if(!this._issues){ 
+        else if(!this._issues){ 
 
             this._issues = data
             
             return this.setupHasIssues() 
         }
 
+
         this._issues = data
+
+        this.refreshIssues()
     }
     get issueRows(){
 
@@ -213,18 +215,7 @@ export class GithubIssuesCount extends HTMLElement {
         this.shadowRoot.querySelector('modal-component')
             .addEventListener('close', _ => this.shadowRoot.querySelector('modal-component').close())
 
-        this.shadowRoot.querySelector('modal-component').querySelectorAll('a')
-            .forEach(el => {
-                
-                el.onclick = event => {
-                    event.preventDefault()
-                    const url = el.name !== 'title'
-                        ? el.href
-                        : `https://github.com/${el.href.substring(el.href.indexOf('/repos/')+7, el.href.length)}`
-
-                    this.openLink(url)
-                }
-            })
+        this.listenToAnchors()
     }
 
     setupHasIssues(){
@@ -250,7 +241,6 @@ export class GithubIssuesCount extends HTMLElement {
     setupHasNoIssues(){
         
         this.addModal()
-
         setTimeout(() => {
 
             this.dom.has_data = this.shadowRoot.querySelector('.has_data')
@@ -265,6 +255,38 @@ export class GithubIssuesCount extends HTMLElement {
 
             localStorage.setItem(`${this.repo}__issues`, JSON.stringify(this.issues))
         }, 0)
+    }
+
+    refreshIssues(){
+
+        this.shadowRoot.querySelector('[slot="content"]').innerHTML = this.issueRows
+        
+        this.listenToAnchors()
+        
+        this.dom.has_data = this.shadowRoot.querySelector('.has_data')
+
+        const names = this.issues.map(x => x.title).join('\n')
+
+        this.dom.has_data.textContent = this.count
+        this.dom.has_data.title = `Repo has ${this.count} open issues:\n${names}`
+
+        localStorage.setItem(`${this.repo}__issues`, JSON.stringify(this.issues))
+    }
+
+    listenToAnchors(){
+        
+        this.shadowRoot.querySelector('modal-component').querySelectorAll('a')
+            .forEach(el => {
+                
+                el.onclick = event => {
+                    event.preventDefault()
+                    const url = el.name !== 'title'
+                        ? el.href
+                        : `https://github.com/${el.href.substring(el.href.indexOf('/repos/')+7, el.href.length)}`
+
+                    this.openLink(url)
+                }
+            })
     }
 
     getTemplate(){
