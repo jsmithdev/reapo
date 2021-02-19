@@ -21,8 +21,8 @@ const FILTER = {
 
 const dir = c => c.cwd+'archived/' // this is the dir used to house archives which are named for the repo chosen
 
-const directory = (config, toast) => new Promise((res, rej) => {
-    fs.mkdir(dir(config), () => run(dir(config), config, res, rej, toast))
+const directory = (config, window) => new Promise((res, rej) => {
+    fs.mkdir(dir(config), () => run(dir(config), config, window))
 })
 
 module.exports = { directory }
@@ -41,12 +41,12 @@ module.exports = { directory }
  * @param {Function} rej function to reject
  * @param {Function} toast function to send human messages back
  */
-async function run(dir, config, res, rej, toast){   console.dir(dir);  console.dir(config);
+async function run(dir, config, window){
 
-    const { cwd, name } = config
+    const { cwd, name, responder } = config
 
     // create a file to stream archive data to.
-    const output = fs.createWriteStream(dir+name+'.zip')
+    const output = fs.createWriteStream(`${dir}${name}_${new Date().getTime()}.zip`)
     const archive = archiver('zip', {
         zlib: { level: 9 } // Sets the compression level
     })
@@ -74,13 +74,11 @@ async function run(dir, config, res, rej, toast){   console.dir(dir);  console.d
         }
     }
 
-    output.on('close', () => res(`🎉 Compressed ${name} to ${dir} (${archive.pointer()} bytes)`))
-
-    //output.on('end', () => res(`🎉 Compressed ${name} to ${dir} (${archive.pointer()} bytes)`))
+    output.on('close', () => window.webContents.send(responder, `🎉 Compressed ${name} to ${dir} (${archive.pointer()} bytes)`))
 
     archive.on('warning', console.warn)
 
-    archive.on('error', err => rej(err))
+    archive.on('error', err => window.webContents.send('error', err))
 
     archive.pipe(output)
 

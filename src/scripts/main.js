@@ -1,4 +1,5 @@
-localStorage.setItem('path', '/home/jamie/repo')
+const isUnix = navigator.appVersion.indexOf("Win") === -1
+
 const codes = {
 	find: ['KeyF'],
 	exit: ['KeyW'],
@@ -31,6 +32,9 @@ const CONFIG = {
 		this._repo = path
 	},
 }
+
+
+window.api.receive('error', message => toast(message, 5000))
 
 /* Warn first time users to set their main repo dir */
 if(!CONFIG.REPO_DIR?.length || CONFIG.REPO_DIR === 'undefined'){
@@ -168,6 +172,8 @@ function getIssues( repo ){
  * @param {String} msg the message to display
  */
 function toast( msg, time ){
+	
+	if(msg?.message){ msg = msg.message }
 
 	if(!msg){ return console.log('toast sent w/ out message :/') }
 
@@ -325,7 +331,7 @@ function toggleSearch(){
 		const name = e.detail.name
 		const path = localStorage.path
 		
-		const cmd = process.platform !== 'win32'
+		const cmd = isUnix
 			? `rm -Rf ${path}${name}`
 			: `rmdir /Q /S ${path}${name}`
 		
@@ -425,25 +431,27 @@ function cancelProcesses(){
 async function Archive(event){
 
 	
-	//delete node_package? might not have deps listed, maybe option later in settings #todo
-	//console.dir(Archiver.directory)
-	//run thru handleRepo
+	//todo delete/skip node_package, others (dist)? might not have deps listed, maybe option later in settings
 	try {
 		
-		const data = {
-			toast,
-			detail: event.detail,
-		}
+		const { detail } = event;
 
-		ipcRenderer.send('archive', data)
+		const responder = 'archive-res'
 
-		ipcRenderer.on('archive-res', (event, msg) => {
-				
+		detail.responder = responder
+
+		console.log(detail)
+
+		window.api.send('archive', detail)
+		window.api.receive(responder, callback)
+
+		function callback (msg) {
+
 			DOM.details.close()
-			toast(msg)
+			toast(msg, 5000)
 			// Ask to Delete repo after toasting success msg
 			setTimeout(() => DOM.details.dom.remove.click(), 1500)
-		})
+		}
 	}
 	catch(error){
 		toast(error)
@@ -506,16 +514,6 @@ function newRepo(event) {
 	DOM.details.addEventListener('open-code', (e) => openVsCode(e))
 	
 	DOM.search.addEventListener('open-code', (e) => openVsCode(e))
-}
-
-{ /* Open in Terminal (external) */
-
-	DOM.details.addEventListener('terminal-popout', event => {
-
-		event.detail.resolve = () => toast(`Opened ${e.detail.title} in Terminal 🦄`)
-
-		ipcRenderer.send('terminal-popout', event.detail)
-	})
 }
 
 

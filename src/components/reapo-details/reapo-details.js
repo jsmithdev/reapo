@@ -223,21 +223,29 @@ export class ReapoModal extends HTMLElement {
 			else {
 				this.dom.readme.clear()
 				this.dom.readmeIcon.classList.add('active')
+
+				const cmd = 'cat README.md'
+				const cwd = `${this.path}/${this.name}`
+				const responder = 'readme'
+				
+				const showMarkdown = (markdown) => {
+					console.log('showMarkdown: ', markdown.substring(0, 20))
+					this.dom.readme.setAttribute('string', markdown)
+					this.dom.readme.classList.remove('hide')
+				}
+				
+				window.api.receive(responder, showMarkdown)
+				
+
 				this.dispatchEvent(new CustomEvent(
 					'exec-cmd', 
 					{
 						bubbles: true, 
 						composed: true,
 						detail: {
-							cmd: 'cat README.md',
-							cwd: `${this.path}/${this.name}`,
-							responder: response => {
-								console.log('response '+response.length)
-								//console.log(response)
-								this.dom.readme.setAttribute('string', response)
-								this.dom.readme.classList.remove('hide')
-							},
-							exit: e => console.log(e),
+							cmd,
+							cwd,
+							responder,
 						}
 					})
 				)
@@ -247,16 +255,24 @@ export class ReapoModal extends HTMLElement {
 
 		/* Run git status / sync icon */
 		this.dom.sync.onclick = () => {
+
+			
+			const cmd = 'git status'
+			const cwd = this.path+'/'+this.name
+			const responder = 'git-status'
+			const callback = log => this.dom.term.setAttribute('log', log)
+			
+			window.api.receive(responder, callback)
+			
 			this.dispatchEvent(new CustomEvent(
 				'exec-cmd', 
 				{ 
 					bubbles: true, 
 					composed: true,
 					detail: {
-						cmd: 'git status',
-						cwd: this.path+'/'+this.name,
-						responder: x => this.dom.term.setAttribute('log', x),
-						exit: () => this.dom.term.loggerExit(),
+						cmd, 
+						cwd, 
+						responder,
 					}
 				})
 			)
@@ -290,30 +306,17 @@ export class ReapoModal extends HTMLElement {
 
 		/* Run Archiver / box icon */
 		this.dom.archive.onclick = async () => {
-			
-			try {
-
-				const message = await new Promise((resolve, reject) => {
-					this.dispatchEvent(new CustomEvent(
-						'archive', 
-						{ 
-							bubbles: true, 
-							composed: true,
-							detail: {
-								resolve, 
-								reject,
-								name: this.name,
-								cwd: this.path+'/'
-							}
-						})
-					)
+			this.dispatchEvent(new CustomEvent(
+				'archive', 
+				{
+					bubbles: true, 
+					composed: true,
+					detail: {
+						name: this.name,
+						cwd: this.path+'/'
+					}
 				})
-
-				this.dom.term.setAttribute('log', message)
-			}
-			catch(error){
-				this.dom.term.setAttribute('log', error)
-			}
+			)
 		}
 
 		/* Clear terminal */
@@ -398,6 +401,7 @@ export class ReapoModal extends HTMLElement {
 			)
 		}
 	}
+
 	
 	openOrg( data ){
 		

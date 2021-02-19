@@ -189,7 +189,6 @@ ipcMain.on('mk-dir', (event, data) => {
 		}
 		
 		window.webContents.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
-		//event.sender.send('mk-dir-res', `Created ${name}, happy hacking 🦄`)
 		
 		// Auto open in vs code upon success
 		execute(cmd, cwd)
@@ -198,14 +197,11 @@ ipcMain.on('mk-dir', (event, data) => {
 
 
 
-ipcMain.on('archive', async (event, data) => {
-	
-	const { toast, detail } = data
-	
-	const msg = await Archiver.directory(detail, toast)
+ipcMain.on('archive', async (event, detail) => {
+
+	const msg = await Archiver.directory(detail, window)
 
 	window.webContents.send('archive-res', msg)
-	//event.sender.send('archive-res', msg)
 })
 
 
@@ -330,28 +326,27 @@ function execute(cmd, cwd, responder, exit){
 	console.log(`${cmd} ${cwd} ${responder} ${exit}`)
 
 	const exec = require('child_process').exec
+	
 	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
+
 	if(typeof responder === 'string'){
 		console.log('new responder string')
 		command.stdout.on('data', data => {
 			console.log('Has data ', data)
 			window.webContents.send(responder, data.toString())
 		})
-		command.stderr.on('data', data => responder(data.toString()))
+		command.stdout.on('data', data => {
+			console.log('Has data ', data)
+			window.webContents.send(responder, data.toString())
+		})
+		command.stderr.on('data', data => {
+			console.log('Has ERROR: ', data.toString())
+			window.webContents.send( 'error', data.toString() )
+		});
 
 	}
 	else if(typeof responder === 'function'){
 		command.stdout.on('data', data => responder(data.toString()))
 		command.stderr.on('data', data => responder(data.toString()))
 	}
-	
-	// todo not this
-	command.on('exit', 
-		code => 
-			typeof exit === 'function'
-				? exit(`Process finished with exit code ${code.toString()}`)
-				: typeof responder === 'function'
-					? responder('exit')
-					: null
-	);
 }

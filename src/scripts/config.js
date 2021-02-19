@@ -16,8 +16,10 @@ const validChannels = {
         'open-browser',
         'open-file-man',
         'sfdx-org-open',
+        'archive',
     ],
     "receive": [
+        "error",
         "directories",
         "get-projects-res",
         "select-parent-directory-res",
@@ -29,6 +31,9 @@ const validChannels = {
         "git-url",
         "list-files",
         'open-salesforce',
+        'readme',
+        'git-status',
+        'archive-res',
     ]
 }
 
