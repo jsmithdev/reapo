@@ -346,7 +346,7 @@ function toggleSearch(){
 		
 		const filepath = `${CONFIG.REPO_DIR}${folder}/.`
 
-		shell.showItemInFolder( filepath )
+		window.api.send('open-file-man', filepath )
 	})
 
 
@@ -366,7 +366,7 @@ function toggleSearch(){
 			responder,
 		}
 		
-		window.api.receive("git-url", openGitUrl)
+		window.api.receive(responder, openGitUrl)
 
 		window.api.send("execute", detail)
 

@@ -276,6 +276,11 @@ ipcMain.on('execute', async (event, detail) => {
 	execute(cmd, cwd, responder, exit)
 })
 
+/* Open in OS file manager */
+ipcMain.on('open-file-man', async (event, path) => {
+	shell.showItemInFolder( path )
+})
+
 
 function listIssues(auth, user, repo){
     return new Promise((res, rej) => ghissues.list(auth, user, repo,  (error, issues) => 
@@ -327,8 +332,13 @@ function execute(cmd, cwd, responder, exit){
 	const exec = require('child_process').exec
 	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
 	if(typeof responder === 'string'){
-		
-		command.stdout.on('data', data => window.webContents.send(responder, data.toString()))
+		console.log('new responder string')
+		command.stdout.on('data', data => {
+			console.log('Has data ', data)
+			window.webContents.send(responder, data.toString())
+		})
+		command.stderr.on('data', data => responder(data.toString()))
+
 	}
 	else if(typeof responder === 'function'){
 		command.stdout.on('data', data => responder(data.toString()))

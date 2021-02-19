@@ -14,6 +14,8 @@ const validChannels = {
         "get-issues",
         "execute",
         'open-browser',
+        'open-file-man',
+        'sfdx-org-open',
     ],
     "receive": [
         "directories",
@@ -26,6 +28,7 @@ const validChannels = {
         "get-issues-res",
         "git-url",
         "list-files",
+        'open-salesforce',
     ]
 }
 

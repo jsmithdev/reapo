@@ -269,9 +269,11 @@ export class ReapoModal extends HTMLElement {
 				? `more ".sfdx/sfdx-config.json"`//windows command
 				: `cat .sfdx/sfdx-config.json`//linux command
 
-			console.log(cmd)
 			const cwd = this.path+'/'+this.name
-			const responder = data => this.openOrg(data)
+
+			const responder = 'open-salesforce'
+			
+			window.api.receive(responder, data => this.openOrg(data))
 
 			const opts = { 
 				bubbles: true, 
@@ -325,23 +327,17 @@ export class ReapoModal extends HTMLElement {
 				: `ls`//linux command
 
 			const cwd = this.path+'/'+this.name
-			
+
 			const responder = 'list-files'
 
 			window.api.receive(responder, x => this.dom.term.setAttribute('log', x))
 			
-			this.dispatchEvent(new CustomEvent(
-				'exec-cmd',
-				{
-					bubbles: true,
-					composed: true,
-					detail: {
-						cmd,
-						cwd,
-						responder,
-					}
-				})
-			)
+			const detail = {
+				cmd,
+				cwd,
+				responder,
+			}
+			window.api.send("execute", detail)
 		}
 
 		/* gitlink - go to github link in package.xml if exists / github icon */
@@ -404,16 +400,19 @@ export class ReapoModal extends HTMLElement {
 	}
 	
 	openOrg( data ){
-		console.log(data)
+		
 		if(data.substring(0, 1) !== '{'){ return }
 
 		const { defaultusername } = JSON.parse( data )
 		
 		const cwd = this.path+'/'+this.name
 		const cmd = 'sfdx force:org:open -u '+defaultusername
-		const responder = msg => this.dom.term.setAttribute('log', msg)
-		const exit = () => this.dom.term.loggerExit()
-				
+		const responder = 'sfdx-org-open'
+
+		window.api.receive(responder, msg => this.dom.term.setAttribute('log', msg))
+		
+		//const exit = () => this.dom.term.loggerExit()
+		
 		const opts = { 
 			bubbles: true, 
 			composed: true,
@@ -421,7 +420,6 @@ export class ReapoModal extends HTMLElement {
 				cwd,
 				cmd,
 				responder,
-				exit,
 			}
 		}
 
