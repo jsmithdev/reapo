@@ -140,9 +140,7 @@ if (process.platform !== 'win32') {
 /* IPC Communications: Used to run backend processes like executing commands, CRUD,  */
 
 ipcMain.on('get-directories', async (event, directory) => {
-
-	console.log('get-directories')
-	console.log(directory)
+	
 	if(!directory){ return }
 	
 	const dirs = Repo.list(directory)
@@ -323,20 +321,16 @@ function getGitInfoFromLocalRepo(repo){
 /* Exec on behalf of user */
 function execute(cmd, cwd, responder, exit){
 
-	console.log(`${cmd} ${cwd} ${responder} ${exit}`)
+	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
 
 	const exec = require('child_process').exec
 	
 	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
 
 	if(typeof responder === 'string'){
-		console.log('new responder string')
+
 		command.stdout.on('data', data => {
-			console.log('Has data ', data)
-			window.webContents.send(responder, data.toString())
-		})
-		command.stdout.on('data', data => {
-			console.log('Has data ', data)
+			//console.log('Has data ', data)
 			window.webContents.send(responder, data.toString())
 		})
 		command.stderr.on('data', data => {
