@@ -52,11 +52,6 @@ const scheme = 'app'
 
 
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
-	app.quit()
-}
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let window

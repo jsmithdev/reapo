@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "archiver": "^4.0.2",
-    "electron-squirrel-startup": "^1.0.0",
     "electron-window-state": "^5.0.3",
     "fs-jetpack": "^2.4.0",
     "ghissues": "^1.1.4",
