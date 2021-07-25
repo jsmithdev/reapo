@@ -1,4 +1,3 @@
-const isUnix = navigator.appVersion.indexOf("Win") === -1
 
 const codes = {
 	find: ['KeyF'],
@@ -331,9 +330,7 @@ function toggleSearch(){
 		const name = e.detail.name
 		const path = localStorage.path
 		
-		const cmd = isUnix
-			? `rm -Rf ${path}${name}`
-			: `rmdir /Q /S ${path}${name}`
+		const cmd = `rm -Rf ${path}${name}`
 		
 		execEvent({ cmd })
 

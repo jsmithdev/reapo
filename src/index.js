@@ -1,3 +1,4 @@
+console.log(`ENV VARS`); console.dir(process.env); console.log(); // todo will potentially need to check / know what terminal to use; see gnome-terminal use as example;
 
 const path = require('path')
 
