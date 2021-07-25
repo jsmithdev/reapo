@@ -1,17 +1,16 @@
+<!-- markdownlint-disable MD033 MD028 -->
 
 # <img src="https://i.imgur.com/QgLQMsf.png" width="45" height="auto" > Reapo  
 
-## A repo manager made with web components & standards
+## Project manager built with native web components & standards (linux)
 
 <img src="https://i.imgur.com/ZZNvmQ0.png" width="500" height="auto" >
 
-Wants & issues are on Github under [Issues](https://github.com/jsmithdev/reapo/issues) 
+[Issues](https://github.com/jsmithdev/reapo/issues)
 
-Releases are on Github under [Releases](https://github.com/jsmithdev/reapo/releases)
+[Releases](https://github.com/jsmithdev/reapo/releases)
 
-* Linux builds are always bleeding, then Windows; MacOS could be added if interest emerges
-
-*Reapo compliments VS Code & there's a matching theme now called [Abyski](https://github.com/jsmithdev/abyski)*
+> Reapo compliments VS Code and there's a matching theme: [Abyski](https://github.com/jsmithdev/abyski)
 
 ---
 
@@ -23,20 +22,21 @@ Releases are on Github under [Releases](https://github.com/jsmithdev/reapo/relea
 
 The 5 main functions in the header, some have a hotkey, going left to right are:
 
-1. Refresh repos ( Ctrl+R )
+1 - Refresh repos ( Ctrl+R )
 
-2. Order By Date (latest modified project would be at the top) or Alphabetically
+2 - Order By Date (latest modified project would be at the top) or Alphabetically
 
-3. Filter projects from view ( Ctrl+F )
+3 - Filter projects from view ( Ctrl+F )
 
-4. Search all projects for a particular string ( Ctrl+S )
-  * choose a result to open that project in VS Code to that particular file the string was found in <img src="https://i.imgur.com/hLtGWla.png" width="500" height="auto" >
+4 - Search all projects for a particular string ( Ctrl+S )
 
-5. Settings / Menu ( Ctrl+N )
+  * 4a - choose a result to open that project in VS Code to that particular file the string was found in <img src="https://i.imgur.com/hLtGWla.png" width="500" height="auto" >
 
-* Add your main repo directory where all your projects you want included live
-* Create a New project, Salesforce project or git clone by adding git url 
-  * Any way you choose to create a new project, it will auto open project in VS Code
+5 - Settings / Menu ( Ctrl+N )
+
+  * 5a - Add your main repo directory where all your projects you want included live
+  * 5b - Create a New project, Salesforce project or git clone by adding git url 
+  * 5c - Any way you choose to create a new project, it will auto open project in VS Code
   <img src="https://i.imgur.com/hdpgFRF.png" width="500" height="auto" >
 
 ---

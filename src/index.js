@@ -1,4 +1,3 @@
-//process.env.debug = true
 
 const path = require('path')
 
@@ -102,7 +101,7 @@ function createWindow() {
 	window.loadURL('app://./index.html')
 
 	// Open the DevTools
-	if(process.env.debug){
+	if(process.env.DEBUG){
 		window.webContents.openDevTools()
 	}
 
@@ -266,6 +265,12 @@ ipcMain.on('get-issues', async (event, args) => {
 ipcMain.on('execute', async (event, detail) => {
 	
 	const { cmd, cwd, responder, exit } = detail;
+
+	console.log('ipc execute 269')
+	console.log(cmd)
+	console.log(cwd)
+	console.log(responder)
+	console.log(exit)
 	
 	execute(cmd, cwd, responder, exit)
 })

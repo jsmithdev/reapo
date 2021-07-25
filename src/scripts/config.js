@@ -17,6 +17,9 @@ const validChannels = {
         'open-file-man',
         'sfdx-org-open',
         'archive',
+        'new-sfdx',
+        'new-git',
+        'new-repo',
     ],
     "receive": [
         "error",

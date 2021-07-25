@@ -406,8 +406,15 @@ function toggleSearch(){
  * @description execute a command
  * @param {String} repo the local path to the repo
  */
-function execEvent( detail ){
-	window.api.send("execute", detail)
+function execEvent( data ){
+	console.log(data)
+	if(data?.detail){
+		const {detail} = data
+		window.api.send("execute", detail)
+	}
+	else {
+		window.api.send("execute", data)
+	}
 }
 
 

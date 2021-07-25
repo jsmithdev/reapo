@@ -197,6 +197,8 @@ export class ReapoCreate extends HTMLElement {
 
 	newEvent(type, cmd, cwd, name, path) {
 
+		console.log(type, cmd, cwd, name, path)
+
 		const responder = 'mk-dir-res'
 
 		const exit = x => this.cleanup(x, name, path, cmd.includes('git'))
@@ -209,10 +211,10 @@ export class ReapoCreate extends HTMLElement {
 				bubbles: true,
 				composed: true,
 				detail: {
-					name,
-					path,
 					cmd,
 					cwd,
+					name,
+					path,
 					responder,
 				}
 			}
@@ -220,6 +222,11 @@ export class ReapoCreate extends HTMLElement {
 	}
 
 	cleanup(x, name, path, open) {
+
+		console.log(x)
+		console.log(name)
+		console.log(path)
+		console.log(open)
 		
 		this.toast(x.length > 200 ? `${x.substring(0, 200)}...` : x)
 
