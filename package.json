@@ -21,9 +21,6 @@
     "email": "me@jsmith.dev"
   },
   "license": "MIT",
-  "config": {
-    "forge": "./forge.config.js"
-  },
   "dependencies": {
     "archiver": "^4.0.2",
     "electron-window-state": "^5.0.3",

@@ -14,19 +14,5 @@
           "debug": "true"
         }
       },
-      {
-          "type": "node",
-          "request": "launch",
-          "name": "Reapo Forge",
-          "runtimeExecutable": "electron-forge",
-          "windows": {
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-win.cmd"
-          },
-          // runtimeArgs will be passed directly to your Electron application
-          "env": {
-            "debug": "true"
-          },
-          "cwd": "${workspaceFolder}"
-        }
     ]
 }
