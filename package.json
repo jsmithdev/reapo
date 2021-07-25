@@ -1,5 +1,5 @@
 {
-  "name": "Reapo",
+  "name": "reapo",
   "productName": "Reapo",
   "version": "0.3.2",
   "description": "A desktop repository manager using web standards 🎉",
@@ -36,8 +36,8 @@
     "electron-builder": "^22.11.7"
   },
   "scripts": {
-    "start": "electron start",
-    "start:dev": "DEBUG=true electron start",
+    "start": "electron src/index.js",
+    "start:dev": "DEBUG=true npm start",
     "make": "npx electron-builder --linux snap"
   }
 }
