@@ -29,20 +29,21 @@
     "shell-path": "^2.1.0"
   },
   "devDependencies": {
-    "electron": "^9.4.0",
+    "electron": "^18.2.0",
     "electron-builder": "^22.11.7"
   },
   "scripts": {
     "start": "electron src/index.js",
-    "start:dev": "DEBUG=true npm start",
-    "build": "npx electron-builder --linux snap"
+    "start:dev": "DEBUG=true electron src/index.js --trace-warnings",
+    "build:linux": "npx electron-builder --linux"
   },
   "build": {
-    "appId": "dev.jsmith.reapo",
-    "target": "snap",
-    "icon": "./resources/icon.png",
-    "linux": {
-      "category": "Utility"
-    }
+		"linux": {
+			"target": [
+				"AppImage"
+			],
+      "appId": "dev.jsmith.reapo",
+			"category": "Utility"
+		}
   }
 }
