@@ -35,6 +35,14 @@
   "scripts": {
     "start": "electron src/index.js",
     "start:dev": "DEBUG=true npm start",
-    "make": "npx electron-builder --linux snap"
+    "build": "npx electron-builder --linux snap"
+  },
+  "build": {
+    "appId": "dev.jsmith.reapo",
+    "target": "snap",
+    "icon": "./resources/icon.png",
+    "linux": {
+      "category": "Utility"
+    }
   }
 }
