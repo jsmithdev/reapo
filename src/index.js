@@ -1,4 +1,4 @@
-//process.env.debug = true
+console.log(`ENV VARS`); console.dir(process.env); console.log(); // todo will potentially need to check / know what terminal to use; see gnome-terminal use as example;
 
 const path = require('path')
 
@@ -53,11 +53,6 @@ const scheme = 'app'
 
 
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
-	app.quit()
-}
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let window
@@ -102,7 +97,7 @@ function createWindow() {
 	window.loadURL('app://./index.html')
 
 	// Open the DevTools
-	if(process.env.debug){
+	if(process.env.DEBUG){
 		window.webContents.openDevTools()
 	}
 
@@ -266,6 +261,12 @@ ipcMain.on('get-issues', async (event, args) => {
 ipcMain.on('execute', async (event, detail) => {
 	
 	const { cmd, cwd, responder, exit } = detail;
+
+	console.log('ipc execute 269')
+	console.log(cmd)
+	console.log(cwd)
+	console.log(responder)
+	console.log(exit)
 	
 	execute(cmd, cwd, responder, exit)
 })

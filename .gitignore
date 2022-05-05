@@ -7,3 +7,4 @@ test.html
 src/components/modal-component/modal-example.html
 .env
 forge.config.js
+dist

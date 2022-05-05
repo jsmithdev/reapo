@@ -1,4 +1,3 @@
-const isUnix = navigator.appVersion.indexOf("Win") === -1
 
 const codes = {
 	find: ['KeyF'],
@@ -331,9 +330,7 @@ function toggleSearch(){
 		const name = e.detail.name
 		const path = localStorage.path
 		
-		const cmd = isUnix
-			? `rm -Rf ${path}${name}`
-			: `rmdir /Q /S ${path}${name}`
+		const cmd = `rm -Rf ${path}${name}`
 		
 		execEvent({ cmd })
 
@@ -406,8 +403,15 @@ function toggleSearch(){
  * @description execute a command
  * @param {String} repo the local path to the repo
  */
-function execEvent( detail ){
-	window.api.send("execute", detail)
+function execEvent( data ){
+	console.log(data)
+	if(data?.detail){
+		const {detail} = data
+		window.api.send("execute", detail)
+	}
+	else {
+		window.api.send("execute", data)
+	}
 }
 
 
