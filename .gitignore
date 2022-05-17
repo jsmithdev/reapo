@@ -1,7 +1,7 @@
 node_modules
 out
 .history
-scratch.js
+scratch
 test.html
 .notes
 src/components/modal-component/modal-example.html
