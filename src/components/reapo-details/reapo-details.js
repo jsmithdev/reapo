@@ -365,7 +365,7 @@ export class ReapoModal extends HTMLElement {
 					detail: {
 						from: this.is,
 						title: this.name,
-						cmd: `code ${this.path}/${this.name}`, 
+						cmd: `gio open ${this.path}/${this.name}`, 
 						cwd: `${this.path}/${this.name}`
 					}
 				})
