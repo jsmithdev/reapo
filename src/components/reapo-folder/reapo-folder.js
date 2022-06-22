@@ -189,7 +189,7 @@ export class ReapoFolder extends HTMLElement {
 					detail: {
 						from: this.is,
 						title: this.name,
-						cmd: 'gio open .', 
+						cmd: 'code .', 
 						cwd: `${this.path}/${this.name}`
 					}
 				})
