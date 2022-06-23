@@ -261,12 +261,6 @@ ipcMain.on('get-issues', async (event, args) => {
 ipcMain.on('execute', async (event, detail) => {
 	
 	const { cmd, cwd, responder, exit } = detail;
-
-	console.log('ipc execute 269')
-	console.log(cmd)
-	console.log(cwd)
-	console.log(responder)
-	console.log(exit)
 	
 	execute(cmd, cwd, responder, exit)
 })
