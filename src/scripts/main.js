@@ -404,7 +404,7 @@ function toggleSearch(){
  * @param {String} repo the local path to the repo
  */
 function execEvent( data ){
-	console.log(data)
+	//console.log(data)
 	if(data?.detail){
 		const {detail} = data
 		window.api.send("execute", detail)
@@ -442,7 +442,7 @@ async function Archive(event){
 
 		detail.responder = responder
 
-		console.log(detail)
+		//console.log(detail)
 
 		window.api.send('archive', detail)
 		window.api.receive(responder, callback)

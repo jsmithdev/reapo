@@ -235,7 +235,7 @@ export class SearchRepos extends HTMLElement {
 					bubbles: true, 
 					composed: true,
 					detail: {
-						cmd: `gio open ${this.directory}/${repo} --goto ${this.directory}/${value}`, 
+						cmd: `code ${this.directory}/${repo} --goto ${this.directory}/${value}`, 
 						cwd: `${this.directory}`
 					}
 				})

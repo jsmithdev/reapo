@@ -365,7 +365,7 @@ export class ReapoModal extends HTMLElement {
 					detail: {
 						from: this.is,
 						title: this.name,
-						cmd: `gio open ${this.path}/${this.name}`, 
+						cmd: `code ${this.path}/${this.name}`, 
 						cwd: `${this.path}/${this.name}`
 					}
 				})
@@ -373,7 +373,7 @@ export class ReapoModal extends HTMLElement {
 		}
 		
 
-		/* Open in VS Code / <> icon */
+		/* Open external terminal / [>_] icon */
 		this.dom.terminal_popout.onclick = () => {
 
 			const cmd = `gnome-terminal --working-directory=${this.path}/${this.name}` //linux command

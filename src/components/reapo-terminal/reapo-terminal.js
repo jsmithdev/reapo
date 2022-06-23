@@ -86,25 +86,26 @@ export class ReapoTerminal extends HTMLElement {
 
 	exec(cmd){
 
+		console.log('exec: ', cmd)
+
 		if(!cmd || cmd === ''){ return }
 		this.memory.banks.push(cmd)
 		this.dom.input.value = ''
         
-		if(cmd.toLowerCase() == 'clear'){ this.clear();  return }
-        
-		//new Promise((res, rej) => 
-		this.dispatchEvent(new CustomEvent(
-			'exec-cmd', 
-			{ 
-				bubbles: true,
-				composed: true,
-				detail: {
-					cmd,
-					cwd: this.path+'/'+this.name,
-					responder: this.logger.bind(this)
-				}
-			})
-		)
+		if(cmd.toLowerCase() === 'clear'){ this.clear();  return }
+
+		const cwd = this.path+'/'+this.name
+
+		const responder = 'execute-res'
+
+		window.api.receive(responder, x => this.logger( x ))
+		
+		const detail = {
+			cmd,
+			cwd,
+			responder,
+		}
+		window.api.send("execute", detail)
 	}
 
 	/**
