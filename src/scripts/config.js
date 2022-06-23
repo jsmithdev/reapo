@@ -37,6 +37,7 @@ const validChannels = {
         'readme',
         'git-status',
         'archive-res',
+        'execute-res',
     ]
 }
 
