@@ -1,5 +1,5 @@
 node_modules
-out
+dist
 .history
 scratch
 test.html
@@ -7,4 +7,4 @@ test.html
 src/components/modal-component/modal-example.html
 .env
 forge.config.js
-dist
+todo

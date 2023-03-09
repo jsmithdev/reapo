@@ -10,7 +10,7 @@
         "SharedArrayBuffer": "readonly"
     },
     "parserOptions": {
-        "ecmaVersion": 2018,
+        "ecmaVersion": "latest",
         "sourceType": "module"
     },
     "rules": {
@@ -24,10 +24,11 @@
         ],
         "quotes": [
             "error",
-            "single"
+            "single",
+            "backtick"
         ],
         "semi": [
-            "error",
+            "warn",
             "never"
         ]
     }

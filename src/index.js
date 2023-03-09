@@ -17,7 +17,7 @@ const ghissues = require('ghissues')
 const base = app.getAppPath()
 
 
-// Protocol will be "app://./…"
+// Protocol will be 'app://./…'
 const scheme = 'app'
 
 { 	/* Protocol */
@@ -41,12 +41,7 @@ const scheme = 'app'
 
 
 { /* BrowserWindow */
-
-
-	;(async () => {
-		await app.whenReady()
-		createWindow()
-	})();
+	app.whenReady().then(createWindow)
 }
 
 
@@ -152,20 +147,23 @@ ipcMain.on('get-directories', async (event, directory) => {
 		return dir
 	})
 	
-	window.webContents.send("directories", projects)
+	window.webContents.send('directories', projects)
 }) 
 
-ipcMain.on('select-parent-directory', async (event) => {
+ipcMain.on('select-parent-directory', async () => {
 	const result = await dialog.showOpenDialog(window, {
 		properties: ['openDirectory']
 	})
 	
-	window.webContents.send("select-parent-directory-res", result.filePaths)
+	window.webContents.send('select-parent-directory-res', result.filePaths)
 	//event.sender.send('select-parent-directory-res', result.filePaths)
 }) 
 
-ipcMain.on('home-dir', (event) => {
-	window.webContents.send("home-dir-res", result.filePaths)
+ipcMain.on('home-dir', async () => {
+	const result = await dialog.showOpenDialog(window, {
+		properties: ['openDirectory']
+	})
+	window.webContents.send('home-dir-res', result.filePaths)
 	//event.sender.send('home-dir-res', app.getPath('home'))
 })
 
@@ -201,7 +199,7 @@ ipcMain.on('archive', async (event, detail) => {
 
 ipcMain.on('vs-code', async (event, data) => {
 	
-	const resolve = arg =>	window.webContents.send("vs-code-res", arg)
+	const resolve = arg =>	window.webContents.send('vs-code-res', arg)
 
 	const { cmd, cwd } = data
 	
@@ -220,13 +218,12 @@ ipcMain.on('terminal-popout', (event, data) => {
 	execute(cmd, cwd, resolve)
 })
 
-ipcMain.on('restart', (event, data) => {
+ipcMain.on('restart', () => {
 	app.relaunch()
-	app.exit(0)})
-
-ipcMain.on('quit', (event, data) => {
-	app.exit(0)
+	//app.exit(0)
 })
+
+ipcMain.on('quit', () => app.exit(0))
 
 /* Github */
 ipcMain.on('get-issues', async (event, args) => {
@@ -237,16 +234,16 @@ ipcMain.on('get-issues', async (event, args) => {
 
 	const list = await listIssues( { user, token }, git.user, git.name )
 
-    const issues = list.map(issue => {
+	const issues = list.map(issue => {
 
-        const {
-            url,
-            title,
-            body,
-            created_at,
-        } = issue;
+		const {
+			url,
+			title,
+			body,
+			created_at,
+		} = issue
 
-        return {
+		return {
 			url,
 			title,
 			body,
@@ -272,12 +269,12 @@ ipcMain.on('open-file-man', async (event, path) => {
 
 
 function listIssues(auth, user, repo){
-    return new Promise((res, rej) => ghissues.list(auth, user, repo,  (error, issues) => 
-        error ? rej(error) : res(issues)))
+	return new Promise((res, rej) => ghissues.list(auth, user, repo,  (error, issues) => 
+		error ? rej(error) : res(issues)))
 }
 function listOrgIssues(auth, user, repo){
-    return new Promise((res, rej) => ghissues.listOrg(auth, user, repo,  (error, issues) => 
-        error ? rej(error) : res(issues)))
+	return new Promise((res, rej) => ghissues.listOrg(auth, user, repo,  (error, issues) => 
+		error ? rej(error) : res(issues)))
 }
 
 function getGitInfoFromLocalRepo(repo){

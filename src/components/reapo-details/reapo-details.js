@@ -96,7 +96,7 @@ template.innerHTML = /*html*/`
 
 	</div>
 </div>
-`;
+`
 
 export class ReapoModal extends HTMLElement {
 
@@ -378,7 +378,7 @@ export class ReapoModal extends HTMLElement {
 
 			const cmd = `gnome-terminal --working-directory=${this.path}/${this.name}` //linux command
 
-				this.dispatchEvent(new CustomEvent(
+			this.dispatchEvent(new CustomEvent(
 				'exec-cmd', 
 				{ 
 					bubbles: true, 
