@@ -2,7 +2,7 @@
 
 # <img src="https://i.imgur.com/QgLQMsf.png" width="45" height="auto" > Reapo  
 
-## Project manager built with native web components & standards (linux)
+## Linux repository manager built with native web components & standards
 
 <img src="https://i.imgur.com/ZZNvmQ0.png" width="500" height="auto" >
 
@@ -10,7 +10,7 @@
 
 [Releases](https://github.com/jsmithdev/reapo/releases)
 
-> Reapo compliments VS Code and there's a matching theme: [Abyski](https://github.com/jsmithdev/abyski)
+> Reapo compliments VS Code and has a matching theme: [Abyski](https://github.com/jsmithdev/abyski)
 
 ---
 
@@ -85,11 +85,11 @@ The 'Open in VS Code' feature expects `code` to be a cli command but [VS Code do
 
 ## Develop Reapo
 
-### Clone it
+### Clone
 
 ```git clone https://github.com/jsmithdev/reapo.git && cd reapo```
 
-### Install it
+### Install
 
 ```npm i```
 
@@ -97,13 +97,13 @@ The 'Open in VS Code' feature expects `code` to be a cli command but [VS Code do
 
 ```npm run start```
 
-### Package it
+### Start it (with dev tools)
 
-```npm run package```
+```npm run start:dev```
 
-### Make it (create an installer for your current OS)
+### Build it
 
-```npm run make```
+```npm run build:linux```
 
 ---
 
