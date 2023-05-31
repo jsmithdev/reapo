@@ -1,6 +1,5 @@
-
-const { ipcRenderer, contextBridge } = require('electron')
-const { validChannels } = require('./scripts/config')
+import { ipcRenderer, contextBridge } from 'electron'
+import { validChannels } from './scripts/config'
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object

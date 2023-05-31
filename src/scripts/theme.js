@@ -1,6 +1,5 @@
 
-
-function initiate(){
+export function initiate(){
 	// Default Theme
 	const defaults = {
 		'--color-lightest': '#EEE',
@@ -22,13 +21,10 @@ function initiate(){
 	setTheme()
 }
 
-function setTheme( theme ) {	
+export function setTheme( theme ) {	
     for (const key in theme){
         document.documentElement.style.setProperty(key, theme[key])
 	}
 	
 	localStorage.setItem('theme', theme)
 }
-
-//export for later consumption
-module.exports = { initiate, setTheme }

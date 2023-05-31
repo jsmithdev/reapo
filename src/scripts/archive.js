@@ -1,12 +1,12 @@
 
 
-const fs = require("fs");
-const util = require("util");
+import fs from 'fs'
+import util from 'util'
+import archiver from 'archiver';
 
 const readdir = util.promisify(fs.readdir)
 const stat = util.promisify(fs.stat)
 
-const archiver = require('archiver')
 
 const FILTER = {
     get items(){
@@ -21,13 +21,9 @@ const FILTER = {
 
 const dir = c => c.cwd+'archived/' // this is the dir used to house archives which are named for the repo chosen
 
-const directory = (config, window) => new Promise((res, rej) => {
+export const directory = (config, window) => new Promise((res, rej) => {
     fs.mkdir(dir(config), () => run(dir(config), config, window))
 })
-
-module.exports = { directory }
-
-
 
 
 

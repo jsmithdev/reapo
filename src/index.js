@@ -1,17 +1,27 @@
-console.log(`ENV VARS`); console.dir(process.env); console.log(); // todo will potentially need to check / know what terminal to use; see gnome-terminal use as example;
+console.log(`ENV VARS`);
+console.dir(process.env);
+console.log(); // will potentially need to check / know what terminal to use; see gnome-terminal use as example;
 
-const path = require('path')
+import path from 'path'
 
-const mkdir = require('mkdirp')
-const Archiver = require('./scripts/archive.js')
+import mkdir from 'mkdirp'
 
-const windowStateKeeper = require('electron-window-state')
+import Archiver from './scripts/archive.js'
 
-const { app, protocol, ipcMain, dialog, BrowserWindow, shell, remote } = require('electron')
+import windowStateKeeper from 'electron-window-state'
 
-const Repo = require('fs-jetpack')
+import Repo from 'fs-jetpack'
 
-const ghissues = require('ghissues')
+import ghissues from 'ghissues'
+
+import { createProtocol } from './scripts/create-protocol'
+
+import shellPath from 'shell-path'
+
+import { app, protocol, ipcMain, dialog, BrowserWindow, shell, remote } from 'electron'
+
+import { exec } from 'child_process'
+
 
 // Base path used to resolve modules
 const base = app.getAppPath()
@@ -36,7 +46,7 @@ const scheme = 'app'
 	//protocol.registerStandardSchemes([scheme], { secure: true });
 
 	// Create protocol
-	require('./scripts/create-protocol')(scheme, base)
+	createProtocol(scheme, base)
 }
 
 
@@ -116,8 +126,6 @@ app.on('window-all-closed', () => {
 
 /* Help for unix PATH vars so reapo can run installed CLI tools on behalf of user */
 if (process.platform !== 'win32') {
-
-	const shellPath = require('shell-path')
 	
 	process.env.PATH = shellPath.sync() || [
 		'./node_modules/.bin',
@@ -314,8 +322,6 @@ function getGitInfoFromLocalRepo(repo){
 function execute(cmd, cwd, responder, exit){
 
 	//console.log(`${cmd} ${cwd} ${responder} ${exit}`)
-
-	const exec = require('child_process').exec
 	
 	const command = cwd ? exec(cmd, { cwd }) : exec(cmd)
 

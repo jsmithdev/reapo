@@ -1,5 +1,5 @@
 // allowed channels 
-const validChannels = {
+export const validChannels = {
     "send": [
         "select-parent-directory",
         "terminal-popout",
@@ -39,8 +39,4 @@ const validChannels = {
         'archive-res',
         'execute-res',
     ]
-}
-
-module.exports = {
-    validChannels,
 }
